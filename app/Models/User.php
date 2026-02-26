@@ -19,7 +19,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email',
+        'username',
         'password',
         'no_hp'
     ];
@@ -40,10 +40,10 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'password' => 'bcrypt',
-        ];
-    }
+//     protected function casts(): array
+//     {
+//         return [
+//             'password' => 'hash',
+//         ];
+//     }
 }

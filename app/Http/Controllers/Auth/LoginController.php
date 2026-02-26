@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -21,11 +22,14 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (Auth::attempt($request->only('username', 'password'))) {
-            $request->session()->regenerate();
-            return redirect()->intended('Home')->with('success', 'Selamat datang!');
+        $user = User::where('username', $request->username)->first();
+
+        if ($user && Hash::check($request->password, $user->password)) {
+            $request->session()->put('user_id', $user->id);
+            $request->session()->put('role', $user->role);
+            return redirect('/dashboard')->with('success', 'Login berhasil.');
         }
 
-        return back()->withErrors(['username' => 'Username atau password salah.']);
+        return back()->with('error', 'Username atau password salah.');
     }
 }

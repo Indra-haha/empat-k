@@ -17,14 +17,14 @@ return new class extends Migration
             $table->string('password');
             $table->string('name');
             $table->string('no_hp');
-            $table->enum('role', ['pelanggan', 'cs', 'desainer', 'kp','accounting'])->default('pelanggan');
+            $table->enum('role', ['pelanggan', 'cs', 'desainer', 'kp', 'accounting'])->default('pelanggan');
             $table->rememberToken();
             $table->timestamps();
         });
 
         Schema::create('sessions', function (Blueprint $table) {
-            $table->id('id')->primary();
-            $table->foreignId('user_id')->unique()->constrained('users', 'user_id')->cascadeOnDelete();
+            $table->string('id')->primary();         
+            $table->string('user_id')->nullable()->unique();    
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');

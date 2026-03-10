@@ -33,7 +33,18 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        /* default page ketika dikunjungi pertama kali */
+        if (Auth::user()->role === 'pelanggan' || Auth::user()->role === 'cs') {
+            return redirect()->intended('/products');
+        } else if (Auth::user()->role === 'desainer') {
+            return redirect()->intended('/requests');
+        } else if (Auth::user()->role === 'accounting') {
+            return redirect()->intended('/tagihan');
+        } else if (Auth::user()->role === 'kp') {
+            return redirect()->intended('/order-kerja');
+        } else {
+            return redirect()->intended('/dashboard');
+        }
     }
 
     /**

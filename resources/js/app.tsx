@@ -1,26 +1,27 @@
-/// <reference types="vite/client" />
+import '../css/app.css';
+import './bootstrap';
 
-import { createInertiaApp } from '@inertiajs/react'
-import { createRoot } from 'react-dom/client'
+import { createInertiaApp } from '@inertiajs/react';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { createRoot } from 'react-dom/client';
+import React from 'react';
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
-  resolve: (name) => {
-    const pages = import.meta.glob('./Pages/**/*.tsx', { eager: true })
-    
-    // ubah dot notation menjadi folder path
-    const path = name.replace(/\./g, '/')
+    title: (title) => `${title} - ${appName}`,
+    resolve: (name) =>
+        resolvePageComponent(
+            `./Pages/${name}.tsx`,
+            import.meta.glob('./Pages/**/*.tsx'),
+        ),
+    setup({ el, App, props }) {
+        const root = createRoot(el);
 
-    const page = pages[`./Pages/${path}.tsx`]
-
-    if (!page) {
-      console.error('Available pages:', Object.keys(pages))
-      throw new Error(`Page not found: ./Pages/${path}.tsx`)
-    }
-
-    return page
-  },
-  setup({ el, App, props }) {
-    if (!el) throw new Error('React root element not found')
-    createRoot(el).render(<App {...props} />)
-  },
-})
+        root.render(
+            <App {...props} />
+        );
+    },
+    progress: {
+        color: '#4B5563',
+    },
+});

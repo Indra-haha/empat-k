@@ -1,5 +1,22 @@
 {
-  "compilerOptions": {
-    "jsx": "react-jsx"
-  }
+    "compilerOptions": {
+        "jsx": "react",
+        "baseUrl": ".",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "paths": {
+            "@/*": [
+                "resources/js/*"
+            ],
+            "ziggy-js": [
+                "./vendor/tightenco/ziggy"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules",
+        "public"
+    ]
 }

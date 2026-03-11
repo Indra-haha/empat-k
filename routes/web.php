@@ -17,8 +17,11 @@ Route::get('/', function () {
     ]);
 });
 
-Route::middleware(['auth', 'role:cs'])->group(function () {
+Route::middleware(['auth', 'role:cs,pelanggan'])->group(function () {
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+});
+
+Route::middleware(['auth', 'role:cs'])->group(function () {
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
 });

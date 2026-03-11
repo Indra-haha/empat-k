@@ -31,9 +31,8 @@ export default function Login() {
     };
 
     return (
-        <GuestLayout>
-            <Head title="Log in" />
-            <form onSubmit={submit} className="text-green-800 max-w-[300px]">
+        <section className="flex max-w-[320px] h-screen mx-auto justify-center items-center">
+            <form onSubmit={submit} className="text-green-800 max-w-sm px-6 w-full">
                 {message && (
                     <div className="mb-4 text-sm font-medium text-green-600">
                         {message}
@@ -104,6 +103,7 @@ export default function Login() {
 
                 </div>
             </form>
-        </GuestLayout>
+        </section>
+
     );
 }

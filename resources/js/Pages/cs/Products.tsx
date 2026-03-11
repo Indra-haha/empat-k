@@ -21,7 +21,7 @@ export default function Products({ products }: { products?: any[] }) {
     // Handle submit Add
     const handleAdd = (e: React.FormEvent) => {
         e.preventDefault();
-        Inertia.post("/admin/products/add", form, {
+        Inertia.post("/products/add", form, {
             onSuccess: () => setShowAddModal(false),
         });
     };
@@ -30,7 +30,7 @@ export default function Products({ products }: { products?: any[] }) {
     const handleEdit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedProduct) return;
-        Inertia.put(`/admin/products/edit/${selectedProduct.id}`, form, {
+        Inertia.put(`/products/edit/${selectedProduct.id}`, form, {
             onSuccess: () => {
                 setShowEditModal(false);
                 setSelectedProduct(null);
@@ -41,7 +41,7 @@ export default function Products({ products }: { products?: any[] }) {
     // Handle Delete
     const handleDelete = (productId: number) => {
         if (!confirm("Are you sure?")) return;
-        Inertia.delete(`/admin/products/delete/${productId}`);
+        Inertia.delete(`/products/delete/${productId}`);
     };
 
     // Open Edit Modal
@@ -65,16 +65,18 @@ export default function Products({ products }: { products?: any[] }) {
                     <thead>
                         <tr className="border-b">
                             <th className="p-2">ID</th>
-                            <th className="p-2">Name</th>
-                            <th className="p-2">Price</th>
+                            <th className="p-2 justify-start">Name</th>
+                            <th className="p-2 justify-start">Description</th>
+                            <th className="p-2 justify-start">Price</th>
                             <th className="p-2">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {products?.map((product) => (
                             <tr key={product.id} className="border-b">
-                                <td className="p-2">{product.id}</td>
+                                <td className="p-2 justify-center flex">{product.product_id}</td>
                                 <td className="p-2">{product.name}</td>
+                                <td className="p-2">{product.description}</td>
                                 <td className="p-2">{product.price}</td>
                                 <td className="p-2 flex gap-2">
                                     <button

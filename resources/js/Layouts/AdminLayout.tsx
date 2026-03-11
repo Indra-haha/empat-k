@@ -2,7 +2,7 @@ import { Head, usePage } from "@inertiajs/react";
 import React from "react";
 import { menusByRole } from "../Data/Menu";
 import Dropdown from "@/Components/Dropdown";
-import { AdminHeader } from "@/Components/Admin/Header";
+
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const { auth } = usePage().props;
@@ -83,7 +83,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                     {/* Main Content */}
                     <main className="flex flex-col w-full bg-white shadow-sm sm:rounded-lg">
-                        <AdminHeader title={title} addUrl={url} />
                         {children as React.ReactNode}
                     </main>
                 </div>

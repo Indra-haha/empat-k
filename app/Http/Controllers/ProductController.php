@@ -10,18 +10,31 @@ class ProductController extends BaseController
 {
     protected $modelClass = Product::class;
 
-    public function index() {
+    /* CS lihat produk */
+    public function index()
+    {
         $this->authorizeAction('viewAny');
         $products = Product::all();
-        return inertia('Products', compact('products'));
+        $role = auth()->user()->role;
+
+        return inertia("$role/Products", compact('products'));
     }
 
-    public function create() {
-        $this->authorizeAction('create');
-        return inertia('Products/Create');
+    /* Pelanggan lihat produk */
+    public function show()
+    {
+        $this->authorizeAction('view');
+        return inertia('Customers/Products', compact('products'));
     }
 
-    public function store(Request $request) {
+    public function update()
+    {
+        $this->authorizeAction('update');
+        return inertia('CS/Products/update');
+    }
+
+    public function store(Request $request)
+    {
         $this->authorizeAction('create');
         Product::create($request->all());
         return redirect()->route('products.index');

@@ -24,7 +24,7 @@ Route::middleware(['auth', 'role:cs'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:desainer'])->group(function () {
-    Route::get('/requests', [RequestsController::class, 'index'])->name('requests');
+    Route::get('/requests', [RequestsController::class, 'index'])->name('requests.index');
 });
 
 Route::middleware('auth')->group(function () {

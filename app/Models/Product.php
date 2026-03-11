@@ -11,4 +11,9 @@ class Product extends Model
         'price',
         'url_img'
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category');
+    }
 }

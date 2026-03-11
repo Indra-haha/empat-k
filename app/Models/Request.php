@@ -3,12 +3,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 class Request extends Model
 {
-    protected $table = 'request_id';
+    protected $primaryKey = 'request_id';
 
     protected $fillable = [
         'user_id',
         'product_id',
-        'massage',
+        'description',
         'upload_img',
         'status'
     ];

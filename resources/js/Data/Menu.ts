@@ -6,26 +6,26 @@ export const menusByRole: Record<string, Menu[]> = {
         { name: 'Profile', route: '/profile' },
     ],
     pelanggan: [
-        { name: 'Dashboard', route: '/dashboard' },
-        { name: 'Produk', route: '/produk' },
-        { name: 'Pesanan', route: '/pesanan' },
-        { name: 'Tagihan', route: '/tagihan' },
+        { name: 'Product', route: '/products' },
+        { name: 'Order', route: '/orders' },
+        { name: 'Request', route: '/requests' },
+        { name: 'Billing', route: '/billing' },
     ],
     cs: [
-        { name: 'Produk', route: '/produk' },
-        { name: 'Pesanan', route: '/pesanan' },
-        { name: 'Nota', route: '/nota' },
+        { name: 'Product', route: '/products' },
+        { name: 'Order', route: '/orders' },
+        { name: 'Invoice', route: '/invoice' },
         { name: 'Role User' , route: '/role-user' },
     ],
     desainer: [
-        { name: 'Permintaan', route: '/permintaan' },
+        { name: 'Request', route: '/requests' },
         { name: 'Laporan', route: '/laporan' },
     ],
     kp: [
-        { name: 'Order Kerja', route: '/order-kerja' },
+        { name: 'Work-order', route: '/work-order' },
     ],
     accounting: [
-        { name: 'Nota', route: '/nota' },
-        { name: 'Tagihan', route: '/tagihan' },
+        { name: 'Invoice', route: '/invoice' },
+        { name: 'Billing', route: '/billing' },
     ],
 };

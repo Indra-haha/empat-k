@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Routing\Controller as BaseController;
-use Inertia\Inertia;
+use App\Models\Request;;;
 
 class RequestsController extends BaseController
 {
-    public function index()
-    {
-        return Inertia::render('Requests');
+      public function index() {
+        $this->authorizeAction('viewAny');
+        $requests = Request::all();
+        return inertia('requests', compact('requests'));
     }
 }

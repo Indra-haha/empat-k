@@ -1,20 +1,36 @@
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import React from "react";
-import { usePage } from "@inertiajs/react";
 import { menusByRole } from "../Data/Menu";
 import Dropdown from "@/Components/Dropdown";
+import { AdminHeader } from "@/Components/Admin/Header";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const { auth } = usePage().props;
-    const user = auth?.user; // ← optional chaining
-    const role = user?.role; // default role guest
-    const menus =
-        role != "pelanggan" ? menusByRole[role] : menusByRole.guest;
+    const user = auth?.user;
+    const role = user?.role;
+    const menus = role != "pelanggan" ? menusByRole[role] : menusByRole.guest;
+
+    // Ambil URL saat ini
+    const url = usePage().url; // Contoh: "/admin/products/edit/5"
+
+    // Pisahkan path menjadi array
+    const segments = url.split("/").filter(Boolean); // ["admin", "products", "edit", "5"]
+
+    // Ambil segment yang akan jadi title dan addUrl
+    const currentSection = segments[segments.length - 1] || segments[segments.length - 2] || "dashboard";
+
+    // Title: ubah dash menjadi spasi & capitalize
+    const title = currentSection.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+    
+    console.log("Current URL:", url);
+    console.log("Segments:", segments);
+    console.log("Title:", title);
 
     return (
         <>
-            <Head title="Dashboard" />
+            <Head title={title} />
             <section className="flex flex-col h-screen w-full">
+                {/* Header user dropdown */}
                 <div className="flex h-16 justify-end items-center w-full border-b-2 border-gray-200 px-5">
                     <Dropdown>
                         <Dropdown.Trigger>
@@ -44,29 +60,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             <Dropdown.Link href={route("profile.edit")}>
                                 Profile
                             </Dropdown.Link>
-                            <Dropdown.Link
-                                href={route("logout")}
-                                method="post"
-                                as="button"
-                            >
+                            <Dropdown.Link href={route("logout")} method="post" as="button">
                                 Log Out
                             </Dropdown.Link>
                         </Dropdown.Content>
                     </Dropdown>
                 </div>
+
                 <div className="flex flex-row h-full">
+                    {/* Sidebar */}
                     <aside className="flex flex-col w-50 h-full items-center justify-center bg-accent bg-yellow-500">
                         {menus.map((menu) => (
                             <a
                                 key={menu.route}
                                 href={menu.route}
-                                className="block px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
+                                className={`block px-4 py-2 text-sm font-medium text-white hover:bg-gray-700` + (url === menu.route ? ' bg-gray-700' : '') }
                             >
                                 {menu.name}
                             </a>
                         ))}
                     </aside>
-                    <main className="flex w-full bg-white shadow-sm sm:rounded-lg">
+
+                    {/* Main Content */}
+                    <main className="flex flex-col w-full bg-white shadow-sm sm:rounded-lg">
+                        <AdminHeader title={title} addUrl={url} />
                         {children as React.ReactNode}
                     </main>
                 </div>

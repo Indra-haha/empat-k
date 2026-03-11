@@ -9,6 +9,7 @@ class Order extends Model
         'product_id',
         'request_id',
         'quantity',
+        'price',
         'total_price',
         'status'
     ];

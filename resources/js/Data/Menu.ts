@@ -5,7 +5,6 @@ export const menusByRole: Record<string, Menu[]> = {
         { name: 'Product', route: '/products' },
         { name: 'Order', route: '/orders' },
         { name: 'Request', route: '/requests' },
-        { name: 'Billing', route: '/billing' },
     ],
     pelanggan: [
         { name: 'Product', route: '/products' },

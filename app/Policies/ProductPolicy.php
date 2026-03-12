@@ -11,7 +11,11 @@ class ProductPolicy
     {
         return in_array($user->role, ['cs', 'pelanggan']);
     }
-
+    
+    public function view(User $user)
+    {
+        return in_array($user->role, ['cs', 'pelanggan']);
+    }   
     public function create(User $user)
     {
         return $user->role === 'cs';

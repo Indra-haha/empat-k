@@ -14,19 +14,37 @@ class ProductController extends BaseController
     public function index()
     {
         $this->authorizeAction('viewAny');
-        $products = Product::all();
+        $products = Product::with('category')->get();
         $role = auth()->user()->role;
 
-        return inertia("$role/Products", compact('products'));
+        return inertia("$role/ProductPage/Products", compact('products'));
     }
 
     /* Pelanggan lihat produk */
-    public function show()
+    public function show($id)
     {
         $this->authorizeAction('view');
-        return inertia('Customers/Products', compact('products'));
+        $product = Product::with('category')->findOrFail($id);
+        $role = auth()->user()->role;
+        return inertia("$role/ProductPage/ProductsShow", [
+            'product' => $product
+        ]);
     }
-
+    public function instantBuying($id)
+    {
+        $this->authorizeAction('view');
+        $product = Product::with('category')->findOrFail($id);
+        $requests = \App\Models\Request::where('user_id', auth()->id())
+            ->where('product_id', $id)
+            ->where('status', 'finished')
+            ->latest('updated_at')
+            ->value('upload_img');
+            
+        return inertia('pelanggan/ProductPage/FormBuying', [
+            'product' => $product,
+            'requests' => $requests
+        ]);
+    }
     public function update()
     {
         $this->authorizeAction('update');

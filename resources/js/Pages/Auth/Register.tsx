@@ -4,7 +4,7 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
 import GuestLayout from "@/Layouts/GuestLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
-import React, { useId, useState } from "react";
+import React, { useEffect, useId, useState } from "react";
 
 export default function Register() {
     const id = useId();
@@ -17,6 +17,12 @@ export default function Register() {
         password: "",
         password_confirmation: "",
     });
+
+    useEffect(() => {
+        if (step === 2 && errors && Object.keys(errors).length > 0) {
+            setStep(1);
+        }
+    }, [errors]);
 
     const submit = (e: { preventDefault: () => void }) => {
         e.preventDefault();
@@ -92,6 +98,9 @@ export default function Register() {
                 )}
                 {step == 2 && (
                     <section className="flex flex-col gap-4">
+                        <h1 className="text-2xl font-semibold text-center pb-2 pt-4">
+                            Register
+                        </h1>
                         <div className="w-full max-w-[300px]">
                             {errors && Object.keys(errors).length > 0 && (
                                 <ul className="w-full">

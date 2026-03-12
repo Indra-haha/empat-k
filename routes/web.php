@@ -19,6 +19,11 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'role:cs,pelanggan'])->group(function () {
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/product/{id}', [ProductController::class, 'show'])->name('products.show');
+});
+
+Route::middleware(['auth', 'role:pelanggan'])->group(function () {
+    Route::get('/product/{id}/instant-buying', [ProductController::class, 'instantBuying'])->name('products.instantBuying');
 });
 
 Route::middleware(['auth', 'role:cs'])->group(function () {

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Inertia } from "@inertiajs/inertia";
+import { ProductsProps } from "@/Types/Products";
 
-export default function Products({ products }: { products?: any[] }) {
+export default function Products({ products }: { products?: ProductsProps[] }) {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<any>(null);
+    const [selectedProduct, setSelectedProduct] = useState<ProductsProps | null>(null);
 
     // State untuk form
     const [form, setForm] = useState({
@@ -30,7 +31,7 @@ export default function Products({ products }: { products?: any[] }) {
     const handleEdit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedProduct) return;
-        Inertia.put(`/products/edit/${selectedProduct.id}`, form, {
+        Inertia.put(`/products/edit/${selectedProduct.product_id}`, form, {
             onSuccess: () => {
                 setShowEditModal(false);
                 setSelectedProduct(null);
@@ -73,7 +74,7 @@ export default function Products({ products }: { products?: any[] }) {
                     </thead>
                     <tbody>
                         {products?.map((product) => (
-                            <tr key={product.id} className="border-b">
+                            <tr key={product.product_id} className="border-b">
                                 <td className="p-2 justify-center flex">{product.product_id}</td>
                                 <td className="p-2">{product.name}</td>
                                 <td className="p-2">{product.description}</td>
@@ -87,7 +88,7 @@ export default function Products({ products }: { products?: any[] }) {
                                     </button>
                                     <button
                                         className="bg-red-500 text-white px-2 py-1 rounded"
-                                        onClick={() => handleDelete(product.id)}
+                                        onClick={() => handleDelete(product.product_id)}
                                     >
                                         Delete
                                     </button>

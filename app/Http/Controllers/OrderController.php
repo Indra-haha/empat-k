@@ -40,9 +40,18 @@ class OrderController extends Controller
         $user = Auth::user();
         $role = $user->role;
         $role === 'pelanggan' ?
-            $orders = Order::with('product', 'user')
-                ->select('orders.created_at', 'orders.quantity', 'orders.total_price', 'orders.status', 'product_id', 'user_id')
-                ->get() : 
+            $orders = DB::table('orders')
+                ->join('products', 'orders.product_id', '=', 'products.product_id')
+                ->join('users', 'users.user_id', '=', 'orders.user_id')
+                ->select(
+                    'orders.created_at',
+                    'products.name as product_name',
+                    'users.name as user_name',
+                    'orders.quantity',
+                    'orders.total_price',
+                    'orders.status'
+                )
+                ->get() :
             $orders = Order::with('product')
                 ->select('orders.created_at', 'orders.quantity', 'orders.total_price', 'orders.status', 'product_id', 'user_id')
                 ->get();

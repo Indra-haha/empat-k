@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use App\Models\Product;
-
+use Illuminate\Support\Facades\Auth;
 class ProductController extends BaseController
 {
     protected $modelClass = Product::class;
@@ -38,11 +38,13 @@ class ProductController extends BaseController
             ->where('product_id', $id)
             ->where('status', 'finished')
             ->latest('updated_at')
-            ->value('upload_img');
-            
+            ->first();
+        $id = Auth::user()->user_id;
+
         return inertia('pelanggan/ProductPage/FormBuying', [
             'product' => $product,
-            'requests' => $requests
+            'requests' => $requests,
+            'user' => $id,
         ]);
     }
     public function update()

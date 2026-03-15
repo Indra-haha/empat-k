@@ -3,24 +3,31 @@ import React, { useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { PageWithHeaderBack } from "../Layout/PageWithHeaderBack";
 import { Inertia } from "@inertiajs/inertia";
+import PrimaryButton from "@/Components/PrimaryButton";
+import InputError from "@/Components/InputError";
 
-export default function FormBuying({ product, requests }) {
-    const { data, setData, post } = useForm({
-        product_id: product.product_id,
-        request_id: "",
-    });
-
+export default function FormBuying({ product, requests, user }) {
     const [useRequest, setUseRequest] = useState(false);
+
+    const { data, setData, post, processing, errors, reset } = useForm({
+        product_id: product.product_id,
+        request_id: useRequest ? requests.request_id : null,
+        user_id: user,
+        quantity: 0,
+        price: product.price,
+        total_price: 0,
+    });
+    console.log(user);
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        Inertia.post(`/product/${product.product_id}/buyout`, {
-            use_request: useRequest ? requests : null,
+        post(`/product/buyout`, {
+            
         });
     };
 
-    console.log(requests);
+    console.log(data);
 
     return (
         <PageWithHeaderBack title="Buying">
@@ -38,54 +45,63 @@ export default function FormBuying({ product, requests }) {
                         </h2>
                     </main>
                 </section>
+                {requests ? (
+                    <section className="my-3 w-full border-2 border-gray-200">
+                        <h1 className="text-[14px] font-bold w-full text-end mb-2">
+                            Add your custom design
+                        </h1>
+
+                        <label className="inline-flex items-end h-auto flex flex-col w-full">
+                            <input
+                                type="checkbox"
+                                checked={useRequest}
+                                onChange={() => setUseRequest(!useRequest)}
+                                className="hidden"
+                            />
+                            <LazyLoadImage
+                                src={requests}
+                                alt="Request"
+                                className={`h-20 border-2 border-gray-300 rounded-2xl ${useRequest ? "ring-2 ring-blue-500" : ""}`}
+                            />
+                            {useRequest ? (
+                                <span className="text-sm text-blue-500">
+                                    Using request
+                                </span>
+                            ) : (
+                                <span className="text-sm text-gray-500">
+                                    Not using request
+                                </span>
+                            )}
+                        </label>
+                    </section>
+                ) : null}
+                <label className="mb-2">Harga: {product.price}</label>
+                <label className="mb-2">
+                    Jumlah
+                    <input
+                        id="quantity"
+                        type="number"
+                        name="quantity"
+                        value={data.quantity}
+                        onChange={(e) => {
+                            const quantity = Number(e.target.value);
+                            setData("quantity", quantity);
+                            setData("total_price", quantity * product.price);
+                        }}
+                        className="ml-2 border-2 border-gray-300 rounded-md px-2 py-1 w-20"
+                        required
+                    />
+                </label>
+                <InputError message={errors.quantity} className="mt-2" />
+                <label className="mb-2">Total Harga: {data.total_price}</label>
+
+                <PrimaryButton
+                    className="w-full justify-center rounded-md py-2 my-2"
+                    disabled={processing}
+                >
+                    Buy Now
+                </PrimaryButton>
             </form>
-
-            {requests ? (
-                <section className="my-3 w-full border-2 border-gray-200">
-                    <h1 className="text-[14px] font-bold w-full text-end mb-2">
-                        Add your custom design
-                    </h1>
-
-                    <label className="inline-flex items-end h-auto flex flex-col w-full">
-                        <input
-                            type="checkbox"
-                            checked={useRequest}
-                            onChange={() => setUseRequest(!useRequest)}
-                            className="hidden"
-                        />
-                        <LazyLoadImage
-                            src={requests}
-                            alt="Request"
-                            className={`h-20 border-2 border-gray-300 rounded-2xl ${useRequest ? 'ring-2 ring-blue-500' : ''}`}
-                        />
-                        {useRequest ? <span className="text-sm text-blue-500">Using request</span> : <span className="text-sm text-gray-500">Not using request</span>}
-                    </label>
-                </section>
-            ) : null}
-            <label className="mb-2">Harga: {product.price}</label>
-            {/* <InputLabel
-                htmlFor={`${id}->jumlah`}
-                value="Jumlah"
-                children={undefined}
-            />
-
-            <TextInput
-                id={`${id}-jumlah`}
-                type="text"
-                name="jumlah"
-                value={data.jumlah}
-                className="mt-1 block w-full"
-                autoComplete="jumlah"
-                isFocused={true}
-                onChange={(e) => setData("jumlah", e.target.value)}
-            />   */}
-
-            <button
-                onClick={submit}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-                Konfirmasi Pembelian
-            </button>
         </PageWithHeaderBack>
     );
 }

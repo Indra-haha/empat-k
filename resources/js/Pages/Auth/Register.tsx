@@ -2,8 +2,7 @@ import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
-import GuestLayout from "@/Layouts/GuestLayout";
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Link, useForm } from "@inertiajs/react";
 import React, { useEffect, useId, useState } from "react";
 
 export default function Register() {
@@ -40,6 +39,22 @@ export default function Register() {
                         <h1 className="text-2xl font-semibold text-center pb-2 pt-4">
                             Register
                         </h1>
+                        <div className="w-full max-w-[300px]">
+                            {errors && Object.keys(errors).length > 0 && (
+                                <ul className="w-full">
+                                    {Object.values(errors).map(
+                                        (error: string, index: number) => (
+                                            <li
+                                                key={index}
+                                                className="text-sm text-red-600 break-words"
+                                            >
+                                                {error}
+                                            </li>
+                                        ),
+                                    )}
+                                </ul>
+                            )}
+                        </div>
                         <div className="my-1">
                             <InputLabel
                                 htmlFor={`${id}->name`}
@@ -101,22 +116,6 @@ export default function Register() {
                         <h1 className="text-2xl font-semibold text-center pb-2 pt-4">
                             Register
                         </h1>
-                        <div className="w-full max-w-[300px]">
-                            {errors && Object.keys(errors).length > 0 && (
-                                <ul className="w-full">
-                                    {Object.values(errors).map(
-                                        (error: string, index: number) => (
-                                            <li
-                                                key={index}
-                                                className="text-sm text-red-600 break-words"
-                                            >
-                                                {error}
-                                            </li>
-                                        ),
-                                    )}
-                                </ul>
-                            )}
-                        </div>
 
                         <div className="my-1">
                             <InputLabel

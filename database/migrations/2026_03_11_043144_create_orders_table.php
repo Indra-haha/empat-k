@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id('order_id')->autoIncrement();
-            $table->unsignedBigInteger('request_id'); // kolom request_id di orders
+            $table->unsignedBigInteger('request_id')->nullable(); // kolom request_id di orders
             $table->foreign('request_id')->references('request_id')->on('requests')->onDelete('cascade');
             $table->unsignedBigInteger('product_id'); // kolom product_id di orders
             $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');

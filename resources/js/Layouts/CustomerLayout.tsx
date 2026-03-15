@@ -10,6 +10,7 @@ import {
     faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { faPenClip } from "@fortawesome/free-solid-svg-icons/faPenClip";
+import { Link } from "@inertiajs/react";
 
 const logo = (menuName: string) => {
     switch (menuName) {
@@ -91,7 +92,7 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
             </main>
             <footer className="h-16 flex items-between justify-between bg-green-200 border-t border-green-300 rounded-t-4xl">
                 {menus.slice(0, 3).map((menu) => (
-                    <a
+                    <Link
                         key={menu.name}
                         href={menu.route}
                         className="flex flex-col gap-1 justify-between w-full pt-4 pb-3"
@@ -115,7 +116,7 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
                         >
                             {menu.name}
                         </span>
-                    </a>
+                    </Link>
                 ))}
             </footer>
         </section>

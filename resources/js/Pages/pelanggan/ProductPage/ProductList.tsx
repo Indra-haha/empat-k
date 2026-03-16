@@ -2,7 +2,7 @@ import { ProductCard } from "@/Components/ProductCard";
 import { CustomerLayout } from "@/Layouts/CustomerLayout";
 import { ProductsProps } from "@/Types/Products";
 import React from "react";
-export default function Products({ products }: { products: ProductsProps[] }) {
+export default function ProductList({ products }: { products: ProductsProps[] }) {
     console.log(products);
     return (
         <CustomerLayout>

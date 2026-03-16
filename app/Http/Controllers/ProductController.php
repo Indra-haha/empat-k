@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Illuminate\Routing\Controller as BaseController;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +18,9 @@ class ProductController extends BaseController
         $products = Product::with('category')->get();
         $role = auth()->user()->role;
 
-        return inertia("$role/ProductPage/Products", compact('products'));
+        return Inertia::render("$role/ProductPage/ProductList", [
+            'products' => $products
+        ]);
     }
 
     /* Pelanggan lihat produk */
@@ -26,7 +29,7 @@ class ProductController extends BaseController
         $this->authorizeAction('view');
         $product = Product::with('category')->findOrFail($id);
         $role = auth()->user()->role;
-        return inertia("$role/ProductPage/ProductsShow", [
+        return Inertia::render("$role/ProductPage/ProductShow", [
             'product' => $product
         ]);
     }
@@ -41,7 +44,7 @@ class ProductController extends BaseController
             ->first();
         $id = Auth::user()->user_id;
 
-        return inertia('pelanggan/ProductPage/FormBuying', [
+        return Inertia::render('pelanggan/ProductPage/FormBuying', [
             'product' => $product,
             'requests' => $requests,
             'user' => $id,
@@ -50,7 +53,7 @@ class ProductController extends BaseController
     public function update()
     {
         $this->authorizeAction('update');
-        return inertia('CS/Products/update');
+        return Inertia::render('CS/Products/update');
     }
 
     public function store(Request $request)

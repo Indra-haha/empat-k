@@ -3,7 +3,7 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import { Inertia } from "@inertiajs/inertia";
 import { ProductsProps } from "@/Types/Products";
 
-export default function Products({ products }: { products?: ProductsProps[] }) {
+export default function ProductList({ products }: { products?: ProductsProps[] }) {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<ProductsProps | null>(null);

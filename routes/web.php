@@ -21,7 +21,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'role:cs,pelanggan'])->group(function () {
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/product/{id}', [ProductController::class, 'show'])->name('products.show');
-    Route::get('/orders', [OrderController::class,'show'])->name('orders.show');
+    Route::get('/orders', [OrderController::class,'index'])->name('orders.index');
 });
 
 Route::middleware(['auth', 'role:pelanggan'])->group(function () {

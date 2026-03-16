@@ -8,11 +8,42 @@ use Inertia\Response;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 class OrderController extends Controller
 {
     public function index()
     {
-        // Logic untuk menampilkan daftar pesanan
+        $user = Auth::user();
+        $role = $user->role;
+        $role === 'pelanggan' ?
+            $orders = DB::table('orders')
+                ->join('products', 'orders.product_id', '=', 'products.product_id')
+                ->join('users', 'users.user_id', '=', 'orders.user_id')
+                ->select(
+                    'orders.created_at',
+                    'products.name as product',
+                    'users.name as user',
+                    'orders.quantity',
+                    'orders.total_price as total',
+                    'orders.status'
+                )
+                ->get()
+                ->map(function ($order) {
+                    $order->ordered_by = Carbon::parse($order->created_at)
+                        ->locale('id')
+                        ->translatedFormat('d F Y');
+
+                    unset($order->created_at); // hapus field lama kalau tidak dipakai
+                    return $order;
+                }) :
+            $orders = Order::with('product')
+                ->select('orders.created_at', 'orders.quantity', 'orders.total_price', 'orders.status', 'product_id', 'user_id')
+                ->get();
+
+        return Inertia::render("${role}/OrderPage/OrderList", [
+            'orders' => $orders
+        ]);
+
     }
 
     public function create($id): Response
@@ -37,29 +68,7 @@ class OrderController extends Controller
 
     public function show()
     {
-        $user = Auth::user();
-        $role = $user->role;
-        $role === 'pelanggan' ?
-            $orders = DB::table('orders')
-                ->join('products', 'orders.product_id', '=', 'products.product_id')
-                ->join('users', 'users.user_id', '=', 'orders.user_id')
-                ->select(
-                    'orders.created_at',
-                    'products.name as product_name',
-                    'users.name as user_name',
-                    'orders.quantity',
-                    'orders.total_price',
-                    'orders.status'
-                )
-                ->get() :
-            $orders = Order::with('product')
-                ->select('orders.created_at', 'orders.quantity', 'orders.total_price', 'orders.status', 'product_id', 'user_id')
-                ->get();
-
-        return Inertia::render("${role}/OrderPage/Page", [
-            'orders' => $orders
-        ]);
-
+        
     }
 
 }

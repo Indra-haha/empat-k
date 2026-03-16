@@ -28,4 +28,15 @@ class Order extends Model
     {
         return $this->hasOne(Request::class, 'request_id');
     }
+
+     public function statusHistories()
+    {
+        return $this->hasMany(OrderStatusHistory::class, 'order_id', 'order_id');
+    }
+
+    // mengambil status terbaru dari history
+    public function latestStatus()
+    {
+        return $this->hasOne(OrderStatusHistory::class, 'order_id', 'order_id')->latestOfMany();
+    }
 }

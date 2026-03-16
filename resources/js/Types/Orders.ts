@@ -1,6 +1,10 @@
+import { ReactNode } from "react";
+
 export interface OrdersPelangganProps {
+    product : ReactNode;
+    user: ReactNode;
     quantity: number;
-    total_price: number;
+    total: number;
     status: string;
-    created_at: string;
+    ordered_by: string;
 };

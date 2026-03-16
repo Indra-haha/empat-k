@@ -6,8 +6,8 @@ class Category extends Model
 {
     protected $primaryKey = 'category_id'; // Beritahu Laravel primary key-nya bukan 'id'
     protected $fillable = [
+        'id',
         'name',
-        'description'
     ];
 
     public function products()

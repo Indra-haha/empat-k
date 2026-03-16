@@ -58,11 +58,16 @@ class OrderController extends Controller
             'request_id' => 'nullable',
             'product_id' => 'required',
             'quantity' => 'required',
-            'price' => 'required',
-            'total_price' => 'required'
-        ]);
+        ]); 
+        $price = DB::table('products')->where('product_id', $request->product_id)->value('price');
 
-        Order::create($request->all());
+        Order::create(
+            array_merge(
+                $request->only(['user_id', 'request_id', 'product_id', 'quantity']),
+                ['total_price' => $request->quantity * $price]
+            )
+        );
+        
         return redirect()->route('orders.show')->with('success', 'Order created successfully.');
     }
 

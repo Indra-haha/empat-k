@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Routing\Controller as BaseController;
@@ -18,9 +19,15 @@ class ProductController extends BaseController
         $products = Product::with('category')->get();
         $role = auth()->user()->role;
 
-        return Inertia::render("$role/ProductPage/ProductList", [
-            'products' => $products
-        ]);
+        $data = [
+            'products' => $products,
+        ];
+
+        if ($role === 'cs') {
+            $data['categories'] = Category::select('name', 'category_id as id')->get();
+        }
+
+        return Inertia::render("$role/ProductPage/ProductList", $data);
     }
 
     /* Pelanggan lihat produk */

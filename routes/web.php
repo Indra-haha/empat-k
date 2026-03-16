@@ -30,8 +30,7 @@ Route::middleware(['auth', 'role:pelanggan'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:cs'])->group(function () {
-    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
-    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::post('/products/add', [ProductController::class, 'store'])->name('products.store');
 });
 
 Route::middleware(['auth', 'role:desainer'])->group(function () {

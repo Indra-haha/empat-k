@@ -22,9 +22,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     // Title: ubah dash menjadi spasi & capitalize
     const title = currentSection.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
     
-    console.log("Current URL:", url);
-    console.log("Segments:", segments);
-    console.log("Title:", title);
+    // console.log("Current URL:", url);
+    // console.log("Segments:", segments);
+    // console.log("Title:", title);
 
     return (
         <>

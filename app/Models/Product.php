@@ -6,7 +6,7 @@ class Product extends Model
     protected $primaryKey = 'product_id'; // Beritahu Laravel primary key-nya bukan 'id'
     protected $fillable = [
         'name',
-        'category',
+        'category_id',
         'description',
         'price',
         'url_img'

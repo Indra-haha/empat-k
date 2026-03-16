@@ -2,20 +2,35 @@ import React, { useState } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Inertia } from "@inertiajs/inertia";
 import { ProductsProps } from "@/Types/Products";
+import { CategoriesProps } from "@/Types/Categories";
 
-export default function ProductList({ products }: { products?: ProductsProps[] }) {
+export default function ProductList({
+    products,
+    categories,
+}: {
+    products?: ProductsProps[];
+    categories?: CategoriesProps[];
+}) {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<ProductsProps | null>(null);
+    const [selectedProduct, setSelectedProduct] =
+        useState<ProductsProps | null>(null);
 
     // State untuk form
     const [form, setForm] = useState({
         name: "",
         price: "",
+        description: "",
+        url_img: "",
+        category_id: 0,
     });
 
     // Handle change form
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        >,
+    ) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
@@ -48,7 +63,13 @@ export default function ProductList({ products }: { products?: ProductsProps[] }
     // Open Edit Modal
     const openEditModal = (product: any) => {
         setSelectedProduct(product);
-        setForm({ name: product.name, price: product.price });
+        setForm({
+            name: product.name,
+            price: product.price,
+            description: product.description,
+            url_img: product.url_img,
+            category_id: product.category_id,
+        });
         setShowEditModal(true);
     };
 
@@ -64,22 +85,24 @@ export default function ProductList({ products }: { products?: ProductsProps[] }
 
                 <table className="w-full border">
                     <thead>
-                        <tr className="border-b">
-                            <th className="p-2">ID</th>
-                            <th className="p-2 justify-start">Name</th>
-                            <th className="p-2 justify-start">Description</th>
-                            <th className="p-2 justify-start">Price</th>
+                        <tr className="border-b w-full">
+                            <th className="p-2">No</th>
+                            <th className="p-2 text-start">Name</th>
+                            <th className="p-2 text-start">Description</th>
+                            <th className="p-2 text-start">Price</th>
                             <th className="p-2">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {products?.map((product) => (
-                            <tr key={product.product_id} className="border-b">
-                                <td className="p-2 justify-center flex">{product.product_id}</td>
+                        {products?.map((product, idx) => (
+                            <tr key={idx+1} className="border-b">
+                                <td className="p-2 justify-center flex">
+                                    {idx+1}
+                                </td>
                                 <td className="p-2">{product.name}</td>
                                 <td className="p-2">{product.description}</td>
                                 <td className="p-2">{product.price}</td>
-                                <td className="p-2 flex gap-2">
+                                <td className="p-2 flex gap-2 justify-center">
                                     <button
                                         className="bg-green-500 text-white px-2 py-1 rounded"
                                         onClick={() => openEditModal(product)}
@@ -88,7 +111,9 @@ export default function ProductList({ products }: { products?: ProductsProps[] }
                                     </button>
                                     <button
                                         className="bg-red-500 text-white px-2 py-1 rounded"
-                                        onClick={() => handleDelete(product.product_id)}
+                                        onClick={() =>
+                                            handleDelete(product.product_id)
+                                        }
                                     >
                                         Delete
                                     </button>
@@ -102,8 +127,33 @@ export default function ProductList({ products }: { products?: ProductsProps[] }
                 {showAddModal && (
                     <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-50 z-50">
                         <div className="bg-white p-6 rounded shadow w-96">
-                            <h2 className="text-xl font-bold mb-4">Add Product</h2>
-                            <form onSubmit={handleAdd} className="flex flex-col gap-3">
+                            <h2 className="text-xl font-bold mb-4">
+                                Add Product
+                            </h2>
+                            <form
+                                onSubmit={handleAdd}
+                                className="flex flex-col gap-3"
+                            >
+                                {/* Category */}
+                                <select
+                                    name="category_id"
+                                    value={form.category_id}
+                                    onChange={handleChange}
+                                    className="border p-2 rounded"
+                                    required
+                                >
+                                    <option value="">Select Category</option>
+                                    {categories?.map((category) => (
+                                        <option
+                                            key={category.id}
+                                            value={category.id}
+                                        >
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                {/* Name */}
                                 <input
                                     type="text"
                                     name="name"
@@ -113,6 +163,8 @@ export default function ProductList({ products }: { products?: ProductsProps[] }
                                     className="border p-2 rounded"
                                     required
                                 />
+
+                                {/* Price */}
                                 <input
                                     type="number"
                                     name="price"
@@ -122,6 +174,27 @@ export default function ProductList({ products }: { products?: ProductsProps[] }
                                     className="border p-2 rounded"
                                     required
                                 />
+
+                                {/* Description */}
+                                <textarea
+                                    name="description"
+                                    placeholder="Description"
+                                    value={form.description}
+                                    onChange={handleChange}
+                                    className="border p-2 rounded"
+                                    rows={3}
+                                />
+
+                                {/* Image URL */}
+                                <input
+                                    type="text"
+                                    name="url_img"
+                                    placeholder="Image URL"
+                                    value={form.url_img}
+                                    onChange={handleChange}
+                                    className="border p-2 rounded"
+                                />
+
                                 <div className="flex justify-end gap-2">
                                     <button
                                         type="button"
@@ -130,6 +203,7 @@ export default function ProductList({ products }: { products?: ProductsProps[] }
                                     >
                                         Cancel
                                     </button>
+
                                     <button
                                         type="submit"
                                         className="px-4 py-2 rounded bg-blue-600 text-white"
@@ -146,8 +220,13 @@ export default function ProductList({ products }: { products?: ProductsProps[] }
                 {showEditModal && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                         <div className="bg-white p-6 rounded shadow w-96">
-                            <h2 className="text-xl font-bold mb-4">Edit Product</h2>
-                            <form onSubmit={handleEdit} className="flex flex-col gap-3">
+                            <h2 className="text-xl font-bold mb-4">
+                                Edit Product
+                            </h2>
+                            <form
+                                onSubmit={handleEdit}
+                                className="flex flex-col gap-3"
+                            >
                                 <input
                                     type="text"
                                     name="name"

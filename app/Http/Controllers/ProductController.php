@@ -12,7 +12,7 @@ class ProductController extends BaseController
 {
     protected $modelClass = Product::class;
 
-    /* CS lihat produk */
+    /* CS & pelanggan lihat produk */
     public function index()
     {
         $this->authorizeAction('viewAny');
@@ -30,7 +30,7 @@ class ProductController extends BaseController
         return Inertia::render("$role/ProductPage/ProductList", $data);
     }
 
-    /* Pelanggan lihat produk */
+    /* Pelanggan lihat detail produk */
     public function show($id)
     {
         $this->authorizeAction('view');
@@ -66,7 +66,23 @@ class ProductController extends BaseController
     public function store(Request $request)
     {
         $this->authorizeAction('create');
-        Product::create($request->all());
-        return redirect()->route('products.index');
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'category_id' => 'required|exists:categories,category_id',
+            'url_img' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'description' => 'nullable|string',
+        ]);
+
+        if ($request->hasFile('url_img')) {
+            $path = $request->file('url_img')->store('products', 'public');
+
+            // simpan path saja
+            $validatedData['url_img'] = $path;
+        }
+
+        Product::create($validatedData);
+        return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 }

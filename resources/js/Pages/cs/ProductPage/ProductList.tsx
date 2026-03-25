@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useForm } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Inertia } from "@inertiajs/inertia";
 import { ProductsProps } from "@/Types/Products";
@@ -15,15 +16,17 @@ export default function ProductList({
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedProduct, setSelectedProduct] =
         useState<ProductsProps | null>(null);
+    const [image, setImage] = useState<File | null>(null);
 
     // State untuk form
-    const [form, setForm] = useState({
+    const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         price: "",
         description: "",
         url_img: "",
         category_id: 0,
     });
+    console.log(data);
 
     // Handle change form
     const handleChange = (
@@ -31,14 +34,35 @@ export default function ProductList({
             HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
         >,
     ) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        setData({ ...data, [e.target.name]: e.target.value });
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setImage(e.target.files[0]);
+        }
+    };
     // Handle submit Add
     const handleAdd = (e: React.FormEvent) => {
         e.preventDefault();
-        Inertia.post("/products/add", form, {
-            onSuccess: () => setShowAddModal(false),
+
+        const formData = new FormData();
+        formData.append("name", data.name);
+        formData.append("price", data.price);
+        formData.append("description", data.description);
+        formData.append("category_id", String(data.category_id));
+
+        if (image) {
+            formData.append("url_img", image);
+        }
+
+        Inertia.post("/products/add", formData, {
+            forceFormData: true,
+            onSuccess: () => {
+                setShowAddModal(false);
+                reset();
+                setImage(null);
+            },
         });
     };
 
@@ -46,7 +70,7 @@ export default function ProductList({
     const handleEdit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedProduct) return;
-        Inertia.put(`/products/edit/${selectedProduct.product_id}`, form, {
+        Inertia.put(`/products/edit/${selectedProduct.product_id}`, data, {
             onSuccess: () => {
                 setShowEditModal(false);
                 setSelectedProduct(null);
@@ -63,7 +87,7 @@ export default function ProductList({
     // Open Edit Modal
     const openEditModal = (product: any) => {
         setSelectedProduct(product);
-        setForm({
+        setData({
             name: product.name,
             price: product.price,
             description: product.description,
@@ -95,9 +119,9 @@ export default function ProductList({
                     </thead>
                     <tbody>
                         {products?.map((product, idx) => (
-                            <tr key={idx+1} className="border-b">
+                            <tr key={idx + 1} className="border-b">
                                 <td className="p-2 justify-center flex">
-                                    {idx+1}
+                                    {idx + 1}
                                 </td>
                                 <td className="p-2">{product.name}</td>
                                 <td className="p-2">{product.description}</td>
@@ -137,7 +161,7 @@ export default function ProductList({
                                 {/* Category */}
                                 <select
                                     name="category_id"
-                                    value={form.category_id}
+                                    value={data.category_id}
                                     onChange={handleChange}
                                     className="border p-2 rounded"
                                     required
@@ -158,7 +182,7 @@ export default function ProductList({
                                     type="text"
                                     name="name"
                                     placeholder="Name"
-                                    value={form.name}
+                                    value={data.name}
                                     onChange={handleChange}
                                     className="border p-2 rounded"
                                     required
@@ -169,7 +193,7 @@ export default function ProductList({
                                     type="number"
                                     name="price"
                                     placeholder="Price"
-                                    value={form.price}
+                                    value={data.price}
                                     onChange={handleChange}
                                     className="border p-2 rounded"
                                     required
@@ -179,7 +203,7 @@ export default function ProductList({
                                 <textarea
                                     name="description"
                                     placeholder="Description"
-                                    value={form.description}
+                                    value={data.description}
                                     onChange={handleChange}
                                     className="border p-2 rounded"
                                     rows={3}
@@ -187,11 +211,10 @@ export default function ProductList({
 
                                 {/* Image URL */}
                                 <input
-                                    type="text"
+                                    type="file"
                                     name="url_img"
                                     placeholder="Image URL"
-                                    value={form.url_img}
-                                    onChange={handleChange}
+                                    onChange={handleFileChange}
                                     className="border p-2 rounded"
                                 />
 
@@ -231,7 +254,7 @@ export default function ProductList({
                                     type="text"
                                     name="name"
                                     placeholder="Name"
-                                    value={form.name}
+                                    value={data.name}
                                     onChange={handleChange}
                                     className="border p-2 rounded"
                                     required
@@ -240,7 +263,7 @@ export default function ProductList({
                                     type="number"
                                     name="price"
                                     placeholder="Price"
-                                    value={form.price}
+                                    value={data.price}
                                     onChange={handleChange}
                                     className="border p-2 rounded"
                                     required

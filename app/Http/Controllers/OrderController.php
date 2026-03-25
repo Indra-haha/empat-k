@@ -23,6 +23,29 @@ class OrderController extends Controller
                     'orders.created_at',
                     'products.name as product',
                     'users.name as user',
+                    'products.price as price',
+                    'orders.quantity',
+                    'orders.total_price as total',
+                    'orders.status'
+                )
+                ->where('orders.user_id', $user->user_id)
+                ->get()             
+                ->map(function ($order) {
+                    $order->ordered_by = Carbon::parse($order->created_at)
+                        ->locale('id')
+                        ->translatedFormat('d F Y');
+
+                    unset($order->created_at); // hapus field lama kalau tidak dipakai
+                    return $order;
+                }) :
+            $orders = DB::table('orders')
+                ->join('products', 'orders.product_id', '=', 'products.product_id')
+                ->join('users', 'users.user_id', '=', 'orders.user_id')
+                ->select(
+                    'orders.created_at',
+                    'products.name as product',
+                    'users.name as user',
+                    'products.price as price',
                     'orders.quantity',
                     'orders.total_price as total',
                     'orders.status'
@@ -35,10 +58,7 @@ class OrderController extends Controller
 
                     unset($order->created_at); // hapus field lama kalau tidak dipakai
                     return $order;
-                }) :
-            $orders = Order::with('product')
-                ->select('orders.created_at', 'orders.quantity', 'orders.total_price', 'orders.status', 'product_id', 'user_id')
-                ->get();
+                });
 
         return Inertia::render("${role}/OrderPage/OrderList", [
             'orders' => $orders
@@ -58,22 +78,37 @@ class OrderController extends Controller
             'request_id' => 'nullable',
             'product_id' => 'required',
             'quantity' => 'required',
-        ]); 
-        $price = DB::table('products')->where('product_id', $request->product_id)->value('price');
+        ]);
 
-        Order::create(
-            array_merge(
-                $request->only(['user_id', 'request_id', 'product_id', 'quantity']),
-                ['total_price' => $request->quantity * $price]
-            )
-        );
-        
-        return redirect()->route('orders.show')->with('success', 'Order created successfully.');
+        DB::transaction(function () use ($request) {
+            $price = DB::table('products')
+                ->where('product_id', $request->product_id)
+                ->value('price');
+
+            $order = Order::create([
+                'user_id' => $request->user_id,
+                'request_id' => $request->request_id,
+                'product_id' => $request->product_id,
+                'status' => 'ordered',
+                'quantity' => $request->quantity,
+                'price' => $price,
+                'total_price' => $request->quantity * $price
+            ]);
+
+            DB::table('order_status_histories')->insert([
+                'order_id' => $order->order_id,
+                'status' => $order->status, // ambil dari orders
+                'changed_by' => auth()->id(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
+        return redirect()->route('orders.index')->with('success', 'Order created successfully.');
     }
 
     public function show()
     {
-        
+
     }
 
 }

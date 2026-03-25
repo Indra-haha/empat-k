@@ -3,7 +3,7 @@ export type ProductsProps = {
     name: string;
     price: number;
     description: string;
-    image_url: string;
+    url_img: string;
     category_id: string;
 }
 

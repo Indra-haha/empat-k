@@ -2,7 +2,6 @@ import { useForm } from "@inertiajs/react";
 import React, { useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { PageWithHeaderBack } from "../Layout/PageWithHeaderBack";
-import { Inertia } from "@inertiajs/inertia";
 import PrimaryButton from "@/Components/PrimaryButton";
 import InputError from "@/Components/InputError";
 
@@ -17,7 +16,8 @@ export default function FormBuying({ product, requests, user }) {
         price: product.price,
         total_price: 0,
     });
-    console.log(user);
+
+    // console.log(user);
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,7 +27,7 @@ export default function FormBuying({ product, requests, user }) {
         });
     };
 
-    console.log(data);
+    // console.log(data);
 
     return (
         <PageWithHeaderBack title="Buying">

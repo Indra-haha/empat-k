@@ -4,6 +4,7 @@ export interface OrdersPelangganProps {
     product : ReactNode;
     user: ReactNode;
     quantity: number;
+    price: number;
     total: number;
     status: string;
     ordered_by: string;

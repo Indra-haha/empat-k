@@ -27,8 +27,6 @@ return new class extends Migration {
                 ->on('users')
                 ->onDelete('cascade');
 
-            $table->timestamp('changed_at');
-
             $table->timestamps();
         });
     }

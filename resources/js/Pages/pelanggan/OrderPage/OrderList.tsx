@@ -10,7 +10,7 @@ export default function OrderList({ orders }: { orders?: OrdersPelangganProps[] 
             <ul>
                 {myOrder.length > 0 ? myOrder.map((order, index) => (
                     <li key={index}>
-                        {order.ordered_by} - {order.quantity} item(s) - Total: {order.total} - Status: {order.status} -nama : {order.product} 
+                        {order.ordered_by} - {order.quantity} item(s) - Total: {order.total} - Status: {order.status} -nama : {order.product}  -harga: {order.price}
                     </li>
                 )) : "Tidak ada riwayat order"}
             </ul>

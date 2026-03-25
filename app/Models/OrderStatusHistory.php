@@ -10,8 +10,7 @@ class OrderStatusHistory extends Model
     protected $fillable = [
         'order_id',
         'status',
-        'changed_by',
-        'changed_at'
+        'created_by',
     ];
 
     // relasi ke order
@@ -23,6 +22,6 @@ class OrderStatusHistory extends Model
     // relasi ke user yang mengubah
     public function user()
     {
-        return $this->belongsTo(User::class, 'changed_by', 'user_id');
+        return $this->belongsTo(User::class, 'created_by', 'user_id');
     }
 }

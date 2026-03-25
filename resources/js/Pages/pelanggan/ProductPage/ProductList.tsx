@@ -1,17 +1,22 @@
 import { ProductCard } from "@/Components/ProductCard";
 import { CustomerLayout } from "@/Layouts/CustomerLayout";
 import { ProductsProps } from "@/Types/Products";
+import { useRemember } from "@inertiajs/react";
 import React from "react";
+
 export default function ProductList({ products }: { products: ProductsProps[] }) {
-    console.log(products);
+    const [data, setData] = useRemember(products, "products");
+
     return (
         <CustomerLayout>
-            {products && products.length > 0 ? (
+            {data && data.length > 0 ? (
                 <div className="grid grid-cols-2 gap-3">
-                    {products.map((product) => (
-                        <ProductCard category={{
-                            name: "Apapun"
-                        }} key={product.product_id} {...product} />
+                    {data.map((product) => (
+                        <ProductCard
+                            category={{
+                                name: ""
+                            }} key={product.product_id}
+                            {...product}                        />
                     ))}
                 </div>
             ) : (

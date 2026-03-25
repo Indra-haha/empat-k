@@ -3,7 +3,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from '@inertiajs/react';
 import React from "react";
 
-export default function ProductsShow({ product }) {
+export default function ProductShow({ product }) {
     return (
         <PageWithHeaderBack title="Detail">
             <section className="w-full h-full flex flex-col rounded-xl border-2 border-gray-300 overflow-hidden text-green-800">

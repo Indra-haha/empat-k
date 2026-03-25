@@ -4,7 +4,7 @@ import { menusByRole } from "../Data/Menu";
 import Dropdown from "@/Components/Dropdown";
 
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children, className }: { children: React.ReactNode; className?: string }) {
     const { auth } = usePage().props;
     const user = auth?.user;
     const role = user?.role;
@@ -82,7 +82,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </aside>
 
                     {/* Main Content */}
-                    <main className="flex flex-col w-full bg-white shadow-sm sm:rounded-lg">
+                    <main className={`flex flex-col w-full bg-white shadow-sm sm:rounded-lg ${className || ''}`}>
                         {children as React.ReactNode}
                     </main>
                 </div>

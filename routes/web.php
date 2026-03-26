@@ -27,6 +27,7 @@ Route::middleware(['auth', 'role:cs,pelanggan'])->group(function () {
 Route::middleware(['auth', 'role:pelanggan'])->group(function () {
     Route::get('/product/{id}/instant-buying', [ProductController::class, 'instantBuying'])->name('products.instantBuying');
     Route::post('/product/buyout', [OrderController::class,'store'])->name('orders.store');
+    Route::get('/product/{id}/custom', [ProductController::class, 'custom'])->name('products.custom');
 });
 
 Route::middleware(['auth', 'role:cs'])->group(function () {

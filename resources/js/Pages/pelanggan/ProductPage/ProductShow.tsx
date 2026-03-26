@@ -9,8 +9,10 @@ export default function ProductShow({ product }) {
             <section className="w-full h-full flex flex-col rounded-xl border-2 border-gray-300 overflow-hidden text-green-800">
                 <LazyLoadImage
                     className="flex items-center h-full border-b-2 border-gray-300 justify-center w-full h-full [font-family:'Inter-Italic',Helvetica] font-normal italic text-black text-base text-center tracking-[0] leading-[normal] whitespace-nowrap"
-                    src={product?.image_url}
+                    src={`/storage/${product.url_img}`}
                     alt={product.name}
+                    width={150}
+                    height={150}
                 />
                 <main className="inline-flex flex-col items-start justify-center gap-2 relative py-6 px-3">
                     <h1 className="relative flex items-center justify-center w-fit text-xl font-bold whitespace-nowrap">
@@ -29,7 +31,7 @@ export default function ProductShow({ product }) {
                         </div>
                     </span>
                     <span className="flex flex-row gap-4 w-full justify-end">
-                        <Link className="py-2 px-4 bg-gray-300 text-black rounded-md">Custom</Link>
+                        <Link href={`/product/${product.product_id}/custom`} className="py-2 px-4 bg-gray-300 text-black rounded-md">Custom</Link>
                         <Link href={`/product/${product.product_id}/instant-buying`} className="py-2 px-4 bg-blue-500 text-white rounded-md">Beli</Link>
                     </span>
                 </footer>

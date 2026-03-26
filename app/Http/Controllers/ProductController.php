@@ -85,4 +85,13 @@ class ProductController extends BaseController
         Product::create($validatedData);
         return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
+
+    public function custom($id)
+    {
+        $this->authorizeAction('view');
+        $product = Product::with('category')->findOrFail($id);
+        return Inertia::render('pelanggan/RequestPage/FormCustom', [
+            'product' => $product
+        ]);
+    }
 }

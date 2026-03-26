@@ -87,7 +87,7 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
                     </Dropdown.Content>
                 </Dropdown>
             </header>
-            <main className="h-full items-center justify-center p-4">
+            <main className="h-full items-center justify-center p-4 overflow-y-auto">
                 {children}
             </main>
             <footer className="h-16 flex items-between justify-between bg-green-200 border-t border-green-300 rounded-t-4xl">

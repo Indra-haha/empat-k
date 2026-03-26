@@ -26,7 +26,6 @@ export default function ProductList({
         url_img: "",
         category_id: 0,
     });
-    console.log(data);
 
     // Handle change form
     const handleChange = (

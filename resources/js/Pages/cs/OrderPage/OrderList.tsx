@@ -20,7 +20,7 @@ export default function OrderList({ orders }: { orders: any[] }) {
                     {orders.map((order, idx) => (
                         <tr key={idx} className="border">
                             <td className="p-2 justify-center flex">
-                                {idx+1}
+                                {idx + 1}
                             </td>
                             <td className="border p-2">{order.product}</td>
                             <td className="border p-2">{order.quantity}</td>

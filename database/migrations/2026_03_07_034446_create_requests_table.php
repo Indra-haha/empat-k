@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('product_id'); // kolom product_id di requests
             $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
-            $table->text('description')->nullable();
+            $table->json('description')->nullable();
             $table->string('upload_img')->nullable();
             $table->enum('status', ['requested', 'process', 'finished'])->default('requested');
             $table->timestamps();

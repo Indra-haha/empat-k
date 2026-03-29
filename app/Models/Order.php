@@ -11,7 +11,6 @@ class Order extends Model
         'quantity',
         'price',
         'total_price',
-        'status'
     ];
 
     public function user()
@@ -26,7 +25,7 @@ class Order extends Model
 
     public function request()
     {
-        return $this->hasOne(Request::class, 'request_id');
+        return $this->hasOne(CustomRequest::class, 'request_id');
     }
 
      public function statusHistories()

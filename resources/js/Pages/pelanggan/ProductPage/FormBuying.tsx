@@ -1,5 +1,5 @@
 import { useForm } from "@inertiajs/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { PageWithHeaderBack } from "../Layout/PageWithHeaderBack";
 import PrimaryButton from "@/Components/PrimaryButton";
@@ -8,6 +8,10 @@ import InputError from "@/Components/InputError";
 export default function FormBuying({ product, requests, user }) {
     const [useRequest, setUseRequest] = useState(false);
 
+    useEffect(() => {
+        setData("request_id", useRequest ? requests.request_id : null);
+    }, [useRequest, requests.request_id]);
+    
     const { data, setData, post, processing, errors, reset } = useForm({
         product_id: product.product_id,
         request_id: useRequest ? requests.request_id : null,
@@ -22,9 +26,7 @@ export default function FormBuying({ product, requests, user }) {
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        post(`/product/buyout`, {
-            
-        });
+        post(`/product/buyout`, {});
     };
 
     // console.log(data);
@@ -34,7 +36,7 @@ export default function FormBuying({ product, requests, user }) {
             <form onSubmit={submit} className="flex flex-col gap-4">
                 <section className="w-full h-20 flex flex-row gap-4">
                     <LazyLoadImage
-                        src={product.image_url}
+                        src={product.url_img}
                         alt={product.name}
                         className="border-2 border-gray-300"
                     />

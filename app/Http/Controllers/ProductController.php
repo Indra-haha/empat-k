@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Routing\Controller as BaseController;
 use App\Models\Product;
+use App\Models\CustomRequest;
 use Illuminate\Support\Facades\Auth;
 class ProductController extends BaseController
 {
@@ -44,13 +45,12 @@ class ProductController extends BaseController
     {
         $this->authorizeAction('view');
         $product = Product::with('category')->findOrFail($id);
-        $requests = \App\Models\Request::where('user_id', auth()->id())
+        $requests = CustomRequest::where('user_id', Auth::user()->user_id)
             ->where('product_id', $id)
             ->where('status', 'finished')
             ->latest('updated_at')
             ->first();
         $id = Auth::user()->user_id;
-
         return Inertia::render('pelanggan/ProductPage/FormBuying', [
             'product' => $product,
             'requests' => $requests,

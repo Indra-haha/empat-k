@@ -29,7 +29,7 @@ export default function AdminLayout({ children, className }: { children: React.R
     return (
         <>
             <Head title={title} />
-            <section className="flex flex-col h-screen w-full">
+            <section className="flex flex-col h-screen w-full overflow-hidden">
                 {/* Header user dropdown */}
                 <div className="flex h-16 justify-end items-center w-full border-b-2 border-gray-200 px-5">
                     <Dropdown>
@@ -82,8 +82,9 @@ export default function AdminLayout({ children, className }: { children: React.R
                     </aside>
 
                     {/* Main Content */}
-                    <main className={`flex flex-col w-full bg-white shadow-sm sm:rounded-lg ${className || ''}`}>
-                        {children as React.ReactNode}
+                    <main className={`flex flex-col w-full bg-white shadow-sm sm:rounded-lg pl-4 pt-4`}>
+                        <h1 className="text-2xl font-bold mb-4">List {title}</h1>
+                        <section className="overflow-y overflow-y-scroll pr-4">{children as React.ReactNode}</section>
                     </main>
                 </div>
             </section>

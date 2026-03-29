@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('requests', function (Blueprint $table) {
+        Schema::create('custom_requests', function (Blueprint $table) {
             $table->id('request_id')->autoIncrement(); // kolom request_id sebagai primary key
             $table->unsignedBigInteger('user_id'); // kolom user_id di requests
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');

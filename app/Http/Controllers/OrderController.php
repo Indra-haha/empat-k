@@ -16,60 +16,47 @@ class OrderController extends Controller
         $user = Auth::user();
         $role = $user->role;
         $role === 'pelanggan' ?
-            $orders = DB::table('orders')
-                ->join('products', 'orders.product_id', '=', 'products.product_id')
-                ->join('users', 'users.user_id', '=', 'orders.user_id')
-                ->select(
-                    'orders.created_at',
-                    'products.name as product',
-                    'users.name as user',
-                    'products.price as price',
-                    'orders.quantity',
-                    'orders.total_price as total',
-                    'orders.status'
-                )
-                ->where('orders.user_id', $user->user_id)
-                ->get()             
+            $orders = Order::with('product', 'latestStatus')
+                ->get()
+                ->where('user_id', $user->user_id)
                 ->map(function ($order) {
-                    $order->ordered_by = Carbon::parse($order->created_at)
-                        ->locale('id')
-                        ->translatedFormat('d F Y');
+                    return [
+                        'no' => $order->product->product_id,
+                        'name' => $order->product->name,
+                        'url' => $order->product->url_img,
+                        'quantity' => $order->quantity,
+                        'ordered_by' => Carbon::parse($order->created_at)
+                            ->locale('id')
+                            ->translatedFormat('d F Y'),
+                        'status' => $order->latestStatus->status,
+                    ];
+                })
 
-                    unset($order->created_at); // hapus field lama kalau tidak dipakai
-                    return $order;
-                }) :
-            $orders = DB::table('orders')
-                ->join('products', 'orders.product_id', '=', 'products.product_id')
-                ->join('users', 'users.user_id', '=', 'orders.user_id')
-                ->select(
-                    'orders.created_at',
-                    'products.name as product',
-                    'users.name as user',
-                    'products.price as price',
-                    'orders.quantity',
-                    'orders.total_price as total',
-                    'orders.status'
-                )
+            :
+            $orders = Order::with('product', 'latestStatus')
                 ->get()
                 ->map(function ($order) {
-                    $order->ordered_by = Carbon::parse($order->created_at)
-                        ->locale('id')
-                        ->translatedFormat('d F Y');
-
-                    unset($order->created_at); // hapus field lama kalau tidak dipakai
-                    return $order;
+                    return [
+                        'quantity' => $order->quantity,
+                        'no' => $order->order_id,
+                        'url_img' => $order->product->url_img,
+                        'ordered_by' => Carbon::parse($order->created_at)
+                            ->locale('id')
+                            ->translatedFormat('d F Y'),
+                        'total_price' => $order->total_price, // rename
+                        'status' => $order->latestStatus->status,
+                    ];
                 });
-
         return Inertia::render("${role}/OrderPage/OrderList", [
             'orders' => $orders
         ]);
 
     }
 
-    public function create($id): Response
-    {
-        return Inertia::render(`pelanggan/product/${id}`);
-    }
+    // public function create($id): Response
+    // {
+    //     return Inertia::render(`pelanggan/product/${id}`);
+    // }
 
     public function store(Request $request)
     {
@@ -89,7 +76,6 @@ class OrderController extends Controller
                 'user_id' => $request->user_id,
                 'request_id' => $request->request_id,
                 'product_id' => $request->product_id,
-                'status' => 'ordered',
                 'quantity' => $request->quantity,
                 'price' => $price,
                 'total_price' => $request->quantity * $price
@@ -98,7 +84,7 @@ class OrderController extends Controller
             DB::table('order_status_histories')->insert([
                 'order_id' => $order->order_id,
                 'status' => $order->status, // ambil dari orders
-                'changed_by' => auth()->id(),
+                'created_by' => auth()->id(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -106,9 +92,34 @@ class OrderController extends Controller
         return redirect()->route('orders.index')->with('success', 'Order created successfully.');
     }
 
-    public function show()
+    public function show($id)
     {
-
+        // return Inertia::render('pelanggan/OrderPage/OrderShow', [
+        //     'order' => "Order masuk show dengan id $id"
+        // ]);
+        $this->authorizeAction('view');
+        $order = Order::with('statusHistories')->where('product_id', $id)
+        ->where('user_id', auth()->id())
+        ->firstOrFail()                                                                                              ;
+        return Inertia::render('pelanggan/OrderPage/OrderShow', [
+            'order' => [
+                'no' => $order->product->product_id,
+                'name' => $order->product->name,
+                'url' => $order->product->url_img,  
+                'quantity' => $order->quantity,
+                'ordered_by' => Carbon::parse($order->created_at)
+                    ->locale('id')
+                    ->translatedFormat('d F Y'),
+                'status_histories' => $order->statusHistories->map(function ($status) {
+                    return [
+                        'status' => $status->status,
+                        'updated_at' => Carbon::parse($status->updated_at)
+                            ->locale('id')
+                            ->translatedFormat('d F Y'),
+                    ];
+                }),
+            ]
+        ]);
     }
 
 }

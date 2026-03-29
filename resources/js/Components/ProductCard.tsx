@@ -5,7 +5,7 @@ import { Link } from "@inertiajs/react";
 export const ProductCard = (product: ProductWithCategoryProps): JSX.Element => {
     return (
         <Link
-            href={`product/${product.product_id}`}
+            href={`/product/${product.product_id}`}
             className="flex flex-col w-full h-[190px] items-center justify-between relative bg-green-200 rounded-[10px] overflow-hidden"
         >
             <LazyLoadImage

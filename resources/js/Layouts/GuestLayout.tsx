@@ -29,7 +29,7 @@ const logo = (menuName: string) => {
 export default function GuestLayout({ children }: GuestLayoutProps) {
      const menus = menusByRole.guest;
     return (
-        <button className="flex flex-col max-w-[320px] h-screen mx-auto bg-green-100 text-green-800" onClick={() => window.location.href = route('login')}>
+        <button className="flex flex-col max-w-[425px] h-screen mx-auto bg-green-100 text-green-800" onClick={() => window.location.href = route('login')}>
             <header className="h-16 flex flex-row justify-between items-center gap-auto border-2 border-green-200 bg-green-200 rounded-b-4xl px-5 py-2">
                 <div className="w-12 h-12 flex items-center justify-center bg-white rounded-full">
                     <FontAwesomeIcon

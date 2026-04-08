@@ -25,13 +25,12 @@ export default function AdminLayout({ children, className }: { children: React.R
     // console.log("Current URL:", url);
     // console.log("Segments:", segments);
     // console.log("Title:", title);
-
     return (
         <>
             <Head title={title} />
             <section className="flex flex-col h-screen w-full overflow-hidden">
                 {/* Header user dropdown */}
-                <div className="flex h-16 justify-end items-center w-full border-b-2 border-gray-200 px-5">
+                <div className="flex-none h-12 w-full flex justify-end items-center border-b-2 border-gray-200 px-5">
                     <Dropdown>
                         <Dropdown.Trigger>
                             <span className="inline-flex rounded-md">
@@ -67,14 +66,14 @@ export default function AdminLayout({ children, className }: { children: React.R
                     </Dropdown>
                 </div>
 
-                <div className="flex flex-row h-full">
+                <div className="flex flex-row flex-1 h-full w-full">
                     {/* Sidebar */}
                     <aside className="flex flex-col w-50 h-full items-center justify-center bg-accent bg-yellow-500">
                         {menus.map((menu) => (
                             <a
                                 key={menu.route}
                                 href={menu.route}
-                                className={`block px-4 py-2 text-sm font-medium text-white hover:bg-gray-700` + (url === menu.route ? ' bg-gray-700' : '') }
+                                className={`block px-4 py-2 text-sm font-medium text-white hover:bg-gray-700` + (url.replace(/s$/, '') === menu.route.replace(/s$/, '') ? ' bg-gray-700' : '') }
                             >
                                 {menu.name}
                             </a>
@@ -83,7 +82,7 @@ export default function AdminLayout({ children, className }: { children: React.R
 
                     {/* Main Content */}
                     <main className={`flex flex-col w-full bg-white shadow-sm sm:rounded-lg pl-4 pt-4`}>
-                        <h1 className="text-2xl font-bold mb-4">List {title}</h1>
+                        <h1 className="text-2xl font-bold mb-4">{isNaN(Number(title)) ? `List ${title}` : "Detail Pesanan"}</h1>
                         <section className="overflow-y overflow-y-scroll pr-4">{children as React.ReactNode}</section>
                     </main>
                 </div>

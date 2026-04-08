@@ -1,7 +1,8 @@
 import React from "react";
 import { AdminItemCardProps } from "../Types/AdminItemCard";
 import PrimaryButton from "@/Components/PrimaryButton";
-export default function AdminItemCard({
+
+export function AdminItemCard({
     url_img,
     judul,
     tgl,
@@ -10,16 +11,16 @@ export default function AdminItemCard({
     onClick,
 }: AdminItemCardProps) {
     return (
-        <section className="flex flex-row w-full justify-around border-2 border-black">
-            <header className="w-1/9 border-2 border-black p-2">
+        <section className="flex flex-row w-full justify-around bg-green-100 mb-4 p-2 rounded-xl">
+            <header className="w-1/9 p-2">
                 <img
                     src={url_img}
                     alt={judul}
-                    className="aspect-square object-cover rounded-md border-2 border-black"
+                    className="aspect-square object-cover rounded-md"
                 />
             </header>
 
-            <main className="flex flex-col w-7/9 p-2 justify-start text-green-800 border-2 border-black">
+            <main className="flex flex-col w-7/9 p-2 justify-start text-green-800">
                 <h1 className="text-[20px] text-extrabold w-full mb-1">{judul}</h1>
                 <span className="text-[14px] text-normal w-full mb-3">{tgl}</span>
                 <span className="text-[14px] text-normal w-full">
@@ -27,13 +28,14 @@ export default function AdminItemCard({
                 </span>
             </main>
 
-            <div className="flex flex-col w-1/9 justify-between text-green-800 border-2 border-black p-2">
+            <div className="flex flex-col w-1/9 justify-between text-green-800 p-2">
                 <span className="px-4 py-2 rounded-4 bg-green-400">
                     {status}
                 </span>
                 <PrimaryButton
                     disabled={undefined}
                     children="Detail"
+                    onClick={onClick}
                 ></PrimaryButton>
             </div>
         </section>

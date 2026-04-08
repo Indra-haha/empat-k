@@ -3,8 +3,7 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { Link, useForm, usePage } from '@inertiajs/react';
 import React, { useEffect, useId, useState } from 'react';
 export default function Login() {
     const id = useId();
@@ -31,7 +30,7 @@ export default function Login() {
     };
 
     return (
-        <section className="flex max-w-[320px] h-screen mx-auto justify-center items-center">
+        <section className="flex max-w-[425px] h-screen mx-auto justify-center items-center">
             <form onSubmit={submit} className="text-green-800 max-w-sm px-6 w-full">
                 {message && (
                     <div className="mb-4 text-sm font-medium text-green-600">

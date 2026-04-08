@@ -32,8 +32,8 @@ export default function Register() {
     };
 
     return (
-        <section className="flex max-w-[320px] h-screen mx-auto justify-center items-center">
-            <form onSubmit={submit} className="text-green-800 max-w-[300px] px-6 w-full">
+        <section className="flex max-w-[425px] h-screen mx-auto justify-center items-center">
+            <form onSubmit={submit} className="text-green-800 max-w-sm px-6 w-full">
                 {step == 1 && (
                     <section className="flex flex-col gap-4">
                         <h1 className="text-2xl font-semibold text-center pb-2 pt-4">

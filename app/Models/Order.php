@@ -25,7 +25,7 @@ class Order extends Model
 
     public function request()
     {
-        return $this->hasOne(CustomRequest::class, 'request_id');
+        return $this->hasOne(CustomRequest::class, 'request_id', 'request_id');
     }
 
      public function statusHistories()

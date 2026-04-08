@@ -12,7 +12,8 @@ class CustomRequest extends Model
         'product_id',
         'description',
         'upload_img',
-        'status'
+        'status',
+        'fee'
     ];
 
     public function user()
@@ -23,6 +24,11 @@ class CustomRequest extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function order()
+    {
+        return $this->hasOne(Order::class, 'request_id', 'request_id');
     }
 
 }

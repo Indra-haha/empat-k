@@ -36,7 +36,7 @@ Route::middleware(['auth', 'role:cs'])->group(function () {
     Route::post('/products/add', [ProductController::class, 'store'])->name('products.store');
 });
 
-Route::middleware(['auth', 'role:desainer'])->group(function () {
+Route::middleware(['auth', 'role:desainer,pelanggan'])->group(function () {
     Route::get('/requests', [RequestsController::class, 'index'])->name('requests.index');
 });
 

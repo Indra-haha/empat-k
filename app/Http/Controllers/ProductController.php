@@ -18,7 +18,7 @@ class ProductController extends BaseController
     {
         $this->authorizeAction('viewAny');
         $products = Product::with('category')->get();
-        $role = auth()->user()->role;
+        $role = Auth::user()->role;
 
         $data = [
             'products' => $products,
@@ -36,7 +36,7 @@ class ProductController extends BaseController
     {
         $this->authorizeAction('view');
         $product = Product::with('category')->findOrFail($id);
-        $role = auth()->user()->role;
+        $role = Auth::user()->role;
         return Inertia::render("$role/ProductPage/ProductShow", [
             'product' => $product
         ]);

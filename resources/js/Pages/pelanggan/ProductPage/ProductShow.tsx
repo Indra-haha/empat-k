@@ -5,14 +5,14 @@ import React from "react";
 
 export default function ProductShow({ product }) {
     return (
-        <PageWithHeaderBack title="Detail">
+        <PageWithHeaderBack title="Detail" route="products">
             <section className="w-full h-full flex flex-col rounded-xl border-2 border-gray-300 overflow-hidden text-green-800">
                 <LazyLoadImage
                     className="flex items-center h-full border-b-2 border-gray-300 justify-center w-full h-full [font-family:'Inter-Italic',Helvetica] font-normal italic text-black text-base text-center tracking-[0] leading-[normal] whitespace-nowrap"
                     src={`/storage/${product.url_img}`}
                     alt={product.name}
                     width={150}
-                    height={150}
+                    height={100}
                 />
                 <main className="inline-flex flex-col items-start justify-center gap-2 relative py-6 px-3">
                     <h1 className="relative flex items-center justify-center w-fit text-xl font-bold whitespace-nowrap">

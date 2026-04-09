@@ -20,25 +20,22 @@ export default function OrderList({
                           <img
                               src={`/storage/${order.url}`}
                               alt={order.name}
-                              className="h-16 my-auto aspect-square text-[10px]"
+                              className="h-16 my-auto aspect-square text-[10px] rounded-lg object-cover"
                           />
                           <article className="flex flex-col mx-4 w-full">
-                              <h1 className="text-[14px] font-bold text-black">
+                              <h1 className="text-lg font-bold text-black">
                                   {order.name}
                               </h1>
-                              <p className="text-[12px] text-gray-600 mb-3">
+                              <p className="text-sm text-gray-600 mb-3">
                                   Quantiy : {order.quantity}
                               </p>
-                              <span className="text-[12px] italic">
+                              <span className="text-sm italic">
                                   ordered by: {order.ordered_by}
                               </span>
                           </article>
-                          <aside className="flex flex-col justify-between gap-auto">
-                              <span className="text-[12px] py-1 px-2 bg-gray-200">
-                                  {order.status}
-                              </span>
+                          <aside className="flex flex-col justify-end">
                               <Link
-                                  className="text-[12px] py-1 px-2 bg-blue-500 text-white hover:bg-blue-600"
+                                  className="text-sm py-1 px-2 bg-blue-500 text-white hover:bg-blue-600 rounded-lg"
                                   href={`/order/${order.no}`}
                               >
                                   Detail

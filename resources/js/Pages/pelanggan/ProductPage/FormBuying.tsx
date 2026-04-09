@@ -9,8 +9,8 @@ export default function FormBuying({ product, requests, user }) {
     const [useRequest, setUseRequest] = useState(false);
 
     useEffect(() => {
-        setData("request_id", useRequest ? requests.request_id : null);
-    }, [useRequest, requests.request_id]);
+        setData("request_id", useRequest ? requests?.request_id : null);
+    }, [useRequest, requests?.request_id]);
     
     const { data, setData, post, processing, errors, reset } = useForm({
         product_id: product.product_id,
@@ -32,7 +32,7 @@ export default function FormBuying({ product, requests, user }) {
     // console.log(data);
 
     return (
-        <PageWithHeaderBack title="Buying">
+        <PageWithHeaderBack title="Buying" route="products">
             <form onSubmit={submit} className="flex flex-col gap-4">
                 <section className="w-full h-20 flex flex-row gap-4">
                     <LazyLoadImage

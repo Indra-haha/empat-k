@@ -5,9 +5,9 @@ import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import { useForm } from "@inertiajs/react";
 import PrimaryButton from "@/Components/PrimaryButton";
-import { ProductWithCategoryProps } from "@/Types/Products";
+import { ProductDetailProps } from "@/Types/Products";
 
-export default function FormCustom({ product }: { product: ProductWithCategoryProps }) {
+export default function FormCustom({ product }: { product: ProductDetailProps }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         product_id: product.product_id,
         description: {
@@ -27,7 +27,7 @@ export default function FormCustom({ product }: { product: ProductWithCategoryPr
     };
     console.log(data);
     return (
-        <PageWithHeaderBack title="Custom Produk">
+        <PageWithHeaderBack title="Custom Produk" route="products">
             <section className="text-green-800">
                 <main className="border-2 border-gray-300 flex flex-row gap-4 w-[300px]">
                     <LazyLoadImage

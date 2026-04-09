@@ -1,5 +1,3 @@
-import { ReactNode } from "react";
-
 export interface OrdersPelangganProps {
     no : number;
     name : string;
@@ -7,16 +5,29 @@ export interface OrdersPelangganProps {
     quantity: number;
     url : string;
     price: number;
-    total: number;
+    request: number;
+    total_price: number;
     status: string;
     ordered_by: string;
 };
 
+export type OrdersPelangganDetailProps = OrdersPelangganProps & {
+    category: string;
+    status_histories: {
+        status: string;
+        created_at: string;
+    };    
+};
+
 export interface OrdersAdminProps {
+    no : number;
+    name: string;
     order: number;
-    no: string;
+    request: number;
     user: string;
-    url_img: string;
+    phone: string;
+    url_img_product: string;
+    url_img_request: string;
     quantity: number;
     price: number;
     total_price: number;

@@ -7,7 +7,7 @@ export type ProductsProps = {
     category_id: string;
 }
 
-export type ProductWithCategoryProps = ProductsProps & {
+export type ProductDetailProps = ProductsProps & {
     category: {
         name: string;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CustomRequest;
 use App\Models\OrderStatusHistory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -28,7 +29,7 @@ class OrderController extends Controller
                         'ordered_by' => Carbon::parse($order->created_at)
                             ->locale('id')
                             ->translatedFormat('d F Y'),
-                        'status' => $order->latestStatus->status,
+                        'status' => $order->latestStatus?->status ?? 'pending',
                     ];
                 })
 
@@ -50,7 +51,7 @@ class OrderController extends Controller
                         'quantity' => $order->quantity,
                         'price' => $order->product->price,
                         'total_price' => $order->total_price, // rename
-                        'status' => $order->latestStatus->status,
+                        'status' => $order->latestStatus?->status ?? 'pending',
                     ];
                 });
         return Inertia::render("${role}/OrderPage/OrderList", [
@@ -79,7 +80,7 @@ class OrderController extends Controller
         ]);
         OrderStatusHistory::create([
             'order_id' => $order->order_id,
-            'status' => $order->status, // ambil dari orders
+            'status' => $request->status ?? 'pending',
             'created_by' => auth()->id(),
             'created_at' => now(),
             'updated_at' => now(),
@@ -98,7 +99,7 @@ class OrderController extends Controller
                 'name' => $order->product->name,
                 'url' => $order->product->url_img,
                 'category' => $order->product->category->name,
-                'request' => $order->request_id ? $order->request->fee : null,
+                'request' => $order->request_id ? $order->request_id : null,
                 'quantity' => $order->quantity,
                 'price' => $order->product->price,
                 'total_price' => $order->total_price,
@@ -117,4 +118,54 @@ class OrderController extends Controller
         ]);
     }
 
+    public function updateStatus($id)
+    {
+        $order = Order::where('order_id', $id)->firstOrFail();
+        $role = Auth::user()->role;
+        $currentStatus = $order->latestStatus?->status ?? 'pending';
+
+        /* Apakah ini produk custom? Jika ya, harus 'finished' dulu request-nya. */
+        $isCustomAndReady = true;
+        if ($order->request_id) {
+            $isCustomAndReady = CustomRequest::where('request_id', $order->request_id)
+                ->where('status', 'finished')
+                ->exists();
+        }
+
+        /* Tidak ready (untuk custom), langsung tolak */
+        if (!$isCustomAndReady) {
+            return redirect()->back()->with('error', 'Permintaan custom belum selesai dikerjakan!');
+        }
+
+        /* Ketika cs update status */
+        if ($role === 'cs') {
+            if ($currentStatus === 'pending') {
+                $newStatus = 'ordered';
+            } elseif ($currentStatus === 'paid') {
+                $newStatus = 'process';
+            }
+        }
+
+        /* Ketika accounting update status */
+        elseif ($role === 'accounting' && $currentStatus === 'ordered') {
+            $newStatus = 'paid';
+        }
+       
+        /* Ketika kp update status */
+        elseif ($role === 'kp' && $currentStatus === 'process') {
+            $newStatus = 'finished';
+        }
+
+        /* Buat history status baru */
+        if (isset($newStatus)) {
+            OrderStatusHistory::create([
+                'order_id' => $id,
+                'status' => $newStatus,
+                'created_by' => Auth::id(),
+            ]);
+            return redirect()->back()->with('success', "Status berhasil diperbarui ke {$newStatus}!");
+        }
+
+        return redirect()->back()->with('error', 'Anda tidak memiliki akses atau status tidak valid untuk diperbarui.');
+    }
 }

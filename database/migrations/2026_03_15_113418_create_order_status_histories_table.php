@@ -19,7 +19,7 @@ return new class extends Migration {
                 ->on('orders')
                 ->onDelete('cascade');
 
-            $table->enum('status', ['ordered', 'paid', 'process', 'finished']);
+            $table->enum('status', ['pending','ordered', 'paid', 'process', 'checking', 'finished'])->default('pending');
 
             $table->unsignedBigInteger('changed_by'); // siapa yg ubah
             $table->foreign('changed_by')

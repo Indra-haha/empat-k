@@ -34,6 +34,7 @@ Route::middleware(['auth', 'role:pelanggan'])->group(function () {
 
 Route::middleware(['auth', 'role:cs'])->group(function () {
     Route::post('/products/add', [ProductController::class, 'store'])->name('products.store');
+    Route::patch('/orders/{id}', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 });
 
 Route::middleware(['auth', 'role:desainer,pelanggan'])->group(function () {

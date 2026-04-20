@@ -9,6 +9,7 @@ export interface descriptionRequest {
 export interface RequestProps {
     no: number;
     user: string;
+    product: string;
     upload_image: string;
     img_product: string;
     description: descriptionRequest;

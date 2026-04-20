@@ -2,7 +2,7 @@ export interface AdminItemCardProps {
     url_img: string;
     judul: string;
     tgl : string;
-    quantity : number;
+    keterangan? : string;
     status : string;
     onClick : () => void;
 }

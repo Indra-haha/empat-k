@@ -1,11 +1,11 @@
 <?php
 
 
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RequestsController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -13,10 +13,16 @@ Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
     ]);
-});
+})->middleware('guest');
+
+Route::get('/auth', function () {
+    $user = auth()->user();
+    if ($user->role == 'pelanggan') return redirect()->route('products.index');
+    if ($user->role == 'accounting') return redirect()->route('invoices.index');
+    if ($user->role == 'desainer') return redirect()->route('requests.index');
+    return redirect('/products'); // fallback default
+})->middleware('auth');
 
 Route::middleware(['auth', 'role:cs,pelanggan'])->group(function () {
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -45,11 +51,18 @@ Route::middleware(['auth', 'role:desainer'])->group(function () {
     Route::patch('/requests/{id}', [RequestsController::class, 'updateGambar'])->name('requests.updateGambar');
 });
 
+Route::middleware(['auth', 'role:accounting'])->group(function () {
+    Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::fallback(function () {
+    return back(); 
 });
 
 require __DIR__ . '/auth.php';

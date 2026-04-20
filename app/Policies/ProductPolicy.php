@@ -7,11 +7,6 @@ use App\Models\User;
 
 class ProductPolicy
 {
-    public function viewAny(User $user)
-    {
-        return in_array($user->role, ['cs', 'pelanggan']);
-    }
-    
     public function view(User $user)
     {
         return in_array($user->role, ['cs', 'pelanggan']);

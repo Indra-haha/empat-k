@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
         //
+        $middleware->redirectTo(
+        guests: '/',    
+        users: '/auth' 
+    );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

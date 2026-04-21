@@ -1,36 +1,36 @@
 import React from "react";
-import { OrdersAdminProps } from "@/Types/Orders";
+import { OrdersCSProps } from "@/Types/Orders";
 import { ClipboardList, FileText, X } from "lucide-react";
-import { useForm } from "@inertiajs/react";
+import { useForm } from '@inertiajs/react';
 
 export default function OrderModals({
     selectedOrder,
     onClose,
 }: {
-    selectedOrder: OrdersAdminProps;
+    selectedOrder: OrdersCSProps;
     onClose: () => void;
 }) {
-    const { patch } = useForm({
-        status: selectedOrder?.status, // Ambil status saat ini sebagai default
-    });
-
-    const submitStatus = (e: { preventDefault: () => void }) => {
-        e.preventDefault();
-        // Ganti 'orders.update' dengan nama route update kamu di Laravel
-        patch(route("orders.updateStatus", selectedOrder.no), {
-            onSuccess: (page) => {
-                // Ambil flash langsung dari object 'page' yang baru saja kembali
-                const flash = page.props.flash as any;
-                if (flash.success) {
-                    alert(flash.success);
-                }
-                onClose(); // Tutup modal
-            },
-            onError: (errors) => {
-                alert("Terjadi kesalahan sistem");
-            },
+        const { patch } = useForm({
+            status: selectedOrder?.status, // Ambil status saat ini sebagai default
         });
-    };
+    
+        const submitStatus = (e: { preventDefault: () => void; }) => {
+            e.preventDefault();
+            // Ganti 'orders.update' dengan nama route update kamu di Laravel
+            patch(route('orders.updateStatus',selectedOrder.no ), {
+                onSuccess: (page) => {
+            // Ambil flash langsung dari object 'page' yang baru saja kembali
+            const flash = page.props.flash as any; 
+            if (flash.success) {
+                alert(flash.success);
+            }
+            onClose(); // Tutup modal
+        },
+        onError: (errors) => {
+            alert("Terjadi kesalahan sistem");
+        }
+            });
+        };
     return (
         <section className="fixed inset-0 bg-black/50 overflow-y-auto z-50 justify-center items-center w-full py-10">
             <form className="bg-[#8c8c8c] mx-auto max-w-3xl rounded-3xl p-8 shadow-2xl text-gray-800">
@@ -161,10 +161,7 @@ export default function OrderModals({
 
                     <div className="flex flex-wrap justify-center gap-6">
                         {selectedOrder.status === "pending" && (
-                            <button
-                                className="flex items-center gap-3 bg-[#d9d9d9] hover:bg-gray-200 transition-colors px-8 py-3 rounded-2xl shadow-lg group"
-                                onClick={submitStatus}
-                            >
+                            <button className="flex items-center gap-3 bg-[#d9d9d9] hover:bg-gray-200 transition-colors px-8 py-3 rounded-2xl shadow-lg group" onClick={submitStatus}>
                                 <FileText size={32} className="text-gray-600" />
                                 <span className="text-2xl font-medium">
                                     Buat Nota

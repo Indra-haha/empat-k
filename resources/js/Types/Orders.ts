@@ -19,7 +19,7 @@ export type OrdersPelangganDetailProps = OrdersPelangganProps & {
     };    
 };
 
-export interface OrdersAdminProps {
+export interface OrdersCSProps {
     no : number;
     name: string;
     order: number;
@@ -34,3 +34,9 @@ export interface OrdersAdminProps {
     status: string;
     ordered_by: string;
 };
+
+export interface OrdersAccountingProps {
+    no : number;
+    name: string;
+    order: number;
+}

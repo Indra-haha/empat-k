@@ -18,7 +18,7 @@ class OrderPolicy
 
     public function update(User $user)
     {
-        return $user->role === 'cs';
+        return in_array($user->role, ['cs', 'pelanggan', 'accounting']);
     }
 
     public function delete(User $user)

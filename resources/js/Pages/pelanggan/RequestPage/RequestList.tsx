@@ -1,11 +1,13 @@
 import { CustomerLayout } from "@/Layouts/CustomerLayout";
 import { RequestProps } from "@/Types/Request";
 import React from "react";
+import { Head } from "@inertiajs/react";    
 
 export default function RequestList({requests}: {requests: RequestProps[]}) {
     console.log("RequestList component rendered", requests);
     return (
         <CustomerLayout>
+            <Head title="Requests" />
             {requests.map((request) => (
                 <div key={request.no}>
                     <h3>{request.user}</h3>

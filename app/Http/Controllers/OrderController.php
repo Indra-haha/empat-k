@@ -54,6 +54,7 @@ class OrderController extends Controller
                         'price' => $order->product->price,
                         'total_price' => $order->total_price, // rename
                         'status' => $order->latestStatus?->status ?? 'pending',
+                        'fee' => $order->request->fee ?? "kosong",
                     ];
                 });
         } else {
@@ -143,7 +144,7 @@ class OrderController extends Controller
     public function updateStatus($id)
     {
         $this->authorizeAction('update', Order::class);
-
+        sleep(2);
         $order = Order::where('order_id', $id)->firstOrFail();
         $role = Auth::user()->role;
         $currentStatus = $order->latestStatus?->status ?? 'pending';
@@ -164,6 +165,9 @@ class OrderController extends Controller
         /* Ketika cs update status */
         if ($role === 'cs') {
             if ($currentStatus === 'pending') {
+                $this->validate(request(), [
+                    'fee' => 'required|numeric|min:0',
+                ]);
                 $newStatus = 'ordered';
             } elseif ($currentStatus === 'paid') {
                 $newStatus = 'process';

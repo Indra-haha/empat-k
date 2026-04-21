@@ -3,11 +3,11 @@ import { PageWithHeaderBack } from "../Layout/PageWithHeaderBack";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
-import { useForm } from "@inertiajs/react";
+import { Head, useForm } from "@inertiajs/react";
 import PrimaryButton from "@/Components/PrimaryButton";
-import { ProductDetailProps } from "@/Types/Products";
+import { ProductsProps } from "@/Types/Products";
 
-export default function FormCustom({ product }: { product: ProductDetailProps }) {
+export default function FormCustom({ product }: { product: ProductsProps }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         product_id: product.product_id,
         description: {
@@ -28,6 +28,7 @@ export default function FormCustom({ product }: { product: ProductDetailProps })
     console.log(data);
     return (
         <PageWithHeaderBack title="Custom Produk" route="products">
+            <Head title="Custom Product" />
             <section className="text-green-800">
                 <main className="border-2 border-gray-300 flex flex-row gap-4 w-[300px]">
                     <LazyLoadImage

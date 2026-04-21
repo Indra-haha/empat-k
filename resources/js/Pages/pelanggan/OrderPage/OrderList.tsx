@@ -1,7 +1,7 @@
 import React from "react";
 import { CustomerLayout } from "@/Layouts/CustomerLayout";
 import { OrdersPelangganProps } from "@/Types/Orders";
-import { Link, useRemember } from "@inertiajs/react";
+import { Head, Link, useRemember } from "@inertiajs/react";
 
 export default function OrderList({
     orders,
@@ -11,6 +11,7 @@ export default function OrderList({
     const [data, setData] = useRemember(orders, "orders");
     return (
         <CustomerLayout>
+            <Head title="Order"/>
             {data && data.length > 0
                 ? data.map((order, index) => (
                       <section

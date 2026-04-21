@@ -39,7 +39,7 @@ class AuthenticatedSessionController extends Controller
         } else if (Auth::user()->role === 'desainer') {
             return redirect()->intended('/requests');
         } else if (Auth::user()->role === 'accounting') {
-            return redirect()->intended('/billings');
+            return redirect()->intended('/orders');
         } else if (Auth::user()->role === 'kp') {
             return redirect()->intended('/work-orders');
         } else {

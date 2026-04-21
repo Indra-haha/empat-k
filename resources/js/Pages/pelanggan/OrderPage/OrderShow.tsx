@@ -3,6 +3,7 @@ import { PageWithHeaderBack } from "../Layout/PageWithHeaderBack";
 import TrackingPoint from "@/Components/TrackingPoint";
 import { formatPrice } from "@/utils/Formater";
 import { OrdersPelangganDetailProps } from "@/Types/Orders";
+import { Head } from "@inertiajs/react";
 
 export default function OrderShow({
     order,
@@ -14,6 +15,7 @@ export default function OrderShow({
     console.log("cek order", order);
     return (
         <PageWithHeaderBack title="Order Details" route="orders">
+            <Head title="Detail Order" />
             <section className="w-full">
                 <header className="text-xl font-bold w-full mb-2 bg-gray-200 py-2 px-3 rounded-full">
                     No: {data.no}

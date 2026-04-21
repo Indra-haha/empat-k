@@ -39,7 +39,7 @@ export default function RequestModals({
             },
         });
     };
-
+    console.log("Selected Request:", selectedRequest);
     return (
         <section className="fixed inset-0 bg-black/50 overflow-y-auto z-50 flex justify-center items-start py-10">
             {/* Ganti ke div atau tetap form, tapi pastikan onSubmit di handle di sini */}
@@ -94,7 +94,7 @@ export default function RequestModals({
                     </aside>
                 </div>
 
-                <main className="flex flex-row gap-4 w-full">
+                <main className="flex flex-row gap-4 w-full flex-wrap items-stretch">
                     {[
                         {
                             label: "Referensi",
@@ -117,10 +117,10 @@ export default function RequestModals({
                             key={idx}
                             className="flex flex-col flex-1 bg-gray-200 rounded-xl min-w-0 overflow-hidden"
                         >
-                            <h2 className="text-sm text-gray-600 bg-gray-300 px-4 py-2 text-center">
+                            <h2 className="text-sm text-gray-600 bg-gray-300 px-4 py-2 text-center shrink-0">
                                 {item.label}
                             </h2>
-                            <p className="flex-1 flex items-center justify-center font-semibold italic break-words px-4 py-2 text-center text-sm">
+                            <p className="flex-1 flex items-center justify-center font-semibold italic break-all px-4 py-2 text-center text-sm overflow-y-auto">
                                 "{item.val || "-"}"
                             </p>
                         </div>
@@ -128,42 +128,65 @@ export default function RequestModals({
                 </main>
 
                 <footer className="flex flex-col gap-3 w-full mt-4">
-                    <label className="font-bold">Upload Hasil Desain:</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        className="border p-2 rounded bg-white"
-                        onChange={(e) =>
-                            setData(
-                                "url_img",
-                                e.target.files ? e.target.files[0] : null,
-                            )
-                        }
-                    />
-                    {/* Tampilkan error validasi jika ada */}
-                    {errors.url_img && (
-                        <span className="text-red-600 text-sm font-bold">
-                            {errors.url_img}
-                        </span>
-                    )}
+                    {selectedRequest.upload_image ? (
+                        <div className="flex flex-col gap-2 items-center">
+                            <span className="px-3 w-100 italic semibold">
+                                *Sudah mengumpload File
+                            </span>
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="px-6 py-2 rounded-xl bg-gray-400 text-white font-bold w-100"
+                            >
+                                Tutup
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            <label className="font-bold">
+                                Upload Hasil Desain:
+                            </label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="border p-2 rounded bg-white"
+                                onChange={(e) =>
+                                    setData(
+                                        "url_img",
+                                        e.target.files
+                                            ? e.target.files[0]
+                                            : null,
+                                    )
+                                }
+                            />
+                            {/* Tampilkan error validasi jika ada */}
+                            {errors.url_img && (
+                                <span className="text-red-600 text-sm font-bold">
+                                    {errors.url_img}
+                                </span>
+                            )}
 
-                    <div className="flex gap-2 justify-end mt-2">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-6 py-2 rounded-xl bg-gray-400 text-white font-bold"
-                        >
-                            Batal
-                        </button>
-                        <button
-                            type="button"
-                            disabled={processing}
-                            className={`px-6 py-2 rounded-xl text-white font-bold ${processing ? "bg-blue-300" : "bg-blue-600 hover:bg-blue-700"}`}
-                            onClick={submitStatus}
-                        >
-                            {processing ? "Mengirim..." : "Simpan Perubahan"}
-                        </button>
-                    </div>
+                            <div className="flex gap-2 justify-end mt-2">
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="px-6 py-2 rounded-xl bg-gray-400 text-white font-bold"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="button"
+                                    disabled={processing}
+                                    className={`px-6 py-2 rounded-xl text-white font-bold ${processing ? "bg-blue-300" : "bg-blue-600 hover:bg-blue-700"}`}
+                                    onClick={submitStatus}
+                                >
+                                    {processing
+                                        ? "Mengirim..."
+                                        : "Simpan Perubahan"}
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </footer>
             </div>
         </section>

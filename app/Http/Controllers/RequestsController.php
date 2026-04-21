@@ -11,7 +11,7 @@ class RequestsController extends BaseController
 {
     public function index()
     {
-        $this->authorizeAction('viewAny');
+        $this->authorizeAction('view', CustomRequest::class);
         $role = Auth::user()->role;
         $role === 'desainer' ?
             $customrequests = CustomRequest::with('product')->get() :
@@ -44,7 +44,7 @@ class RequestsController extends BaseController
 
     public function store(Request $request)
     {
-        $this->authorizeAction('create');
+        $this->authorizeAction('create', CustomRequest::class);
 
         $desc = $request->validate([
             'teks_font' => 'required|string',
@@ -71,7 +71,7 @@ class RequestsController extends BaseController
     public function updateGambar(Request $request, $id)
     {
         // 1. Authorize (Pastikan desainer yang melakukan ini)
-        $this->authorizeAction('update');
+        $this->authorizeAction('update', CustomRequest::class);
 
         // 2. Masukkan ID dari parameter URL ke dalam request agar bisa divalidasi
         $request->merge(['request_id' => $id]);

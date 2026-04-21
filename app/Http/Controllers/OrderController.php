@@ -14,9 +14,11 @@ class OrderController extends Controller
 {
     public function index()
     {
+        $this->authorizeAction('view', Order::class);
         $user = Auth::user();
         $role = $user->role;
-        $role === 'pelanggan' ?
+        
+        if ($role === 'pelanggan') {
             $orders = Order::with('product', 'latestStatus')
                 ->get()
                 ->where('user_id', $user->user_id)
@@ -31,9 +33,9 @@ class OrderController extends Controller
                             ->translatedFormat('d F Y'),
                         'status' => $order->latestStatus?->status ?? 'pending',
                     ];
-                })
+                });
 
-            :
+        } elseif ($role === 'cs') {
             $orders = Order::with('product', 'request', 'latestStatus', 'user')
                 ->get()
                 ->map(function ($order) {
@@ -54,14 +56,33 @@ class OrderController extends Controller
                         'status' => $order->latestStatus?->status ?? 'pending',
                     ];
                 });
-        return Inertia::render("${role}/OrderPage/OrderList", [
+        } else {
+            $orders = Order::with('product', 'latestStatus', 'invoice')
+                ->get()
+                ->where('latestStatus.status', 'ordered')
+                ->map(function ($order) {
+                    return [
+                        'no' => $order->order_id,
+                        'invoice_no' => $order->invoices?->invoice_number ?? null,
+                        'price' => $order->product->price,
+                        'total_price' => $order->total_price,
+                        'url_img' => $order->invoices?->url_img ?? null,
+                        'update_at' => Carbon::parse($order->latestStatus?->created_at)
+                            ->locale('id')
+                            ->translatedFormat('d F Y'),
+                        'status' => $order->latestStatus->status,
+                    ];
+                });
+        }
+        return Inertia::render("$role/OrderPage/OrderList", [
             'orders' => $orders
         ]);
-
+       
     }
 
     public function store(Request $request)
     {
+        $this->authorizeAction('create', Order::class);
         $this->validate($request, [
             'user_id' => 'required',
             'request_id' => 'nullable',
@@ -90,6 +111,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
+        $this->authorizeAction('view', Order::class);
         $order = Order::where('order_id', $id)
             ->where('user_id', auth()->id())
             ->firstOrFail();
@@ -120,6 +142,8 @@ class OrderController extends Controller
 
     public function updateStatus($id)
     {
+        $this->authorizeAction('update', Order::class);
+
         $order = Order::where('order_id', $id)->firstOrFail();
         $role = Auth::user()->role;
         $currentStatus = $order->latestStatus?->status ?? 'pending';
@@ -144,15 +168,11 @@ class OrderController extends Controller
             } elseif ($currentStatus === 'paid') {
                 $newStatus = 'process';
             }
-        }
-
-        /* Ketika accounting update status */
-        elseif ($role === 'accounting' && $currentStatus === 'ordered') {
+        } elseif ($role === 'accounting' && $currentStatus === 'ordered') {
+            /* Ketika accounting update status */
             $newStatus = 'paid';
-        }
-       
-        /* Ketika kp update status */
-        elseif ($role === 'kp' && $currentStatus === 'process') {
+        } elseif ($role === 'kp' && $currentStatus === 'process') {
+            /* Ketika kp update status */
             $newStatus = 'finished';
         }
 

@@ -29,6 +29,7 @@ export interface OrdersCSProps {
     url_img_product: string;
     url_img_request: string;
     quantity: number;
+    fee: number;
     price: number;
     total_price: number;
     status: string;

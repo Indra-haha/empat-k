@@ -1,11 +1,11 @@
 import { AdminItemCard } from "@/Components/AdminItemCard";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { OrdersAdminProps } from "@/Types/Orders";
+import { OrdersCSProps } from "@/Types/Orders";
 import React, { useState } from "react";
 import OrderModals from "./OrderModals";
 
-export default function OrderList({ orders }: { orders: OrdersAdminProps[] }) {
-    const [selectedOrder, setSelectedOrder] = useState<OrdersAdminProps | null>(
+export default function OrderList({ orders }: { orders: OrdersCSProps[] }) {
+    const [selectedOrder, setSelectedOrder] = useState<OrdersCSProps | null>(
         null,
     );
     const [showModal, setShowModal] = useState(false);
@@ -16,10 +16,10 @@ export default function OrderList({ orders }: { orders: OrdersAdminProps[] }) {
                 {orders.map((order) => (
                     <AdminItemCard
                         key={order.order}
-                        url_img={`/storage/${order.url_img_product}`}
+                        url_img={`${order.url_img_product}`}
                         judul={order.name}
                         tgl={order.ordered_by}
-                        quantity={order.quantity}
+                        keterangan={String(order.quantity)}
                         status={order.status}
                         onClick={() => {
                             setSelectedOrder(order);

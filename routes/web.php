@@ -1,11 +1,10 @@
 <?php
 
-
-use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RequestsController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\InvoiceController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,13 +17,13 @@ Route::get('/', function () {
 
 Route::get('/auth', function () {
     $user = auth()->user();
-    if ($user->role == 'pelanggan') return redirect()->route('products.index');
-    if ($user->role == 'accounting') return redirect()->route('invoices.index');
+    if ($user->role == 'pelanggan' || $user->role === 'cs') return redirect()->route('products.index');
+    if ($user->role == 'accounting') return redirect()->route('orders.index');
     if ($user->role == 'desainer') return redirect()->route('requests.index');
-    return redirect('/products'); // fallback default
+    // return redirect('/products'); // fallback default
 })->middleware('auth');
 
-Route::middleware(['auth', 'role:cs,pelanggan'])->group(function () {
+Route::middleware(['auth', 'role:cs,pelanggan,accounting'])->group(function () {
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/product/{id}', [ProductController::class, 'show'])->name('products.show');
     Route::get('/orders', [OrderController::class,'index'])->name('orders.index');
@@ -52,7 +51,7 @@ Route::middleware(['auth', 'role:desainer'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:accounting'])->group(function () {
-    Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+   Route::post('/invoices/store', [InvoiceController::class, 'store'])->name('invoices.store');
 });
 
 Route::middleware('auth')->group(function () {

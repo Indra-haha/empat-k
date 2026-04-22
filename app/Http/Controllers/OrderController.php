@@ -17,7 +17,7 @@ class OrderController extends Controller
         $this->authorizeAction('view', Order::class);
         $user = Auth::user();
         $role = $user->role;
-        
+
         if ($role === 'pelanggan') {
             $orders = Order::with('product', 'latestStatus')
                 ->get()
@@ -58,27 +58,64 @@ class OrderController extends Controller
                     ];
                 });
         } else {
-            $orders = Order::with('product', 'latestStatus', 'invoice')
-                ->get()
-                ->where('latestStatus.status', 'ordered')
-                ->map(function ($order) {
-                    return [
-                        'no' => $order->order_id,
-                        'invoice_no' => $order->invoices?->invoice_number ?? null,
-                        'price' => $order->product->price,
-                        'total_price' => $order->total_price,
-                        'url_img' => $order->invoices?->url_img ?? null,
-                        'update_at' => Carbon::parse($order->latestStatus?->created_at)
-                            ->locale('id')
-                            ->translatedFormat('d F Y'),
-                        'status' => $order->latestStatus->status,
-                    ];
-                });
+            $ordersRaw = Order::with('latestStatus', 'request', 'invoice', 'product')
+                ->whereHas('latestStatus', function ($q) {
+                    $q->whereIn('status', ['ordered', 'partial_paid']);
+                })
+                ->get();
+            $groupedOrders = $ordersRaw->groupBy(function ($order) {
+                // Ambil invoice terbaru dari koleksi invoices (Many-to-One)
+                $latestInvoice = $order->latestInvoiceStatus()->first();
+
+                if (!$latestInvoice) {
+                    return 'orders';
+                }
+
+                if (empty($latestInvoice->url_img_bukti)) {
+                    return 'receipts';
+                }
+
+                return 'complete';
+            });
+
+            // Map setiap grup menggunakan helper function
+            $orders = [
+                'orders' => $this->mapForAccountingOrders($groupedOrders->get('orders', collect())),
+                'receipts' => $this->mapForAccountingOrders($groupedOrders->get('receipts', collect())),
+                'complete'   => $this->mapForAccountingOrders($groupedOrders->get('complete', collect())),
+            ];
+           
         }
         return Inertia::render("$role/OrderPage/OrderList", [
             'orders' => $orders
         ]);
-       
+
+    }
+
+    private function mapForAccountingOrders($collection)
+    {
+        return $collection->map(function ($order) {
+            // Ambil invoice terbaru karena relasi Many-to-One
+            $latestInvoice = $order->latestInvoiceStatus()->first();
+
+            return [
+                'no' => $order->order_id,
+                'invoice_no' => $latestInvoice?->invoice_number,
+                'product_name' => $order->product->name,
+                'product_category' => $order->product->category->name ?? '-',
+                'url_img_request' => $order->request?->upload_img,
+                'custom_fee' => $order->request?->fee,
+                'quantity' => $order->quantity,
+                'price' => $order->product->price,
+                'total_price' => $order->total_price,
+                'url_img_tagihan' => $latestInvoice?->url_img_tagihan,
+                'update_at' => $order->latestStatus 
+                    ? Carbon::parse($order->latestStatus->created_at)->locale('id')->translatedFormat('d F Y')
+                    : '-',
+                'status' => $order->latestStatus->status ?? 'ordered',
+            ];
+        })->values(); // Reset keys agar menjadi array murni di JSON
+    
     }
 
     public function store(Request $request)

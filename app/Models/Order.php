@@ -38,4 +38,14 @@ class Order extends Model
     {
         return $this->hasOne(OrderStatusHistory::class, 'order_id', 'order_id')->latestOfMany();
     }
+
+    public function invoice()
+    {
+        return $this->hasMany(Invoice::class, 'order_id', 'order_id');
+    }
+
+    public function latestInvoiceStatus()
+    {
+        return $this->hasOne(Invoice::class, 'order_id', 'order_id')->latestOfMany();
+    }
 }

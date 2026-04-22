@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->decimal('price', 10, 2);
             $table->decimal('total_price', 10, 2);
-            $table->timestamps();
+            $table->timestamps()->default()->now();
         });
     }
 

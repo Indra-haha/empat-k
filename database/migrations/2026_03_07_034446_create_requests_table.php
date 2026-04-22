@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('upload_img')->nullable();
             $table->enum('status', ['requested', 'process', 'finished'])->default('requested');
             $table->decimal('fee', 10, 2)->nullable();
-            $table->timestamps();
+            $table->timestamps()->default()->now();
         });
     }
 

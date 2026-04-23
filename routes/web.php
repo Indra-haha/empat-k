@@ -46,6 +46,7 @@ Route::middleware(['auth', 'role:cs'])->group(function () {
 
 Route::middleware(['auth', 'role:desainer,pelanggan'])->group(function () {
     Route::get('/requests', [RequestsController::class, 'index'])->name('requests.index');
+    Route::get('/requests/show/{id}', [RequestsController::class, 'show'])->name('requests.show');
 });
 
 Route::middleware(['auth', 'role:desainer'])->group(function () {

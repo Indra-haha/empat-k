@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 class CustomRequest extends Model
 {
     protected $primaryKey = 'request_id';
+    protected $table = 'custom_requests';
     protected $casts = [
         'description' => 'array', 
     ];

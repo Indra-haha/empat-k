@@ -4,6 +4,11 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $primaryKey = 'product_id'; // Beritahu Laravel primary key-nya bukan 'id'
+    protected $hidden = [
+        'category_id',
+        'created_at',
+        'updated_at',
+    ];
     protected $fillable = [
         'name',
         'category_id',

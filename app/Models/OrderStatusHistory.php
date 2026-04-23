@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class OrderStatusHistory extends Model
 {
     //
+    protected $primaryKey = 'id';
     protected $fillable = [
         'order_id',
         'status',

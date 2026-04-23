@@ -27,14 +27,16 @@ Route::middleware(['auth', 'role:cs,pelanggan,accounting'])->group(function () {
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/product/{id}', [ProductController::class, 'show'])->name('products.show');
     Route::get('/orders', [OrderController::class,'index'])->name('orders.index');
-    Route::get('/order/{id}', [OrderController::class,'show'])->name('orders.show');    
+    Route::get('/order/{id}', [OrderController::class,'show'])->name('orders.show');   
+    Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index'); 
 });
 
 Route::middleware(['auth', 'role:pelanggan'])->group(function () {
     Route::get('/product/{id}/instant-buying', [ProductController::class, 'instantBuying'])->name('products.instantBuying');
     Route::post('/product/buyout', [OrderController::class,'store'])->name('orders.store');
     Route::get('/product/{id}/custom', [ProductController::class, 'custom'])->name('products.custom');
-    Route::post('/product/customReq', [RequestsController::class, 'store'])->name('requests.store');    
+    Route::post('/product/customReq', [RequestsController::class, 'store'])->name('requests.store'); 
+    Route::get('/show-invoice', [InvoiceController::class, 'show'])->name('invoices.show');
 });
 
 Route::middleware(['auth', 'role:cs'])->group(function () {

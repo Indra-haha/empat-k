@@ -8,7 +8,11 @@ export default function OrderList({
 }: {
     orders?: OrdersPelangganProps[];
 }) {
-    const [data, setData] = useRemember(orders, "orders");
+    const initialData = orders ? Object.values(orders) : [];
+    
+    const [data] = useRemember(initialData, "orders");
+
+    console.log(data);
     return (
         <CustomerLayout>
             <Head title="Order"/>

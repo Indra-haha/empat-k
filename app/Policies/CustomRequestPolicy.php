@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Policies;
-
-use App\Models\CustomRequest;
 use App\Models\User;
 
 class CustomRequestPolicy
@@ -17,13 +15,13 @@ class CustomRequestPolicy
         return $user->role === 'pelanggan';
     }
 
-    public function update(User $user, CustomRequest $request)
+    public function update(User $user)
     {
-        return $user->role === 'desainer' || ($user->role === 'pelanggan' && $request->user_id === $user->id);
+        return in_array($user->role, ['desainer', 'pelanggan']);
     }
 
-    public function delete(User $user, CustomRequest $request)
+    public function delete(User $user)
     {
-        return $user->role === 'desainer' || ($user->role === 'pelanggan' && $request->user_id === $user->id);
+        return in_array($user->role, ['desainer', 'pelanggan']);
     }
 }

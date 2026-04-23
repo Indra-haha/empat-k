@@ -6,6 +6,7 @@ import TextInput from "@/Components/TextInput";
 import { Head, useForm } from "@inertiajs/react";
 import PrimaryButton from "@/Components/PrimaryButton";
 import { ProductsProps } from "@/Types/Products";
+import InputError from "@/Components/InputError";
 
 export default function FormCustom({ product }: { product: ProductsProps }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -44,12 +45,15 @@ export default function FormCustom({ product }: { product: ProductsProps }) {
                     </article>
                 </main>
                 <form onSubmit={submit} className="my-5 flex flex-col gap-4">
-                    <div className="flex flex-col gap-1">
-                        <InputLabel
-                            htmlFor="Titik Fokus Revisi"
-                            value="Titik Fokus Revisi"
-                            children={undefined}
-                        />
+                    <div className="flex flex-col gap-1">      
+                        <h2 className="flex flex-row gap-2">
+                            <InputLabel
+                                htmlFor="Titik Fokus Revisi"
+                                value="Titik Fokus Revisi"
+                                children={undefined}
+                            />
+                            <InputError message={errors["description.titik_fokus_revisi"]} />
+                        </h2>
                         <TextInput
                             id={`titik_fokus_revisi`}
                             type="text"
@@ -65,12 +69,14 @@ export default function FormCustom({ product }: { product: ProductsProps }) {
                         />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <InputLabel
-                            htmlFor="Referensi Virtual"
-                            value="Referensi Virtual"
-                            children={undefined}
-                        />
-
+                        <h2 className="flex flex-row gap-2">
+                            <InputLabel
+                                htmlFor="Referensi Virtual"
+                                value="Referensi Virtual"
+                                children={undefined}
+                            />
+                            <InputError message={errors["description.referensi_virtual"]} />
+                        </h2>
                         <TextInput
                             id={`referensi_virtual`}
                             type="text"
@@ -86,12 +92,14 @@ export default function FormCustom({ product }: { product: ProductsProps }) {
                         />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <InputLabel
-                            htmlFor="Gaya Desain"
-                            value="Gaya Desain"
-                            children={undefined}
-                        />
-
+                        <h2 className="flex flex-row gap-2">
+                            <InputLabel
+                                htmlFor="Gaya Desain"
+                                value="Gaya Desain"
+                                children={undefined}
+                            />
+                            <InputError message={errors["description.gaya_desain"]} />
+                        </h2>
                         <TextInput
                             id={`gaya_desain`}
                             type="text"
@@ -107,12 +115,14 @@ export default function FormCustom({ product }: { product: ProductsProps }) {
                         />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <InputLabel
-                            htmlFor="Warna Dominan"
-                            value="Warna Dominan"
-                            children={undefined}
-                        />
-
+                        <h2 className="flex flex-row gap-2">
+                            <InputLabel
+                                htmlFor="Warna Dominan"
+                                value="Warna Dominan"
+                                children={undefined}
+                            />
+                            <InputError message={errors["description.warna_dominan"]} />
+                        </h2>
                         <TextInput
                             id={`warna_dominan`}
                             type="text"
@@ -128,12 +138,14 @@ export default function FormCustom({ product }: { product: ProductsProps }) {
                         />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <InputLabel
-                            htmlFor="Teks Font"
-                            value="Teks Font"
-                            children={undefined}
-                        />
-
+                        <h2 className="flex flex-row gap-2">
+                            <InputLabel
+                                htmlFor="Teks Font"
+                                value="Teks Font"
+                                children={undefined}
+                            />
+                            <InputError message={errors["description.teks_font"]} />
+                        </h2>
                         <TextInput
                             id={`teks_font`}
                             type="text"

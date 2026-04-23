@@ -15,5 +15,6 @@ export interface RequestProps {
     description: descriptionRequest;
     status: string; 
     fee: number;  
-    create: string;               
+    create: string;  
+    category: string;             
 }

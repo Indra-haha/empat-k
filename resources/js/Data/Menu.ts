@@ -10,7 +10,7 @@ export const menusByRole: Record<string, Menu[]> = {
         { name: 'Product', route: '/products' },
         { name: 'Order', route: '/orders' },
         { name: 'Request', route: '/requests' },
-        { name: 'Billing', route: '/billing' },
+        { name: 'Invoices', route: '/invoices' },
     ],
     cs: [
         { name: 'Product', route: '/products' },
@@ -26,7 +26,7 @@ export const menusByRole: Record<string, Menu[]> = {
         { name: 'Work-order', route: '/work-order' },
     ],
     accounting: [
-        { name: 'Invoice', route: '/invoice' },
-        { name: 'Billing', route: '/billing' },
+        { name: 'Orders', route: '/orders' },
+        { name: 'Invoices', route: '/invoices' },
     ],
 };

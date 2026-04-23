@@ -44,28 +44,42 @@ class RequestsController extends BaseController
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $this->authorizeAction('create', CustomRequest::class);
 
-        $desc = $request->validate([
-            'teks_font' => 'required|string',
-            'gaya_desain' => 'required|string',
-            'warna_dominan' => 'required|string',
-            'referensi_virtual' => 'required|string',
-            'titik_fokus_revisi' => 'required|string',
+        $request->validate([
+            'product_id' => 'required|integer|exists:products,product_id',
+            'description' => 'required|array',
+            'description.teks_font' => 'required|string',
+            'description.gaya_desain' => 'required|string',
+            'description.warna_dominan' => 'required|string',
+            'description.referensi_virtual' => 'required|string',
+            'description.titik_fokus_revisi' => 'required|string',
+        ], [
+            'description.teks_font.required' => 'This field is required.',
+            'description.gaya_desain.required' => 'This field is required.',
+            'description.warna_dominan.required' => 'This field is required.',
+            'description.referensi_virtual.required' => 'This field is required.',
+            'description.titik_fokus_revisi.required' => 'This field is required.',
         ]);
 
-        $data = $request->validate([
-            'product_id' => 'required',
-            'description' => $desc,
-        ]);
+        $data = [
+            'product_id' => $request->product_id,
+            'description' => $request->description,
+        ];
 
-        CustomRequest::create([
-            'product_id' => $data['product_id'],
-            'user_id' => Auth::user()->user_id,
-            'description' => $data['description'],
-        ]);
+        if ($request->descrpition) {
+            CustomRequest::create([
+                'product_id' => $data['product_id'],
+                'user_id' => auth()->id(),
+                'description' => $data['description'],
+            ]);
 
-        return redirect()->route('products.index')->with('success', 'Custom request created successfully.');
+            return redirect()->route('products.index')->with('success', 'Custom request created successfully.');
+        }
+
+        return redirect()->route('products.index')->with('error', 'Failed to create custom request. Please try again.');
+
     }
 
     public function updateGambar(Request $request, $id)
@@ -109,5 +123,34 @@ class RequestsController extends BaseController
         }
 
         return redirect()->back()->with('error', 'Gagal mengunggah gambar.');
+    }
+
+    public function show($id)
+    {
+        $this->authorizeAction('view', CustomRequest::class);
+        $request = CustomRequest::with('product')->findOrFail($id);
+        return Inertia("pelanggan/RequestPage/RequestShow", [
+            'request' => [
+                'no' => $request->request_id,
+                'user' => $request->user->name,
+                'upload_image' => $request->upload_img,
+                'category' => $request->product->category->name,
+                'product' => $request->product->name,
+                'img_product' => $request->product->url_img,
+                'description' =>
+                    [
+                        'teks' => $request->description['teks_font'] ?? null,
+                        'style' => $request->description['gaya_desain'] ?? null,
+                        'color' => $request->description['warna_dominan'] ?? null,
+                        'reference' => $request->description['referensi_virtual'] ?? null,
+                        'focus_spot' => $request->description['titik_fokus_revisi'] ?? null
+                    ],
+                'status' => $request->status,
+                'fee' => $request->fee,
+                'create' => Carbon::parse($request->updated_at)
+                    ->locale('id')
+                    ->translatedFormat('d F Y'),
+            ]
+        ]);
     }
 }

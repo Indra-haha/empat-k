@@ -22,6 +22,7 @@ return new class extends Migration {
             $table->decimal('total_amount', 10, 2);
             $table->string('url_img_tagihan')->nullable();
             $table->string('url_img_bukti')->nullable();
+            $table->enum('status_bukti', ['pending', 'rejected', 'approved'])->default('pending');
             $table->timestamps()->default()->now();
         });
     }

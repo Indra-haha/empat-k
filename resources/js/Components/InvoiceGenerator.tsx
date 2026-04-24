@@ -18,6 +18,21 @@ const TagihanGenerator = ({
     const { processing } = useForm();
     const [openBukti, setOpenBukti] = useState(false);
 
+    const submitStatusUpdate = (status: "approved" | "rejected") => {
+        router.patch(route("invoices.updateStatus", { id: item.invoice_no }), {
+            status: status
+        }, {
+            onSuccess: () => {
+                alert(`Tagihan berhasil ${status === "approved" ? "diterima" : "ditolak"}!`);
+                onClose();
+            },
+            onError: (errors) => {
+                console.error("Detail Error:", errors);
+                alert("Terjadi kesalahan saat memperbarui status.");
+            },
+        });
+    };
+
     const handleSaveToDatabase = async () => {
         if (notaRef.current === null) return;
 
@@ -249,9 +264,16 @@ const TagihanGenerator = ({
                                         src={`/show-bukti?file=${item.url_img_bukti}`}
                                         alt="Bukti Tagihan"
                                     />
-                                    <button onClick={() => setOpenBukti(false)} className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full font-bold shadow-lg transition-all mt-4">
-                                        Tutup Bukti
-                                    </button>
+                                    {item.status_bukti === "pending" ? (
+                                        <div className="flex flex-row items-center justify-center gap-4">
+                                            <button onClick={() => {setOpenBukti(false); submitStatusUpdate("approved")}} className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full font-bold transition-all mt-4" >
+                                            Terima
+                                            </button>
+                                            <button onClick={() => {setOpenBukti(false); submitStatusUpdate("rejected")}} className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full font-bold shadow-lg transition-all mt-4">
+                                            Tolak
+                                        </button>
+                                    </div>
+                                    ): (<p className="text-gray-500 bg-blue-600 text-white w-fit px-4 py-3 rounded-xl mx-auto">Status bukti: {item.status_bukti}</p>)}
                                 </>
                             )}
                         </div>
@@ -263,3 +285,7 @@ const TagihanGenerator = ({
 };
 
 export default TagihanGenerator;
+function patch(arg0: string, arg1: {}) {
+    throw new Error("Function not implemented.");
+}
+

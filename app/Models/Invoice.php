@@ -11,7 +11,8 @@ class Invoice extends Model
         'invoice_number', 
         'total_amount', 
         'url_img_tagihan',
-        'url_img_bukti'
+        'url_img_bukti',
+        'status_bukti',
     ];
 
     protected $hidden = [

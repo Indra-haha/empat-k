@@ -101,6 +101,7 @@ class OrderController extends Controller
             return [
                 'no' => $order->order_id,
                 'invoice_no' => $latestInvoice?->invoice_number,
+                'request_id'  => $order->request_id,
                 'product_name' => $order->product->name,
                 'product_category' => $order->product->category->name ?? '-',
                 'url_img_request' => $order->request?->upload_img,
@@ -109,6 +110,7 @@ class OrderController extends Controller
                 'price' => $order->product->price,
                 'total_price' => $order->total_price,
                 'url_img_tagihan' => $latestInvoice?->url_img_tagihan,
+                'url_img_bukti' => $latestInvoice?->url_img_bukti,
                 'update_at' => $order->latestStatus 
                     ? Carbon::parse($order->latestStatus->created_at)->locale('id')->translatedFormat('d F Y')
                     : '-',

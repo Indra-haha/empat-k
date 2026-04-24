@@ -53,14 +53,17 @@ Route::middleware(['auth', 'role:desainer'])->group(function () {
     Route::patch('/requests/{id}', [RequestsController::class, 'updateGambar'])->name('requests.updateGambar');
 });
 
-Route::middleware(['auth', 'role:accounting'])->group(function () {
+Route::middleware(['auth', 'role:accounting,pelanggan'])->group(function () {
    Route::post('/invoices/store', [InvoiceController::class, 'store'])->name('invoices.store');
+   Route::patch('/invoice/upload-bukti', [InvoiceController::class, 'uploadBukti'])->name('invoice.uploadBukti');
+   Route::get('/show-bukti', [InvoiceController::class, 'show'])->name('invoice.show');
+   Route::patch('/invoices/{id}/update-status', [InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::delete('/profile', [ProfileControler::class, 'destroy'])->name('profile.destroy');
 });
 
 Route::fallback(function () {

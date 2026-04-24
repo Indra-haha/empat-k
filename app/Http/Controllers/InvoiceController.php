@@ -103,13 +103,14 @@ class InvoiceController extends Controller
                 $file = $request->file('url_img_bukti');
 
                 // Gunakan nama file yang bersih
-                 $fileName = str_replace(['/', '\\', ' '], '-', $request->invoice_no) . '.png';
+                $fileName = str_replace(['/', '\\', ' '], '-', $request->invoice_no) . '.png';
 
                 // Simpan ke disk 'private'
                 $path = $file->storeAs('bukti', $fileName, 'private');
 
                 Invoice::where('invoice_number', $request->invoice_no)->update([
                     'url_img_bukti' => $path,
+                    'status_bukti' => 'pending',
                 ]);
 
                 return back()->with('success', 'Bukti Pembayaran Berhasil Disimpan!');
@@ -141,5 +142,17 @@ class InvoiceController extends Controller
         }
 
         return response()->file($fullPath);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $this->authorizeAction('update', Invoice::class);
+        $this->validate($request, [
+            'status' => 'required|in:approved,rejected',
+        ]);
+
+        Invoice::where('invoice_number', $id)->update(['status_bukti' => $request->status]);
+
+        return back()->with('success', "Invoice {$request->status}!");
     }
 }

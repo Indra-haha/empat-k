@@ -111,6 +111,7 @@ class OrderController extends Controller
                 'total_price' => $order->total_price,
                 'url_img_tagihan' => $latestInvoice?->url_img_tagihan,
                 'url_img_bukti' => $latestInvoice?->url_img_bukti,
+                'status_bukti' => $latestInvoice?->status_bukti,
                 'update_at' => $order->latestStatus 
                     ? Carbon::parse($order->latestStatus->created_at)->locale('id')->translatedFormat('d F Y')
                     : '-',

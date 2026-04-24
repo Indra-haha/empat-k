@@ -17,7 +17,7 @@ class InvoicePolicy
 
     public function update(User $user)
     {
-        return $user->role === 'accounting';
+        return in_array($user->role, ['accounting', "pelanggan"]);
     }
 
     public function delete(User $user)

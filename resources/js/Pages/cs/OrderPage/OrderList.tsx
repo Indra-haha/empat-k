@@ -9,7 +9,7 @@ export default function OrderList({ orders }: { orders: OrdersCSProps[] }) {
         null,
     );
     const [showModal, setShowModal] = useState(false);
-
+    console.table(orders);
     return (
         <AdminLayout>
             <section className="p-6">
@@ -21,6 +21,7 @@ export default function OrderList({ orders }: { orders: OrdersCSProps[] }) {
                         tgl={order.ordered_by}
                         keterangan={String(order.quantity)}
                         status={order.status}
+                        status_bukti_tagihan ={order.status_bukti}
                         onClick={() => {
                             setSelectedOrder(order);
                             setShowModal(true);

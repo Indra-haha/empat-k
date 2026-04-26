@@ -18,3 +18,11 @@ export const formatToShortDate = (dateString: string): string => {
     return `${day}${month}${year}`;
 };
 
+export const formatWord = (text: string) => {
+    if (!text) return "";
+    return text
+        .replace(/_/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+};

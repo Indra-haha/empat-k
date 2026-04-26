@@ -2,6 +2,7 @@ import React from "react";
 import { AdminItemCardProps } from "../Types/AdminItemCard";
 import PrimaryButton from "@/Components/PrimaryButton";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { formatWord } from "@/utils/Formater";
 
 export function AdminItemCard({
     url_img,
@@ -9,6 +10,7 @@ export function AdminItemCard({
     tgl,
     keterangan,
     status,
+    status_bukti_tagihan,
     onClick,
 }: AdminItemCardProps) {
     return (
@@ -35,10 +37,20 @@ export function AdminItemCard({
                 </span>
             </main>
 
-            <div className="flex flex-col w-1/9 justify-between text-green-800 p-2">
-                <span className="px-4 py-2 rounded-4 bg-green-400">
-                    {status}
-                </span>
+            <div className="flex flex-col w-2/9 justify-between text-green-800 p-2 gap-7">
+                <div className="flex flex-col gap-2 items-end">
+                    <span className="px-4 py-2 rounded-4 bg-green-400 w-full text-center rounded-xl">
+                        {formatWord(status)}
+                    </span>
+                    {status.endsWith('paid') ? status_bukti_tagihan === null ? (
+                        <span className="px-4 py-2 rounded-4 bg-yellow-400 w-fit rounded-xl">
+                            Belum dibayar
+                        </span>
+                    ) : (<span className="px-4 py-2 rounded-4 bg-blue-400 text-black w-fit rounded-xl">
+                        {formatWord(status_bukti_tagihan!)}
+                    </span>): null}
+                </div>
+                
                 <PrimaryButton
                     disabled={undefined}
                     children="Detail"

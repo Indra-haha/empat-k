@@ -5,4 +5,5 @@ export interface AdminItemCardProps {
     keterangan? : string;
     status : string;
     onClick : () => void;
+    status_bukti_tagihan?: string | null;
 }

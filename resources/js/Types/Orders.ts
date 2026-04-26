@@ -34,6 +34,7 @@ export interface OrdersCSProps {
     total_price: number;
     status: string;
     ordered_by: string;
+    status_bukti: string | null;
 };
 
 export interface OrdersAccountingProps {

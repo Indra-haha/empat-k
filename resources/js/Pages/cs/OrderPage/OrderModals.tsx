@@ -2,6 +2,8 @@ import React from "react";
 import { OrdersCSProps } from "@/Types/Orders";
 import { ClipboardList, FileText, X } from "lucide-react";
 import { useForm } from "@inertiajs/react";
+import InputError from "@/Components/InputError";
+import { formatPrice, formatWord } from "@/utils/Formater";
 
 export default function OrderModals({
     selectedOrder,
@@ -19,10 +21,11 @@ export default function OrderModals({
         e.preventDefault();
         // Ganti 'orders.update' dengan nama route update kamu di Laravel
 
-        if (!data.fee) {
+        if (!Number(data.fee)) {
             alert("Biaya custom tidak boleh kosong");
             return;
         }
+
         patch(route("orders.updateStatus", selectedOrder.no), {
             onSuccess: (page) => {
                 // Ambil flash langsung dari object 'page' yang baru saja kembali
@@ -32,12 +35,12 @@ export default function OrderModals({
                 }
                 onClose(); // Tutup modal
             },
-            onError: (errors) => {
+            onError: () => {
                 alert("Terjadi kesalahan sistem");
             },
         });
     };
-    console.log(selectedOrder);
+    console.log("ordereddddd",selectedOrder);
     return (
         <section className="fixed inset-0 bg-black/50 overflow-y-auto z-50 justify-center items-center w-full py-10">
             <form className="bg-[#8c8c8c] mx-auto max-w-3xl rounded-3xl p-8 shadow-2xl text-gray-800">
@@ -64,7 +67,7 @@ export default function OrderModals({
                                     {selectedOrder.no}
                                 </span>
                                 <span className="bg-[#b3b3b3] px-4 py-1 text-sm text-white">
-                                    {selectedOrder.status}
+                                    {formatWord(selectedOrder.status)}
                                 </span>
                             </div>
                         </div>
@@ -144,30 +147,52 @@ export default function OrderModals({
                                 src={`/storage/${selectedOrder.url_img_request}`}
                                 alt="Custom Design "
                             />
-                            
-                            <div className="flex flex-col gap-3">
+
+                            <div className="flex flex-col gap-1">
                                 <label className="block text-white font-bold mb-1">
-                                    Biaya Custom : 
+                                    Biaya Custom :
                                 </label>
-                                <span className="italic bg-[#d9d9d9] rounded-xl p-3">{selectedOrder.status == 'process' ? selectedOrder.fee : ""}</span>
-                                {errors.fee}
-                                {selectedOrder.status === 'process' ? "" : (
-                                    <input
-                                    type="number"
-                                    min={0}
-                                    className="bg-[#d9d9d9] rounded-xl p-3 text-gray-600"
-                                    placeholder={
-                                        selectedOrder.fee
-                                            ? selectedOrder.fee.toString()
-                                            : "Masukkan biaya custom"
-                                    }
-                                    value={data.fee}
-                                    onChange={(e) =>
-                                        setData("fee", Number(e.target.value))
-                                    }
-                                ></input>
-                                )}
+                                {selectedOrder.status == "process" ||
+                                selectedOrder.status == "ordered" ? (
+                                    <span className="italic bg-[#d9d9d9] rounded-xl p-3">
+                                        {selectedOrder.fee || ""}
+                                    </span>
+                                ) : null}
                                 
+                                {selectedOrder.status !== "pending" ? (
+                                    /* Jika status BUKAN pending, tampilkan teks saja atau kosongkan */
+                                    <div className="px-4 py-2 text-black italic bg-[#d9d9d9] rounded-xl">
+                                        {selectedOrder.fee
+                                            ? formatPrice(selectedOrder.fee)
+                                            : "Tidak ada biaya"}
+                                    </div>
+                                ) : (
+                                <>
+                                   <InputError
+                                    message={errors.fee}
+                                    className="mt-2"
+                                />
+                                    /* Jika status ADALAH pending, tampilkan input */
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        className="bg-[#d9d9d9] rounded-xl p-3 text-gray-600"
+                                        placeholder={
+                                            selectedOrder.fee
+                                                ? selectedOrder.fee.toString()
+                                                : "Masukkan biaya custom"
+                                        }
+                                        value={data.fee}
+                                        onChange={(e) =>
+                                            setData(
+                                                "fee",
+                                                Number(e.target.value),
+                                            )
+                                        }
+                                    />
+                                </>
+                                 
+                                )}
                             </div>
                         </div>
                     ) : (
@@ -189,27 +214,26 @@ export default function OrderModals({
                                 onClick={submitStatus}
                                 disabled={processing}
                             >
-                                <FileText 
-                                    size={32} 
-                                    className="text-gray-600" 
-                                />
+                                <FileText size={32} className="text-gray-600" />
                                 <span className="text-2xl font-medium">
-                                    {processing ? "Mengirim..." : "Buat Nota" }
+                                    {processing ? "Mengirim..." : "Buat Nota"}
                                 </span>
                             </button>
                         )}
-                        {selectedOrder.status === "paid" && (
-                            <button 
-                                className="flex items-center gap-3 bg-[#d9d9d9] hover:bg-gray-200 transition-colors px-8 py-3 rounded-2xl shadow-lg group" 
+                        {selectedOrder.status_bukti === "approved" && (
+                            <button
+                                className="flex items-center gap-3 bg-[#d9d9d9] hover:bg-gray-200 transition-colors px-8 py-3 rounded-2xl shadow-lg group"
                                 onClick={submitStatus}
                                 disabled={processing}
-                            >      
+                            >
                                 <ClipboardList
                                     size={32}
                                     className="text-gray-600"
                                 />
                                 <span className="text-2xl font-medium">
-                                    {processing ? "Memproses..." : "Buat Order Kerja"}
+                                    {processing
+                                        ? "Memproses..."
+                                        : "Buat Order Kerja"}
                                 </span>
                             </button>
                         )}

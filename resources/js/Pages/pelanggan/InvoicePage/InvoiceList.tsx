@@ -8,9 +8,7 @@ import ItemCard from "../components/ItemCard";
 export default function InvoiceList({ nota }: { nota: any[] }) {
     console.log("Invoice Data:", nota);
     const [selectedImg, setSelectedImg] = useState<string | null>(null);
-    const [selectedImgBukti, setSelectedImgBukti] = useState<string | null>(
-        null,
-    );
+    const [selectedImgBukti, setSelectedImgBukti] = useState<string | null>(null,);
     const [openBukti, setOpenBukti] = useState(false);
     const { data, setData, patch, processing, errors } = useForm({
         invoice_no: null as string | null,
@@ -122,10 +120,13 @@ export default function InvoiceList({ nota }: { nota: any[] }) {
             </div>
 
             {/* OVERLAY MODAL (MELAYANG) */}
-            {selectedImg && (<>
+            {selectedImg && (
                 <div
                     className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-                    onClick={() => (setSelectedImg(null), setSelectedImgBukti(null))}
+                    onClick={() => (
+                        setSelectedImg(null),
+                        setSelectedImgBukti(null)
+                    )}
                 >
                     <div
                         className="relative w-full max-w-md bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]"
@@ -137,7 +138,10 @@ export default function InvoiceList({ nota }: { nota: any[] }) {
                                 Preview Invoice
                             </span>
                             <button
-                                onClick={() => (setSelectedImg(null), setSelectedImgBukti(null))}
+                                onClick={() => (
+                                    setSelectedImg(null),
+                                    setSelectedImgBukti(null)
+                                )}
                                 className="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200"
                             >
                                 <X size={20} />
@@ -154,7 +158,10 @@ export default function InvoiceList({ nota }: { nota: any[] }) {
                         </div>
                         <div className="flex flex-col w-full gap-4 p-4 border-t bg-white">
                             {selectedImgBukti !== null ? (
-                                <button className="text-center bg-green-600 text-white text-semibold text-md py-3 px-4 rounded-xl" onClick={() => setOpenBukti(true)}>
+                                <button
+                                    className="text-center bg-green-600 text-white text-semibold text-md py-3 px-4 rounded-xl"
+                                    onClick={() => setOpenBukti(true)}
+                                >
                                     Lihat Bukti Pembayaran
                                 </button>
                             ) : (
@@ -187,39 +194,39 @@ export default function InvoiceList({ nota }: { nota: any[] }) {
                         </div>
                     </div>
                 </div>
-                {selectedImgBukti && openBukti &&(
+            )}
+            {selectedImgBukti && openBukti && (
+                <div
+                    className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                    onClick={() => setOpenBukti(false)}
+                >
                     <div
-                        className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-                        onClick={() => setSelectedImgBukti(null)}
+                        className="relative w-full max-w-md bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]"
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <div
-                            className="relative w-full max-w-md bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {/* Header Modal */}
-                            <div className="p-4 border-b flex justify-between items-center bg-white sticky top-0 z-10">
-                                <span className="font-bold text-gray-700">
-                                    Bukti Pembayaran
-                                </span>
-                                <button
-                                    onClick={() => setSelectedImgBukti(null)}
-                                    className="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200"
-                                >
-                                    <X size={20} />
-                                </button>
-                            </div>
-
-                            {/* Image Content */}
-                            <div className="flex-1 overflow-auto bg-gray-50 p-2">
-                                <img
-                                    src={selectedImgBukti}
-                                    alt="Bukti Pembayaran"
-                                    className="w-full h-auto rounded-xl shadow-sm"
-                                />
-                            </div>
+                        {/* Header Modal */}
+                        <div className="p-4 border-b flex justify-between items-center bg-white sticky top-0 z-10">
+                            <span className="font-bold text-gray-700">
+                                Bukti Pembayaran
+                            </span>
+                            <button
+                                onClick={() => setOpenBukti(false)}
+                                className="p-2 bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200"
+                            >
+                                <X size={20} />
+                            </button>
                         </div>
-                    </div>)} 
-                    </> 
+
+                        {/* Image Content */}
+                        <div className="flex-1 overflow-auto bg-gray-50 p-2">
+                            <img
+                                src={selectedImgBukti}
+                                alt="Bukti Pembayaran"
+                                className="w-full h-auto rounded-xl shadow-sm"
+                            />
+                        </div>
+                    </div>
+                </div>
             )}
         </PageWithHeaderBack>
     );

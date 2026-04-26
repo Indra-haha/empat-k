@@ -36,7 +36,7 @@ class OrderController extends Controller
                 });
 
         } elseif ($role === 'cs') {
-            $orders = Order::with('product', 'request', 'latestStatus', 'user')
+            $orders = Order::with('product', 'request', 'latestStatus', 'user', 'invoice')
                 ->get()
                 ->map(function ($order) {
                     return [
@@ -54,7 +54,8 @@ class OrderController extends Controller
                         'price' => $order->product->price,
                         'total_price' => $order->total_price, // rename
                         'status' => $order->latestStatus?->status ?? 'pending',
-                        'fee' => $order->request->fee ?? "kosong",
+                        'status_bukti' => $order->latestInvoiceStatus->status_bukti ?? null,
+                        'fee' => $order->request->fee ?? null,
                     ];
                 });
         } else {

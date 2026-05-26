@@ -11,7 +11,7 @@ export default function ConfirmPassword() {
         password: '',
     });
 
-    const submit = (e) => {
+    const submit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
         post(route('password.confirm'), {
@@ -30,7 +30,7 @@ export default function ConfirmPassword() {
 
             <form onSubmit={submit}>
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                    <InputLabel htmlFor="password" value="Password" children={undefined} />
 
                     <TextInput
                         id="password"

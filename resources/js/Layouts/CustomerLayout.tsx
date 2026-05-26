@@ -52,13 +52,12 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
     return (
         <section className="flex flex-col max-w-[425px] h-screen mx-auto bg-gray-100">
             <header className="h-16 flex flex-row justify-between items-center gap-auto border-2 border-green-200 bg-green-200 rounded-b-4xl px-5 py-2">
-                <div className="w-12 h-12 flex items-center justify-center bg-white rounded-full">
+                <Link className="w-12 h-12 flex items-center justify-center bg-white rounded-full" href={menus[3].route}>
                     <FontAwesomeIcon
                         icon={faDollarSign}
                         className="text-3xl text-green-800"
-                        href={menus[3].route}
                     />
-                </div>
+                </Link>
                 <Dropdown>
                     <Dropdown.Trigger>
                         <span className="inline-flex rounded-full">
@@ -87,7 +86,7 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
                     </Dropdown.Content>
                 </Dropdown>
             </header>
-            <main className="h-full items-center justify-center p-4 overflow-y-auto">
+            <main className="h-full items-center justify-center p-4 overflow-y-auto no-scrollbar">
                 {children}
             </main>
             <footer className="h-16 flex items-between justify-between bg-green-200 border-t border-green-300 rounded-t-4xl">

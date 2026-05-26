@@ -10,10 +10,10 @@ export function PageWithHeaderBack({ title, children, route }) {
                     <Link href={`/${route}`} className="text-green-800">
                         <ChevronLeft className="text-4xl" />
                     </Link>
-                    <h1 className="text-xl font-bold text-green-800">{title}</h1>
+                    <h2 className="text-xl font-bold text-green-800">{title}</h2>
                 </main>
             </header>
-            <main className="p-5 h-auto max-w-[400px] mx-5">{children}</main>
+            <main className="p-5 h-screen max-w-[400px] mx-5 overflow-y-scroll no-scrollbar ">{children}</main>
         </section>
     );
 }

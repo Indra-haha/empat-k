@@ -15,7 +15,7 @@ export const menusByRole: Record<string, Menu[]> = {
     cs: [
         { name: 'Product', route: '/products' },
         { name: 'Order', route: '/orders' },
-        { name: 'Invoice', route: '/invoice' },
+        { name: 'Work Order', route: '/work-order' },
         { name: 'Role User' , route: '/role-user' },
     ],
     desainer: [

@@ -1,4 +1,4 @@
-import { useForm } from "@inertiajs/react";
+import { Head, useForm } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { PageWithHeaderBack } from "../Layout/PageWithHeaderBack";
@@ -33,6 +33,7 @@ export default function FormBuying({ product, requests, user }) {
 
     return (
         <PageWithHeaderBack title="Buying" route="products">
+            <Head title="Buying" />
             <form onSubmit={submit} className="flex flex-col gap-4">
                 <section className="w-full h-20 flex flex-row gap-4">
                     <LazyLoadImage

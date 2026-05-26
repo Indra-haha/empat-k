@@ -3,11 +3,13 @@ import { Check, ChevronDown, ChevronUp, Clock8 } from "lucide-react"; // Tambah 
 import React, { useState } from "react";
 import TagihanGenerator from "@/Components/InvoiceGenerator";
 import { formatPrice } from "@/utils/Formater";
+import { MenuItems } from "@headlessui/react";
 
 export default function OrderList({ orders }: any) {
     const ordersEntries = Object.entries(orders || {});
+    console.log(ordersEntries);
+    const [selectedOrder, setSelectedOrder] = useState<Record<string, any[]> | null>(null);
 
-    const [selectedOrder, setSelectedOrder] = useState<any>(null);
     // Simpan ID unik saja untuk menentukan mana yang terbuka
     const [openDetailId, setOpenDetailId] = useState<string | number | null>(null);
 
@@ -15,7 +17,7 @@ export default function OrderList({ orders }: any) {
         // Jika ID yang diklik sudah buka, maka tutup (null). Jika belum, buka yang baru.
         setOpenDetailId(openDetailId === id ? null : id);
     };
-
+    console.log("ini oderan masuk di acc", selectedOrder);    
     return (
         <AdminLayout>
             <div className="p-4">
@@ -26,16 +28,16 @@ export default function OrderList({ orders }: any) {
                             <button
                                 key={key}
                                 onClick={() => {
-                                    setSelectedOrder(value);
+                                    setSelectedOrder({key, value});
                                     setOpenDetailId(null); // Tutup detail jika ganti workplace
                                 }}
                                 className={`px-4 py-2 rounded whitespace-nowrap transition ${
-                                    selectedOrder === value
+                                    selectedOrder?.key === key
                                         ? "bg-blue-600 text-white"
                                         : "bg-gray-200 hover:bg-gray-300"
                                 }`}
                             >
-                                {key.replace("_", " ").toUpperCase()}
+                                {key.replace(" ", " ").toUpperCase()}
                             </button>
                         ))
                     ) : (
@@ -45,11 +47,9 @@ export default function OrderList({ orders }: any) {
 
                 {/* Looping Kartu Order */}
                 {selectedOrder &&
-                    Array.isArray(selectedOrder) &&
-                    selectedOrder.map((item: any, index: number) => {
+                    selectedOrder?.value.map((item: any, index: number) => {
                         const itemId = item.invoice_no || item.no;
                         const isOpen = openDetailId === itemId;
-                        console.log(item);
                         return (
                             <div key={itemId || index} className="border rounded-lg bg-white shadow-sm border-gray-200 mb-4 overflow-hidden">
                                 <div className="p-6">
@@ -90,7 +90,8 @@ export default function OrderList({ orders }: any) {
                                                     {item.status || "N/A"}
                                                 </span>
                                                 <strong>
-                                                    {item.status_bukti === "pending" ? (<Clock8 className="bg-yellow-500 text-white p-1 rounded-full" />) : <Check className="bg-green-500 text-white p-1 rounded-full" />}
+                                                    {item.url_img_tagihan === null || item.status_bukti === null ? (<Clock8 className="bg-yellow-500 text-white p-1 rounded-full" />) : 
+                                                     <Check className="bg-green-500 text-white p-1 rounded-full" />}
                                                 </strong>
                                             </div>
                                         </div>

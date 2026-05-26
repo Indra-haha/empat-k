@@ -1,11 +1,15 @@
+"use client";
 import { PageWithHeaderBack } from "../Layout/PageWithHeaderBack";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Link } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import React from "react";
+import { ProductsProps } from "@/Types/Products";
 
-export default function ProductShow({ product }) {
+export default function ProductShow( {product} : {product : ProductsProps})  {
+    console.log(product, "ini product show");
     return (
         <PageWithHeaderBack title="Detail" route="products">
+            <Head title="Product Detail" />
             <section className="w-full h-full flex flex-col rounded-xl border-2 border-gray-300 overflow-hidden text-green-800">
                 <LazyLoadImage
                     className="flex items-center h-full border-b-2 border-gray-300 justify-center w-full h-full [font-family:'Inter-Italic',Helvetica] font-normal italic text-black text-base text-center tracking-[0] leading-[normal] whitespace-nowrap"
@@ -20,7 +24,7 @@ export default function ProductShow({ product }) {
                     </h1>
 
                     <h2 className="relative flex items-center justify-center w-fit text-sm font-normal whitespace-nowrap">
-                        {product.category.name}
+                        {product.category}
                     </h2>
                 </main>
 

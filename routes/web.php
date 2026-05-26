@@ -5,6 +5,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RequestsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\WorkOrderController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -51,6 +52,11 @@ Route::middleware(['auth', 'role:desainer,pelanggan'])->group(function () {
 
 Route::middleware(['auth', 'role:desainer'])->group(function () {
     Route::patch('/requests/{id}', [RequestsController::class, 'updateGambar'])->name('requests.updateGambar');
+});
+
+Route::middleware(['auth', 'role:cs,kp'])->group(function () {
+    Route::get('/work-order', [WorkOrderController::class, 'index'])->name('orders.index');
+    Route::get('/work-order/{id}', [WorkOrderController::class, 'showWorkOrder'])->name('orders.showWorkOrder');
 });
 
 Route::middleware(['auth', 'role:accounting,pelanggan'])->group(function () {

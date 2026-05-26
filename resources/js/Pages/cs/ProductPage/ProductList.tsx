@@ -1,29 +1,23 @@
 import React, { useState } from "react";
 import { useForm } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Inertia } from "@inertiajs/inertia";
 import { ProductsProps } from "@/Types/Products";
-import { CategoriesProps } from "@/Types/Categories";
 
 export default function ProductList({
     products,
-    categories,
 }: {
     products?: ProductsProps[];
-    categories?: CategoriesProps[];
 }) {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedProduct, setSelectedProduct] =
-        useState<ProductsProps | null>(null);
-    const [image, setImage] = useState<File | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<ProductsProps | null>(null);
 
     // State untuk form
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, patch, delete: destroy, processing, errors, reset } = useForm({
         name: "",
         price: "",
         description: "",
-        url_img: "",
+        url_img: null as File | null,
         category_id: 0,
     });
 
@@ -38,29 +32,29 @@ export default function ProductList({
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            setImage(e.target.files[0]);
+            // Langsung masukkan ke state 'data' milik useForm
+            setData("url_img", e.target.files[0]);
         }
     };
     // Handle submit Add
     const handleAdd = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const formData = new FormData();
-        formData.append("name", data.name);
-        formData.append("price", data.price);
-        formData.append("description", data.description);
-        formData.append("category_id", String(data.category_id));
-
-        if (image) {
-            formData.append("url_img", image);
-        }
-
-        Inertia.post("/products/add", formData, {
-            forceFormData: true,
-            onSuccess: () => {
-                setShowAddModal(false);
+        post("/products/add", {
+            forceFormData: true, // Wajib agar file terkirim
+            onSuccess: (page) => {
+                const flash = page.props.flash as any;
+                if (flash?.success) {
+                    alert(flash.success);
+                }
                 reset();
-                setImage(null);
+                setShowAddModal(false);
+            },
+            onError: (err) => {
+                console.error(err);
+                alert(
+                    "Gagal mengunggah gambar. Pastikan format benar (JPG/PNG).",
+                );
             },
         });
     };
@@ -69,18 +63,26 @@ export default function ProductList({
     const handleEdit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedProduct) return;
-        Inertia.put(`/products/edit/${selectedProduct.product_id}`, data, {
-            onSuccess: () => {
+        patch(`/products/edit/${selectedProduct.product_id}`, {
+            onSuccess: (page) => {
+                const flash = page.props.flash as any;
+                if (flash?.success) {
+                    alert(flash.success);
+                }
                 setShowEditModal(false);
                 setSelectedProduct(null);
             },
+            onError: (err) => {
+                console.error(err);
+                alert("Gagal memperbarui produk.");
+            }
         });
     };
 
     // Handle Delete
     const handleDelete = (productId: number) => {
         if (!confirm("Are you sure?")) return;
-        Inertia.delete(`/products/delete/${productId}`);
+        destroy(`/products/delete/${productId}`);
     };
 
     // Open Edit Modal
@@ -95,6 +97,8 @@ export default function ProductList({
         });
         setShowEditModal(true);
     };
+    console.log("products:", products);
+    console.log("type:", typeof products);
 
     return (
         <AdminLayout>
@@ -117,32 +121,38 @@ export default function ProductList({
                         </tr>
                     </thead>
                     <tbody>
-                        {products?.map((product, idx) => (
-                            <tr key={idx + 1} className="border-b">
-                                <td className="p-2 justify-center flex">
-                                    {idx + 1}
-                                </td>
-                                <td className="p-2">{product.name}</td>
-                                <td className="p-2">{product.description}</td>
-                                <td className="p-2">{product.price}</td>
-                                <td className="p-2 flex gap-2 justify-center">
-                                    <button
-                                        className="bg-green-500 text-white px-2 py-1 rounded"
-                                        onClick={() => openEditModal(product)}
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        className="bg-red-500 text-white px-2 py-1 rounded"
-                                        onClick={() =>
-                                            handleDelete(product.product_id)
-                                        }
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {Object.values(products ?? {})
+                            .flat()
+                            .map((product, idx) => (
+                                <tr key={idx + 1} className="border-b">
+                                    <td className="p-2 justify-center flex">
+                                        {idx + 1}
+                                    </td>
+                                    <td className="p-2">{product.name}</td>
+                                    <td className="p-2">
+                                        {product.description}
+                                    </td>
+                                    <td className="p-2">{product.price}</td>
+                                    <td className="p-2 flex gap-2 justify-center">
+                                        <button
+                                            className="bg-green-500 text-white px-2 py-1 rounded"
+                                            onClick={() =>
+                                                openEditModal(product)
+                                            }
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            className="bg-red-500 text-white px-2 py-1 rounded"
+                                            onClick={() =>
+                                                handleDelete(product.product_id)
+                                            }
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
                     </tbody>
                 </table>
 
@@ -166,14 +176,13 @@ export default function ProductList({
                                     required
                                 >
                                     <option value="">Select Category</option>
-                                    {categories?.map((category) => (
-                                        <option
-                                            key={category.id}
-                                            value={category.id}
-                                        >
-                                            {category.name}
-                                        </option>
-                                    ))}
+                                    {Object.keys(products ?? {}).map(
+                                        (category, idx) => (
+                                            <option key={idx} value={category}>
+                                                {category}
+                                            </option>
+                                        ),
+                                    )}
                                 </select>
 
                                 {/* Name */}
@@ -290,3 +299,4 @@ export default function ProductList({
         </AdminLayout>
     );
 }
+

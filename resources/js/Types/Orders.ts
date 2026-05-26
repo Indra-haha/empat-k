@@ -1,3 +1,4 @@
+export type StatusHistory = 'pending' | 'ordered' | 'un_paid' | 'partial_paid' | 'process' | 'checking' | 'finished' | 'full_paid' | 'shipping';
 export interface OrdersPelangganProps {
     no : number;
     name : string;
@@ -7,14 +8,14 @@ export interface OrdersPelangganProps {
     price: number;
     request: number;
     total_price: number;
-    status: string;
+    status: StatusHistory;
     ordered_by: string;
 };
 
 export type OrdersPelangganDetailProps = OrdersPelangganProps & {
     category: string;
     status_histories: {
-        status: string;
+        status: StatusHistory;
         created_at: string;
     };    
 };

@@ -2,7 +2,7 @@ import { AdminItemCard } from "@/Components/AdminItemCard";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { RequestProps } from "@/Types/Request";
 import React, { useState } from "react";
-import RequestModals from "./RequestModals";
+import RequestModals from "@/Features/desain/components/RequestModals";
 
 export default function RequestList({
     requests,

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('upload_img')->nullable();
             $table->enum('status', ['requested', 'process', 'finished'])->default('requested');
             $table->decimal('fee', 10, 2)->nullable();
-            $table->timestamps()->default()->now();
+            $table->timestamps();
         });
     }
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('requests');
+        Schema::dropIfExists('custom_requests');
     }
 };

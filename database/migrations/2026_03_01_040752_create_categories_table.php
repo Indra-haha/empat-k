@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('category_id');
             $table->string('name')->unique();
             $table->text('bahan');
-            $table->timestamps()->default()->now();
+            $table->timestamps();
         });
     }
 

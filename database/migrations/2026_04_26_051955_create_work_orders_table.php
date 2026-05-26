@@ -10,19 +10,16 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        //
-        Schema::create('invoices', function (Blueprint $table) {
-            $table->id();
-            $table->string('invoice_number')->unique();
+        Schema::create('work_orders', function (Blueprint $table) {
+            $table->id('wo_id');
             $table->unsignedBigInteger('order_id');
             $table->foreign('order_id')
-                ->references('order_id')
+                ->references('order_id') // Nama primary key asli di tabel orders
                 ->on('orders')
                 ->onDelete('cascade');
-            $table->decimal('total_amount', 10, 2);
-            $table->string('url_img_tagihan')->nullable();
-            $table->string('url_img_bukti')->nullable();
-            $table->enum('status_bukti', ['pending', 'rejected', 'approved'])->default('pending');
+            $table->enum('status_pengerjaan', ['none','process', 'finished'])->default('none'); // Contoh status pengerjaan
+            $table->string('url_gambar_work_order')->nullable();
+            $table->string('url_gambar_laporan')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('invoices');
+        Schema::dropIfExists('work_orders');
     }
 };

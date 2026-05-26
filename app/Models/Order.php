@@ -48,4 +48,9 @@ class Order extends Model
     {
         return $this->hasOne(Invoice::class, 'order_id', 'order_id')->latestOfMany();
     }
+
+    public function workOrder()
+    {
+        return $this->hasOne(WorkOrder::class, 'order_id', 'order_id');
+    }
 }

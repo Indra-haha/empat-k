@@ -36,28 +36,31 @@ class OrderController extends Controller
                 });
 
         } elseif ($role === 'cs') {
-            $orders = Order::with('product', 'request', 'latestStatus', 'user', 'invoice')
-                ->get()
-                ->map(function ($order) {
-                    return [
-                        'no' => $order->order_id,
-                        'name' => $order->product->name,
-                        'user' => $order->user->name,
-                        'request' => ($order->request_id) ? $order->request_id : null,
-                        'phone' => $order->user->no_hp,
-                        'url_img_product' => $order->product->url_img,
-                        'url_img_request' => ($order->request && $order->request->status === 'finished') ? $order->request->upload_img : null,
-                        'ordered_by' => Carbon::parse($order->created_at)
-                            ->locale('id')
-                            ->translatedFormat('d F Y'),
-                        'quantity' => $order->quantity,
-                        'price' => $order->product->price,
-                        'total_price' => $order->total_price, // rename
-                        'status' => $order->latestStatus?->status ?? 'pending',
-                        'status_bukti' => $order->latestInvoiceStatus->status_bukti ?? null,
-                        'fee' => $order->request->fee ?? null,
-                    ];
-                });
+            $ordersRaw = Order::with('product', 'request', 'latestStatus', 'user', 'invoice')
+                ->whereHas('latestStatus', function ($q) {
+                    $q->whereIn('status', [
+                        'pending',
+                        'ordered',
+                        'un_paid',
+                        'partial_paid',
+                        'process',
+                        'checking',
+                        'finished',
+                        'full_paid',
+                        'shipping'
+                    ]);
+                })
+                ->get();
+
+            $groupedOrders = $ordersRaw->groupBy(function ($order) {
+                return $order->latestStatus->status;
+            });
+
+            $orders = $groupedOrders->mapWithKeys(function ($items, $groupName) {
+                return [
+                    $groupName => $this->mapForCSOrders($items)
+                ];
+            });
         } else {
             $ordersRaw = Order::with('latestStatus', 'request', 'invoice', 'product')
                 ->whereHas('latestStatus', function ($q) {
@@ -76,17 +79,18 @@ class OrderController extends Controller
                     return 'receipts';
                 }
 
-                return 'complete';
+                return 'comfirm';
             });
 
             // Map setiap grup menggunakan helper function
             $orders = [
                 'orders' => $this->mapForAccountingOrders($groupedOrders->get('orders', collect())),
                 'receipts' => $this->mapForAccountingOrders($groupedOrders->get('receipts', collect())),
-                'complete'   => $this->mapForAccountingOrders($groupedOrders->get('complete', collect())),
+                'comfirm' => $this->mapForAccountingOrders($groupedOrders->get('comfirm', collect())),
             ];
-           
+
         }
+
         return Inertia::render("$role/OrderPage/OrderList", [
             'orders' => $orders
         ]);
@@ -102,7 +106,7 @@ class OrderController extends Controller
             return [
                 'no' => $order->order_id,
                 'invoice_no' => $latestInvoice?->invoice_number,
-                'request_id'  => $order->request_id,
+                'request_id' => $order->request_id,
                 'product_name' => $order->product->name,
                 'product_category' => $order->product->category->name ?? '-',
                 'url_img_request' => $order->request?->upload_img,
@@ -113,14 +117,43 @@ class OrderController extends Controller
                 'url_img_tagihan' => $latestInvoice?->url_img_tagihan,
                 'url_img_bukti' => $latestInvoice?->url_img_bukti,
                 'status_bukti' => $latestInvoice?->status_bukti,
-                'update_at' => $order->latestStatus 
+                'update_at' => $order->latestStatus
                     ? Carbon::parse($order->latestStatus->created_at)->locale('id')->translatedFormat('d F Y')
                     : '-',
                 'status' => $order->latestStatus->status ?? 'ordered',
             ];
         })->values(); // Reset keys agar menjadi array murni di JSON
-    
+
     }
+
+    private function mapForCSOrders($collection)
+    {
+        return $collection->map(function ($order) {
+            // Ambil invoice terbaru karena relasi Many-to-One
+            $latestInvoice = $order->latestInvoiceStatus()->first();
+
+            return [
+                'no' => $order->order_id,
+                'name' => $order->product->name,
+                'user' => $order->user->name,
+                'request' => ($order->request_id) ? $order->request_id : null,
+                'phone' => $order->user->no_hp,
+                'url_img_product' => $order->product->url_img,
+                'url_img_request' => ($order->request && $order->request->status === 'finished') ? $order->request->upload_img : null,
+                'ordered_by' => Carbon::parse($order->created_at)
+                    ->locale('id')
+                    ->translatedFormat('d F Y'),
+                'quantity' => $order->quantity,
+                'price' => $order->product->price,
+                'total_price' => $order->total_price, // rename
+                'status' => $order->latestStatus?->status ?? 'pending',
+                'status_bukti' => $order->latestInvoiceStatus->status_bukti ?? null,
+                'fee' => $order->request->fee ?? null,
+            ];
+        })->values(); // Reset keys agar menjadi array murni di JSON
+
+    }
+
 
     public function store(Request $request)
     {

@@ -12,7 +12,10 @@ export default function OrderList({
     const ordersEntries = Object.entries(orders || {});
     console.log(ordersEntries);
     // Tambahkan Partial di depan Record
-    const [selectedOrder, setSelectedOrder] = useState<Record<string, any[]> | null>(null);
+    const [selectedOrder, setSelectedOrder] = useState<Record<
+        StatusHistory,
+        OrdersCSProps[]
+    > | null>(null);
     console.log(selectedOrder);
     const [openDetail, setOpenDetail] = useState<OrdersCSProps | null>(
         null,

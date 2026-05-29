@@ -2,35 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Routing\Controller as BaseController;
 use App\Models\Product;
 use App\Models\CustomRequest;
 use Illuminate\Support\Facades\Auth;
-class ProductController extends BaseController
+use App\Services\CloudinaryService;
+class ProductController extends Controller
 {
     /* CS & pelanggan lihat produk */
-    public function index()
+    public function index(CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', Product::class);
         $products = Product::with(['category:category_id,name'])->get()
             ->makeHidden(['category_id'])
-            ->groupBy(function ($product) {
-                return $product->category?->name;
-            })
-            ->map(function ($items) {
-                return $items->map(function ($product) {
-                    return [
-                        'product_id' => $product->product_id,
-                        'name' => $product->name,
-                        'price' => $product->price,
-                        'url_img' => $product->url_img,
-                        'description' => $product->description,
-                    ];
-                });
-            });
+            ->groupBy(fn ($product) => $product->category?->name)
+            ->map(fn ($items) => $items->map(function ($product) use ($cloudinary) {
+                return [
+                    'product_id' => $product->product_id,
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'url_img' => $product->url_img ? $cloudinary->getUrl($product->url_img) : null,
+                    'description' => $product->description,
+                ];
+            }));
 
         $role = Auth::user()->role;
         return Inertia::render("$role/ProductPage/ProductList", [
@@ -39,7 +34,7 @@ class ProductController extends BaseController
     }
 
     /* Pelanggan lihat detail produk */
-    public function show($id)
+    public function show($id, CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', Product::class);
         $product = Product::with('category:category_id,name')->findOrFail($id);
@@ -47,7 +42,7 @@ class ProductController extends BaseController
             'product_id' => $product->product_id,
             'name' => $product->name,
             'price' => $product->price,
-            'url_img' => $product->url_img,
+            'url_img' => $product->url_img ? $cloudinary->getUrl($product->url_img) : null,
             'description' => $product->description,
             'category' => $product->category->name,
         ];

@@ -1,41 +1,41 @@
-import { AdminItemCard } from "@/Components/AdminItemCard";
-import AdminLayout from "@/Layouts/AdminLayout";
-import { OrdersCSProps, StatusHistory } from "@/Types/Orders";
 import React, { useEffect, useState } from "react";
+import AdminLayout from "@/Layouts/AdminLayout";
+import { AdminItemCard } from "@/Components/AdminItemCard";
 import OrderModals from "@/Features/order/components/OrderModals";
+import { OrdersCSProps, StatusHistory } from "@/Types/Orders";
 
-export default function OrderList({
-    orders,
+export default function page({
+    workOrders,
 }: {
-    orders: Partial<Record<StatusHistory, OrdersCSProps>>;
+    workOrders: Partial<Record<string, any[]>>;
 }) {
-    const ordersEntries = Object.entries(orders || {});
-    console.log(ordersEntries);
-
+    const workOrdersEntries = Object.entries(workOrders);
+    
     const [selectedOrder, setSelectedOrder] = useState<{
-        key: StatusHistory;
-        value: OrdersCSProps[];
-    } | null>(null);
+            key: StatusHistory;
+            value: OrdersCSProps[];
+        } | null>(null);
+    
+        useEffect(() => {
+            if (workOrdersEntries.length > 0 && !selectedOrder) {
+                const firstEntry = workOrdersEntries[0];
+                setSelectedOrder({
+                    key: firstEntry[0] as StatusHistory,
+                    value: firstEntry[1] as unknown as OrdersCSProps[],
+                });
+            }
+        }, [workOrdersEntries]);
 
-    useEffect(() => {
-        if (ordersEntries.length > 0 && !selectedOrder) {
-            const firstEntry = ordersEntries[0];
-            setSelectedOrder({
-                key: firstEntry[0] as StatusHistory,
-                value: firstEntry[1] as unknown as OrdersCSProps[],
-            });
-        }
-    }, [ordersEntries]);
-
-    const [openDetail, setOpenDetail] = useState<OrdersCSProps | null>(null);
-    const [showModal, setShowModal] = useState(false);
+    const [openDetail, setOpenDetail] = React.useState<any | null>(null);
+    console.log(workOrdersEntries);
+    const [showModal, setShowModal] = React.useState(false);
 
     return (
         <AdminLayout>
             <section className="p-6">
                 <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-                    {ordersEntries.length > 0 ? (
-                        ordersEntries.map(([key, value]: any) => (
+                    {workOrdersEntries.length > 0 ? (
+                        workOrdersEntries.map(([key, value]: any) => (
                             <button
                                 key={key}
                                 onClick={() => {
@@ -54,6 +54,7 @@ export default function OrderList({
                     ) : (
                         <p>Tidak ada data order.</p>
                     )}
+                
                 </div>
                 {selectedOrder &&
                 selectedOrder.value &&

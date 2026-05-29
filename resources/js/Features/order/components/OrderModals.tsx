@@ -55,7 +55,7 @@ export default function OrderModals({
                         {/* Main Product Image Placeholder */}
                         <div className="w-40 h-40 bg-[#d9d9d9] rounded-lg flex items-center justify-center">
                             <img
-                                src={`/storage/${selectedOrder.url_img_product}`}
+                                src={selectedOrder.url_img_product}
                                 alt="Product"
                                 className="w-full h-full object-cover rounded-lg"
                             />
@@ -147,7 +147,7 @@ export default function OrderModals({
                                     Dengan Custom Design
                                 </label>
                                 <img
-                                    src={`/storage/${selectedOrder.url_img_request}`}
+                                    src={selectedOrder.url_img_request}
                                     alt="Custom Design "
                                 />
                                 <div className="flex flex-col gap-1">

@@ -33,7 +33,7 @@ export default function FormCustom({ product }: { product: ProductsProps }) {
             <section className="text-green-800">
                 <main className="border-2 border-gray-300 flex flex-row gap-4 w-[300px]">
                     <LazyLoadImage
-                        src={`/storage/${product.url_img}`}
+                        src={product.url_img}
                         alt={product.name}
                         width={150}
                         height={150}

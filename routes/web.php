@@ -18,9 +18,11 @@ Route::get('/', function () {
 
 Route::get('/auth', function () {
     $user = auth()->user();
-    if ($user->role == 'pelanggan' || $user->role === 'cs') return redirect()->route('products.index');
+    if ($user->role == 'pelanggan') return redirect()->route('products.index');
+    if ($user->role == 'cs') return redirect()->route('orders.index');
     if ($user->role == 'accounting') return redirect()->route('orders.index');
     if ($user->role == 'desainer') return redirect()->route('requests.index');
+    if ($user->role == 'kp') return redirect()->route('work-orders.index');
     // return redirect('/products'); // fallback default
 })->middleware('auth');
 
@@ -55,8 +57,8 @@ Route::middleware(['auth', 'role:desainer'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:cs,kp'])->group(function () {
-    Route::get('/work-order', [WorkOrderController::class, 'index'])->name('orders.index');
-    Route::get('/work-order/{id}', [WorkOrderController::class, 'showWorkOrder'])->name('orders.showWorkOrder');
+    Route::get('/work-order', [WorkOrderController::class, 'index'])->name('work-orders.index');
+    Route::get('/work-order/{id}', [WorkOrderController::class, 'showWorkOrder'])->name('work-orders.showWorkOrder');
 });
 
 Route::middleware(['auth', 'role:accounting,pelanggan'])->group(function () {
@@ -69,7 +71,7 @@ Route::middleware(['auth', 'role:accounting,pelanggan'])->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileControler::class, 'destroy'])->name('profile.destroy');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 Route::fallback(function () {

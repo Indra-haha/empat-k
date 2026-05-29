@@ -17,7 +17,7 @@ export function AdminItemCard({
         <section className="flex flex-row w-full justify-around bg-green-100 mb-4 p-2 rounded-xl">
             <header className="w-1/9 p-2">
                 <LazyLoadImage
-                    src={`/storage/${url_img}`}
+                    src={url_img}
                     alt={judul}
                     width={200}
                     height={100}

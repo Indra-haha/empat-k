@@ -23,7 +23,7 @@ export default function OrderList({
                           className="flex flex-row w-full p-2 bg-green-200 rounded-lg mb-2"
                       >
                           <img
-                              src={`/storage/${order.url}`}
+                              src={order.url}
                               alt={order.name}
                               className="h-16 my-auto aspect-square text-[10px] rounded-lg object-cover"
                           />

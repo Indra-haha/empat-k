@@ -27,7 +27,7 @@ export default function RequestShow({ request }: { request: RequestProps }) {
                 </span>
             </div>
             <LazyLoadImage
-                src={`/storage/${request.img_product}`}
+                src={request.img_product}
                 alt="Hasil Desain"
                 className="mb-6"
             />
@@ -66,7 +66,7 @@ export default function RequestShow({ request }: { request: RequestProps }) {
             <div className="flex flex-col items-start gap-2">
                 <span className="text-normal text-md">Hasil Desain</span>
                 <LazyLoadImage
-                    src={`/storage/${request.upload_image}`}
+                    src={request.upload_image}
                     alt="Hasil Desain"
                     className="rounded-xl"
                 />

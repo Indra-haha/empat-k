@@ -1,29 +1,28 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Routing\Controller as BaseController;
+use App\Services\CloudinaryService;
 use App\Models\CustomRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
-class RequestsController extends BaseController
+class RequestsController extends Controller
 {
-    public function index()
+    public function index(CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', CustomRequest::class);
         $role = Auth::user()->role;
         $role === 'desainer' ?
             $customrequests = CustomRequest::with('product')->get() :
             $customrequests = CustomRequest::with('product')->where('user_id', Auth::user()->user_id)->get();
+    
         return Inertia("{$role}/RequestPage/RequestList", [
-            'requests' => $customrequests->map(function ($request) {
+            'requests' => $customrequests->map(function ($request) use ($cloudinary) {
                 return [
                     'no' => $request->request_id,
                     'user' => $request->user->name,
                     'upload_image' => $request->upload_img,
                     'product' => $request->product->name,
-                    'img_product' => $request->product->url_img,
                     'description' =>
                         [
                             'teks' => $request->description['teks_font'] ?? null,
@@ -40,6 +39,7 @@ class RequestsController extends BaseController
                 ];
             }),
         ]);
+        
     }
 
     public function store(Request $request)
@@ -82,7 +82,7 @@ class RequestsController extends BaseController
 
     }
 
-    public function updateGambar(Request $request, $id)
+    public function updateGambar(Request $request, $id, CloudinaryService $cloudinary)
     {
         // 1. Authorize (Pastikan desainer yang melakukan ini)
         $this->authorizeAction('update', CustomRequest::class);
@@ -105,13 +105,17 @@ class RequestsController extends BaseController
 
         // 5. Proses File
         if ($request->hasFile('url_img')) {
-            // Hapus gambar lama jika ada di storage (biar hemat ruang)
-            if ($customRequest->upload_img) {
-                Storage::disk('public')->delete($customRequest->upload_img);
-            }
 
-            // Simpan file baru ke folder 'uploads/desain' di disk public
-            $path = $request->file('url_img')->store('uploads/desain', 'public');
+            // Upload to Cloudinary via service
+            $uploadResult = $cloudinary->upload($request->file('url_img')->getRealPath(), [
+                'folder' => 'uploads/desain',
+                'public_id' => 'desain_' . $customRequest->request_id,
+                'overwrite' => true,
+                'resource_type' => 'image',
+            ]);
+
+            // If Cloudinary returned a secure_url, store it; otherwise fallback to local storage
+            $path = $uploadResult['secure_url'] ?? $request->file('url_img')->store('uploads/desain', 'public');
 
             // 6. Update database
             $customRequest->update([
@@ -125,7 +129,7 @@ class RequestsController extends BaseController
         return redirect()->back()->with('error', 'Gagal mengunggah gambar.');
     }
 
-    public function show($id)
+    public function show($id, CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', CustomRequest::class);
         $request = CustomRequest::with('product')->findOrFail($id);
@@ -133,10 +137,10 @@ class RequestsController extends BaseController
             'request' => [
                 'no' => $request->request_id,
                 'user' => $request->user->name,
-                'upload_image' => $request->upload_img,
+                'upload_image' => $request->upload_img ? $cloudinary->getUrl($request->upload_img) : null,
                 'category' => $request->product->category->name,
                 'product' => $request->product->name,
-                'img_product' => $request->product->url_img,
+                'img_product' => $request->product->url_img ? $cloudinary->getUrl($request->product->url_img) : null,
                 'description' =>
                     [
                         'teks' => $request->description['teks_font'] ?? null,

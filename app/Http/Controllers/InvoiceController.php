@@ -1,20 +1,29 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Invoice;
 use App\Models\OrderStatusHistory;
 use App\Models\Order;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use App\Services\CloudinaryService;
+
 class InvoiceController extends Controller
 {
+    protected $cloudinary;
+    public function __construct(CloudinaryService $cloudinary)
+    {
+        $this->cloudinary = $cloudinary;
+    }
+
     public function index()
     {
         $this->authorizeAction('view', Invoice::class);
         $role = Auth::user()->role;
         $invoices = [];
+
         if ($role === 'pelanggan') {
             $invoices = Order::with('invoice', 'latestStatus')
                 ->where('user_id', Auth::user()->user_id)
@@ -23,26 +32,33 @@ class InvoiceController extends Controller
                 })
                 ->get();
 
-            $invoices = $invoices->map(function ($order) {
-                $invoice = $order->invoice
-                    ? $order->invoice->first()
-                    : $order->invoice;
+            $cloudinary = $this->cloudinary;
+
+            $invoices = $invoices->map(function ($order) use ($cloudinary) {
+                $invoice = $order->invoice?->first() ?? $order->invoice;
+
+                $tagihanPublicId = $invoice?->url_img_tagihan ?? null;
+                $buktiPublicId = $invoice?->url_img_bukti ?? null;
 
                 return [
                     'invoice_no' => $invoice?->invoice_number ?? null,
                     'order_id' => $order->order_id,
                     'total' => $invoice?->total_amount ?? null,
-                    'img_tagihan' => $invoice?->url_img_tagihan ?? null,
+
+                    'img_tagihan' => $tagihanPublicId
+                        ? $cloudinary->getSignedUrl($tagihanPublicId, 300)
+                        : null,
                     'status' => $order->latestStatus->status,
-                    'img_bukti' => $invoice?->url_img_bukti ?? null,
+                    'img_bukti' => $buktiPublicId
+                        ? $cloudinary->getSignedUrl($buktiPublicId, 300)
+                        : null,
                 ];
             });
         }
 
-        return Inertia::render("${role}/InvoicePage/InvoiceList", [
+        return Inertia::render("{$role}/InvoicePage/InvoiceList", [
             'nota' => $invoices
         ]);
-
     }
 
     public function store(Request $request)
@@ -54,38 +70,40 @@ class InvoiceController extends Controller
             'url_img_tagihan' => 'required|file|mimes:jpg,jpeg,png|max:5120',
             'total_amount' => 'required|numeric',
         ]);
+
         try {
             if ($request->hasFile('url_img_tagihan')) {
-                $file = $request->file('url_img_tagihan');
 
-                // Gunakan nama file yang bersih
-                $fileName = str_replace(['/', '\\', ' '], '-', $request->invoice_no) . '.png';
+                $order = Order::findOrFail($request->order_id);
 
-                // Simpan ke disk 'private'
-                $path = $file->storeAs('tagihan', $fileName, 'private');
+                // upload ke Cloudinary
+                $uploadResult = $this->cloudinary->upload($request->file('url_img_tagihan')->getRealPath(), [
+                    'folder' => 'tagihan',
+                    'public_id' => 'invoice_' . $order->order_id . '_' . time()
+                ]);
+
+                // Ambil URL hasil upload
+                $imageUrl = $uploadResult['secure_url'];
 
                 Invoice::updateOrCreate(
-                    ['order_id' => $request->order_id], // Key pencarian
                     [
+                        'order_id' => $request->order_id,
                         'invoice_number' => $request->invoice_no,
                         'total_amount' => $request->total_amount,
-                        'url_img_tagihan' => $path,
+                        'url_img_tagihan' => $imageUrl, // Simpan URL gambar
                     ]
                 );
 
-                OrderStatusHistory::with('order')
-                    ->where('order_id', $request->order_id)
-                    ->create([
-                        'order_id' => $request->order_id,
-                        'status' => 'partial_paid',
-                        'created_by' => Auth::user()->user_id,
-                    ]);
+                OrderStatusHistory::create([
+                    'order_id' => $request->order_id,
+                    'status' => 'partial_paid',
+                    'created_by' => Auth::user()->user_id,
+                ]);
 
-                return back()->with('success', 'Tagihan Berhasil Disimpan!');
+                return back()->with('success', 'Tagihan Berhasil Disimpan ke Cloudinary!');
             }
         } catch (\Exception $e) {
-            // Jika gagal simpan/upload, kirim error ke frontend
-            return back()->withErrors(['error' => 'Gagal simpan: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Gagal upload ke Cloudinary: ' . $e->getMessage()]);
         }
 
         return back()->withErrors(['url_img_tagihan' => 'File tidak ditemukan']);
@@ -97,51 +115,57 @@ class InvoiceController extends Controller
             'invoice_no' => 'required|string',
             'url_img_bukti' => 'required|file|mimes:jpg,jpeg,png|max:5120',
         ]);
-        sleep(2);
+
         try {
             if ($request->hasFile('url_img_bukti')) {
                 $file = $request->file('url_img_bukti');
 
-                // Gunakan nama file yang bersih
-                $fileName = str_replace(['/', '\\', ' '], '-', $request->invoice_no) . '.png';
 
-                // Simpan ke disk 'private'
-                $path = $file->storeAs('bukti', $fileName, 'private');
+                Cloudinary::upload($file->getRealPath(), [
+                    'folder' => 'bukti',
+                    'public_id' => $request->invoice_no,
+                    'overwrite' => true,
+                    'type' => 'private',
+                    'access_mode' => 'authenticated'
+                ]);
+
+                $publicId = 'bukti/' . $request->invoice_no;
 
                 Invoice::where('invoice_number', $request->invoice_no)->update([
-                    'url_img_bukti' => $path,
+                    'url_img_bukti' => $publicId,
                     'status_bukti' => 'pending',
                 ]);
 
-                return back()->with('success', 'Bukti Pembayaran Berhasil Disimpan!');
+                return back()->with('success', 'Bukti Pembayaran Berhasil Disimpan ke Cloudinary!');
             }
         } catch (\Exception $e) {
-            // Jika gagal simpan/upload, kirim error ke frontend
-            return back()->withErrors(['error' => 'Gagal simpan: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Gagal upload ke Cloudinary: ' . $e->getMessage()]);
         }
 
         return back()->withErrors(['url_img_bukti' => 'File tidak ditemukan']);
     }
-    public function show(Request $request)
+    public function show(Request $request, CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', Invoice::class);
 
-        $path = $request->query('file'); // Isinya: tagihan/INV-xxx.png
+        $publicId = $request->query('file'); // Contoh: "tagihan/INV-xxx" atau "bukti/INV-xxx"
 
         if (!auth()->check()) {
             abort(401, 'Session habis, silakan login ulang.');
         }
 
-        if (!$path)
+        if (!$publicId) {
             abort(400, 'Path file kosong.');
-
-        $fullPath = storage_path("app/private/{$path}");
-
-        if (!file_exists($fullPath)) {
-            abort(404, "File tidak ada di: " . $fullPath);
         }
 
-        return response()->file($fullPath);
+        // 🔐 TAMBAHKAN PERMISSION CHECK DISINI
+        if (!$this->canAccessFile($publicId)) {
+            abort(403, 'Anda tidak memiliki akses ke file ini');
+        }
+
+        $signedUrl = $cloudinary->getSignedUrl($publicId, 300);
+
+        return redirect($signedUrl);
     }
 
     public function updateStatus(Request $request, $id)
@@ -154,5 +178,45 @@ class InvoiceController extends Controller
         Invoice::where('invoice_number', $id)->update(['status_bukti' => $request->status]);
 
         return back()->with('success', "Invoice {$request->status}!");
+    }
+
+    /**
+     * 🔐 Cek apakah user berhak mengakses file
+     */
+    private function canAccessFile($publicId)
+    {
+        $user = Auth::user();
+
+        // Admin, Accounting, CS bisa akses SEMUA
+        if (in_array($user->role, ['admin', 'accounting', 'cs'])) {
+            return true;
+        }
+
+        // Extract invoice_number dari public_id
+        // Contoh: "tagihan/INV-220426-25" -> "INV-220426-25"
+        if (preg_match('/(?:tagihan|bukti)\/(INV-\d+)/', $publicId, $matches)) {
+            $invoiceNumber = $matches[1];
+
+            // Cari invoice
+            $invoice = Invoice::where('invoice_number', $invoiceNumber)->first();
+
+            if (!$invoice) {
+                return false;
+            }
+
+            // Cari order dari invoice
+            $order = Order::find($invoice->order_id);
+
+            if (!$order) {
+                return false;
+            }
+
+            // Pelanggan: hanya bisa akses miliknya sendiri
+            if ($user->role === 'pelanggan' || $user->role === 'customer') {
+                return $order->user_id === $user->id;
+            }
+        }
+
+        return false;
     }
 }

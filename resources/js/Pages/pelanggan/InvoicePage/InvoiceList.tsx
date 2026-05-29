@@ -3,7 +3,6 @@ import { PageWithHeaderBack } from "../Layout/PageWithHeaderBack";
 import { Eye, X, ReceiptText, FileText } from "lucide-react";
 import { formatPrice } from "@/utils/Formater";
 import { useForm } from "@inertiajs/react";
-import ItemCard from "../components/ItemCard";
 
 export default function InvoiceList({ nota }: { nota: any[] }) {
     console.log("Invoice Data:", nota);
@@ -86,7 +85,7 @@ export default function InvoiceList({ nota }: { nota: any[] }) {
                                 <button
                                     onClick={() => {
                                         setSelectedImg(
-                                            `/show-invoice?file=${item.img_tagihan}`,
+                                            `${item.img_tagihan}`,
                                         );
                                         setData({
                                             ...data,
@@ -95,7 +94,7 @@ export default function InvoiceList({ nota }: { nota: any[] }) {
                                         {
                                             if (item.img_bukti !== null) {
                                                 setSelectedImgBukti(
-                                                    `/show-bukti?file=${item.img_bukti}`,
+                                                    `${item.img_bukti}`,
                                                 );
                                             }
                                         }

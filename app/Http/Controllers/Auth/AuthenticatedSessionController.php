@@ -34,8 +34,8 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         /* default page ketika dikunjungi pertama kali */
-        if (in_array(Auth::user()->role, ['pelanggan', 'cs'])) {
-            return redirect()->intended('/products'); 
+        if (Auth::user()->role === 'cs') {
+            return redirect()->intended('/orders'); 
         } else if (Auth::user()->role === 'desainer') {
             return redirect()->intended('/requests');
         } else if (Auth::user()->role === 'accounting') {
@@ -43,7 +43,7 @@ class AuthenticatedSessionController extends Controller
         } else if (Auth::user()->role === 'kp') {
             return redirect()->intended('/work-orders');
         } else {
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/products');
         }
     }
 

@@ -56,9 +56,6 @@ export default function AdminLayout({ children, className }: { children: React.R
                             </span>
                         </Dropdown.Trigger>
                         <Dropdown.Content>
-                            <Dropdown.Link href={route("profile.edit")}>
-                                Profile
-                            </Dropdown.Link>
                             <Dropdown.Link href={route("logout")} method="post" as="button">
                                 Log Out
                             </Dropdown.Link>

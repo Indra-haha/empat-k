@@ -1,6 +1,6 @@
-// Di dalam WorkOrderModals.tsx
+"use client";
 import React from "react";
-import { createPortal } from "react-dom"; // 1. Tambahkan import ini
+import { createPortal } from "react-dom";
 
 interface WorkOrderModalsProps {
     selectedOrder: any;
@@ -13,216 +13,119 @@ export default function WorkOrderModals({
 }: WorkOrderModalsProps) {
     console.log("this wo", selectedOrder);
 
-    // 2. Bungkus return dengan createPortal agar dirender di luar OrderModals
     return createPortal(
         <div
-            className="fixed inset-0 bg-black/70 flex justify-center items-center py-10"
+            className="fixed inset-0 bg-black/50 overflow-y-auto z-50 justify-center items-center w-full py-10"
             style={{ zIndex: 9999 }}
         >
-            <div className="size- p-10 bg-zinc-500 rounded-[20px] inline-flex flex-col justify-center items-center gap-5">
-                <div className="self-stretch inline-flex justify-center items-center gap-6">
-                    <div className="w-48 h-52 relative">
-                        <div className="w-48 h-52 left-0 top-0 absolute bg-zinc-300" />
-                        <div className="w-14 h-12 left-[71px] top-[81px] absolute bg-white" />
+            <div className="bg-[#8c8c8c] mx-auto max-w-3xl rounded-3xl p-8 shadow-2xl text-gray-800">
+                {/* Header */}
+                <div className="w-full flex justify-end">
+                    <button onClick={onClose} className="text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                {/* Main Content */}
+                <div className="flex flex-col md:flex-row gap-6 mb-8">
+                    {/* Product Image */}
+                    <div className="w-40 h-40 bg-[#d9d9d9] rounded-lg flex items-center justify-center">
+                        <div className="w-14 h-12 bg-white" />
                     </div>
-                    <div className="w-96 h-52 pt-2.5 inline-flex flex-col justify-start items-start gap-6">
-                        <div className="self-stretch h-10 inline-flex justify-start items-center">
-                            <div className="flex-1 px-5 py-[5px] flex justify-end items-center gap-2.5">
-                                <div className="justify-center text-white text-sm font-medium font-['Inter']">
-                                    No Pesanan
-                                </div>
-                            </div>
-                            <div className="w-40 px-3.5 py-2.5 bg-zinc-300 rounded-tl-[10px] rounded-bl-[10px] flex justify-start items-center gap-2.5">
-                                <div className="justify-start text-black text-xs font-normal font-['Inter']">
+
+                    {/* Order Info */}
+                    <div className="flex-1 space-y-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-white font-medium text-sm">No Pesanan</span>
+                            <div className="flex rounded-md overflow-hidden">
+                                <span className="bg-[#d9d9d9] px-4 py-1 text-sm font-mono text-black">
                                     XSDK2324C
-                                </div>
-                            </div>
-                            <div className="flex-1 px-3.5 py-2.5 bg-neutral-400 rounded-tr-[10px] rounded-br-[10px] flex justify-center items-end gap-2.5">
-                                <div className="w-20 text-center justify-center text-white text-xs font-normal font-['Inter']">
+                                </span>
+                                <span className="bg-[#b3b3b3] px-4 py-1 text-sm text-white">
                                     Terbayar
-                                </div>
+                                </span>
                             </div>
                         </div>
-                        <div className="self-stretch h-36 flex flex-col justify-start items-start gap-2.5">
-                            <div className="self-stretch flex flex-col justify-start items-start gap-5">
-                                <div className="self-stretch text-right justify-start">
-                                    <span className="text-white text-sm font-semibold font-['Inter']">
-                                        Dipesan Tanggal{" "}
-                                    </span>
-                                    <span className="text-white text-xs font-normal font-['Inter']">
-                                        : 21 Agustus 2025
-                                        <br />
-                                    </span>
-                                    <span className="text-white text-sm font-semibold font-['Inter']">
-                                        Diterima oleh
-                                    </span>
-                                    <span className="text-white text-xs font-normal font-['Inter']">
-                                        {" "}
-                                        : Agusnita Ayunda
-                                    </span>
-                                </div>
+                        <div className="text-right">
+                            <p className="text-white text-sm">
+                                <strong>Dipesan Tanggal :</strong> 21 Agustus 2025
+                            </p>
+                        </div>
+                        <div className="space-y-2">
+                            <div className="bg-[#d9d9d9] rounded-full px-4 py-1 flex text-sm">
+                                <span className="font-bold w-40 text-black">Nama Pelanggan</span>
+                                <span className="text-black">: Difa Anugrah Farasya</span>
                             </div>
-                            <div className="self-stretch px-3.5 py-[5px] bg-zinc-300 rounded-[10px] inline-flex justify-start items-center gap-5">
-                                <div className="justify-start">
-                                    <span className="text-black text-sm font-semibold font-['Inter']">
-                                        Nama Pelanggan{" "}
-                                    </span>
-                                    <span className="text-black text-xs font-normal font-['Inter']">
-                                        : Difa Anugrah Farasya
-                                    </span>
-                                </div>
+                            <div className="bg-[#d9d9d9] rounded-full px-4 py-1 flex text-sm">
+                                <span className="font-bold w-40 text-black">Nomor Handphone</span>
+                                <span className="text-black">: 0843943843849</span>
                             </div>
-                            <div className="self-stretch px-3.5 py-[5px] bg-zinc-300 rounded-[10px] inline-flex justify-start items-center gap-5">
-                                <div className="justify-start">
-                                    <span className="text-black text-sm font-semibold font-['Inter']">
-                                        Nomor Handphone{" "}
-                                    </span>
-                                    <span className="text-black text-xs font-normal font-['Inter']">
-                                        : 0843943843849
-                                    </span>
-                                </div>
-                            </div>
-                            <div className="size- px-3.5 py-[5px] bg-zinc-300 rounded-[10px] inline-flex justify-start items-center gap-5">
-                                <div className="justify-center text-black text-xs font-normal font-['Inter']">
-                                    Pesanan khusus{" "}
-                                </div>
+                            <div className="bg-[#d9d9d9] rounded-full px-4 py-1 inline-block text-sm text-black">
+                                Pesanan khusus
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="self-stretch inline-flex justify-center items-start gap-5">
-                    <div className="w-96 inline-flex flex-col justify-start items-start gap-2.5">
-                        <div
-                            data-property-1="Variant2"
-                            className="self-stretch h-16 flex flex-col justify-start items-start"
-                        >
-                            <div className="self-stretch pr-5 py-[5px] inline-flex justify-start items-center gap-2.5">
-                                <div className="justify-center text-white text-base font-medium font-['Inter']">
-                                    Id Produk
-                                </div>
+
+                {/* Content Grid - 2 columns */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    {/* Left Column: Product Details */}
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-white font-bold mb-1 text-sm">Id Produk</label>
+                            <div className="bg-[#d9d9d9] rounded-xl p-3 text-gray-600 text-sm">lorem</div>
+                        </div>
+                        <div>
+                            <label className="block text-white font-bold mb-1 text-sm">Nama Produk</label>
+                            <div className="bg-[#d9d9d9] rounded-xl p-3 text-gray-600 text-sm">lorem</div>
+                        </div>
+                        <div className="flex gap-4">
+                            <div className="flex-1">
+                                <label className="block text-white font-bold mb-1 text-sm">Jumlah Pesanan</label>
+                                <div className="bg-[#d9d9d9] rounded-xl p-3 text-gray-600 text-sm">lorem</div>
                             </div>
-                            <div className="self-stretch pl-3.5 pr-5 py-2.5 bg-zinc-300 rounded-[10px] inline-flex justify-start items-center gap-2.5">
-                                <div className="justify-start text-black text-xs font-normal font-['Inter']">
-                                    lorem
-                                </div>
+                            <div className="flex-1">
+                                <label className="block text-white font-bold mb-1 text-sm">Finishing</label>
+                                <div className="bg-[#d9d9d9] rounded-xl p-3 text-gray-600 text-sm">lorem</div>
                             </div>
                         </div>
-                        <div
-                            data-property-1="Variant2"
-                            className="self-stretch h-16 flex flex-col justify-start items-start"
-                        >
-                            <div className="self-stretch pr-5 py-[5px] inline-flex justify-start items-center gap-2.5">
-                                <div className="justify-center text-white text-base font-medium font-['Inter']">
-                                    Nama Produk
-                                </div>
-                            </div>
-                            <div className="self-stretch pl-3.5 pr-5 py-2.5 bg-zinc-300 rounded-[10px] inline-flex justify-start items-center gap-2.5">
-                                <div className="justify-start text-black text-xs font-normal font-['Inter']">
-                                    lorem
-                                </div>
-                            </div>
+                        <div>
+                            <label className="block text-white font-bold mb-1 text-sm">Bahan</label>
+                            <div className="bg-[#d9d9d9] rounded-xl p-3 text-gray-600 text-sm">lorem</div>
                         </div>
-                        <div className="self-stretch inline-flex justify-start items-center gap-3.5">
-                            <div
-                                data-property-1="Variant2"
-                                className="w-40 h-16 inline-flex flex-col justify-start items-start"
-                            >
-                                <div className="self-stretch pr-5 py-[5px] inline-flex justify-start items-center gap-2.5">
-                                    <div className="justify-center text-white text-base font-medium font-['Inter']">
-                                        Jumlah Pesanan
-                                    </div>
-                                </div>
-                                <div className="self-stretch pl-3.5 pr-5 py-2.5 bg-zinc-300 rounded-[10px] inline-flex justify-start items-center gap-2.5">
-                                    <div className="justify-start text-black text-xs font-normal font-['Inter']">
-                                        lorem
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                data-property-1="Variant2"
-                                className="w-48 h-16 inline-flex flex-col justify-start items-start"
-                            >
-                                <div className="self-stretch pr-5 py-[5px] inline-flex justify-start items-center gap-2.5">
-                                    <div className="justify-center text-white text-base font-medium font-['Inter']">
-                                        Finishing
-                                    </div>
-                                </div>
-                                <div className="self-stretch pl-3.5 pr-5 py-2.5 bg-zinc-300 rounded-[10px] inline-flex justify-start items-center gap-2.5">
-                                    <div className="justify-start text-black text-xs font-normal font-['Inter']">
-                                        lorem
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            data-property-1="Variant2"
-                            className="self-stretch h-16 flex flex-col justify-start items-start"
-                        >
-                            <div className="self-stretch pr-5 py-[5px] inline-flex justify-start items-center gap-2.5">
-                                <div className="justify-center text-white text-base font-medium font-['Inter']">
-                                    Bahan
-                                </div>
-                            </div>
-                            <div className="self-stretch pl-3.5 pr-5 py-2.5 bg-zinc-300 rounded-[10px] inline-flex justify-start items-center gap-2.5">
-                                <div className="justify-start text-black text-xs font-normal font-['Inter']">
-                                    lorem
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            data-property-1="Variant2"
-                            className="self-stretch h-16 flex flex-col justify-start items-start"
-                        >
-                            <div className="self-stretch pr-5 py-[5px] inline-flex justify-start items-center gap-2.5">
-                                <div className="justify-center text-white text-base font-medium font-['Inter']">
-                                    Ukuran
-                                </div>
-                            </div>
-                            <div className="self-stretch pl-3.5 pr-5 py-2.5 bg-zinc-300 rounded-[10px] inline-flex justify-start items-center gap-2.5">
-                                <div className="justify-start text-black text-xs font-normal font-['Inter']">
-                                    lorem
-                                </div>
-                            </div>
+                        <div>
+                            <label className="block text-white font-bold mb-1 text-sm">Ukuran</label>
+                            <div className="bg-[#d9d9d9] rounded-xl p-3 text-gray-600 text-sm">lorem</div>
                         </div>
                     </div>
-                    <div
-                        data-property-1="Default"
-                        className="w-52 inline-flex flex-col justify-start items-start gap-2.5"
-                    >
-                        <div className="self-stretch h-3.5 relative">
-                            <div className="left-0 top-0 absolute justify-start text-white text-sm font-semibold font-['Inter']">
-                                Desain Custom
-                            </div>
-                        </div>
-                        <div className="self-stretch h-52 relative">
-                            <div className="w-48 h-52 left-0 top-0 absolute bg-zinc-300" />
-                            <div className="w-14 h-12 left-[71.71px] top-[81px] absolute bg-white" />
+
+                    {/* Right Column: Custom Design */}
+                    <div className="space-y-4">
+                        <label className="block text-white font-bold mb-1 text-sm">Desain Custom</label>
+                        <div className="w-48 h-48 bg-[#d9d9d9] rounded-lg flex items-center justify-center">
+                            <div className="w-14 h-12 bg-white" />
                         </div>
                     </div>
                 </div>
-                <div className="self-stretch h-16 inline-flex justify-center items-center gap-7">
-                    <div
-                        data-property-1="Variant3"
-                        className="w-60 h-16 flex justify-between items-center"
-                    >
-                        <div className="flex-1 inline-flex flex-col justify-start items-start gap-[5px]">
-                            <div className="self-stretch px-5 py-2.5 bg-zinc-300 rounded-[10px] inline-flex justify-center items-center gap-2.5">
-                                <div className="w-5 h-7 outline outline-[1.50px] outline-offset-[-0.75px] outline-black" />
-                                <div className="justify-start text-black text-2xl font-normal font-['Inter']">
-                                    Sesuai
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="w-60 h-12 px-5 py-2.5 bg-zinc-300 rounded-[10px] flex justify-center items-center gap-2.5">
-                        <div className="w-5 h-7 outline outline-[1.50px] outline-offset-[-0.75px] outline-black" />
-                        <div className="justify-start text-black text-2xl font-normal font-['Inter']">
-                            Buat
-                        </div>
+
+                {/* Footer Actions */}
+                <div className="mt-12 flex flex-col items-center gap-4">
+                    <div className="flex flex-wrap justify-center gap-6">
+                        <button className="flex items-center gap-3 bg-[#d9d9d9] hover:bg-gray-200 transition-colors px-8 py-3 rounded-2xl shadow-lg group">
+                            <div className="w-5 h-7 outline outline-[1.50px] outline-offset-[-0.75px] outline-black" />
+                            <span className="text-2xl font-medium text-black">Sesuai</span>
+                        </button>
+                        <button className="flex items-center gap-3 bg-[#d9d9d9] hover:bg-gray-200 transition-colors px-8 py-3 rounded-2xl shadow-lg group">
+                            <div className="w-5 h-7 outline outline-[1.50px] outline-offset-[-0.75px] outline-black" />
+                            <span className="text-2xl font-medium text-black">Buat</span>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>,
-        document.body, // 3. Targetkan langsung ke body HTML
+        document.body
     );
 }

@@ -25,7 +25,7 @@ export default function OrderShow({
                 <section className="flex flex-row p-2 w-full border-2 border-gray-300 rounded-lg overflow-hidden">
                     <img
                         className="flex-none h-20 aspect-square object-cover"
-                        src={`/storage/${data.url}`}
+                        src={data.url}
                         alt={data.name}
                     />
                     <main className="flex flex-col ml-2 w-full">

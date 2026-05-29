@@ -48,7 +48,7 @@ export default function RequestModals({
                 <div className="flex flex-row gap-4 w-full">
                     <div className="flex-shrink-0">
                         <LazyLoadImage
-                            src={`/storage/${selectedRequest.upload_image}`}
+                            src={selectedRequest.upload_image}
                             alt="Uploaded Image"
                             className="w-60 h-60 object-cover rounded-lg"
                         />

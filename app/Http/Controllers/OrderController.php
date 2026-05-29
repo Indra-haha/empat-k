@@ -10,9 +10,10 @@ use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Services\CloudinaryService;
 class OrderController extends Controller
 {
-    public function index()
+    public function index(CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', Order::class);
         $user = Auth::user();
@@ -22,11 +23,11 @@ class OrderController extends Controller
             $orders = Order::with('product', 'latestStatus')
                 ->get()
                 ->where('user_id', $user->user_id)
-                ->map(function ($order) {
+                ->map(function ($order) use ($cloudinary) {
                     return [
                         'no' => $order->order_id,
                         'name' => $order->product->name,
-                        'url' => $order->product->url_img,
+                        'url' => $order->product->url_img ? $cloudinary->getUrl($order->product->url_img) : null,
                         'quantity' => $order->quantity,
                         'ordered_by' => Carbon::parse($order->created_at)
                             ->locale('id')
@@ -41,26 +42,20 @@ class OrderController extends Controller
                     $q->whereIn('status', [
                         'pending',
                         'ordered',
-                        'un_paid',
-                        'partial_paid',
-                        'process',
-                        'checking',
-                        'finished',
-                        'full_paid',
-                        'shipping'
                     ]);
                 })
                 ->get();
 
             $groupedOrders = $ordersRaw->groupBy(function ($order) {
-                return $order->latestStatus->status;
+                $status = $order->latestStatus?->status ?? 'pending';
+                return $status; // 'pending' atau 'ordered'
             });
 
-            $orders = $groupedOrders->mapWithKeys(function ($items, $groupName) {
-                return [
-                    $groupName => $this->mapForCSOrders($items)
-                ];
-            });
+            $orders = [
+                'pending' => $this->mapForCSOrders($groupedOrders['pending'] ?? collect(), $cloudinary),
+                'ordered' => $this->mapForCSOrders($groupedOrders['ordered'] ?? collect(), $cloudinary),
+            ];
+
         } else {
             $ordersRaw = Order::with('latestStatus', 'request', 'invoice', 'product')
                 ->whereHas('latestStatus', function ($q) {
@@ -126,31 +121,26 @@ class OrderController extends Controller
 
     }
 
-    private function mapForCSOrders($collection)
+    private function mapForCSOrders($collection, CloudinaryService $cloudinary)
     {
-        return $collection->map(function ($order) {
-            // Ambil invoice terbaru karena relasi Many-to-One
-            $latestInvoice = $order->latestInvoiceStatus()->first();
-
-            return [
-                'no' => $order->order_id,
-                'name' => $order->product->name,
-                'user' => $order->user->name,
-                'request' => ($order->request_id) ? $order->request_id : null,
-                'phone' => $order->user->no_hp,
-                'url_img_product' => $order->product->url_img,
-                'url_img_request' => ($order->request && $order->request->status === 'finished') ? $order->request->upload_img : null,
-                'ordered_by' => Carbon::parse($order->created_at)
-                    ->locale('id')
-                    ->translatedFormat('d F Y'),
-                'quantity' => $order->quantity,
-                'price' => $order->product->price,
-                'total_price' => $order->total_price, // rename
-                'status' => $order->latestStatus?->status ?? 'pending',
-                'status_bukti' => $order->latestInvoiceStatus->status_bukti ?? null,
-                'fee' => $order->request->fee ?? null,
-            ];
-        })->values(); // Reset keys agar menjadi array murni di JSON
+        return $collection->map(fn ($order) => [
+            'no' => $order->order_id,
+            'name' => $order->product->name,
+            'user' => $order->user->name,
+            'request' => ($order->request_id) ? $order->request_id : null,
+            'phone' => $order->user->no_hp,
+            'url_img_product' => $order->product->url_img ? $cloudinary->getUrl($order->product->url_img) : null,
+            'url_img_request' => ($order->request && $order->request->status === 'finished') ? $cloudinary->getUrl($order->request->upload_img) : null,
+            'ordered_by' => Carbon::parse($order->created_at)
+                ->locale('id')
+                ->translatedFormat('d F Y'),
+            'quantity' => $order->quantity,
+            'price' => $order->product->price,
+            'total_price' => $order->total_price, // rename
+            'status' => $order->latestStatus?->status ?? 'pending',
+            'status_bukti' => $order->latestInvoiceStatus->status_bukti ?? null,
+            'fee' => $order->request->fee ?? null,
+        ])->values(); // Reset keys agar menjadi array murni di JSON
 
     }
 
@@ -184,7 +174,7 @@ class OrderController extends Controller
         return redirect()->route('orders.index')->with('success', 'Order created successfully.');
     }
 
-    public function show($id)
+    public function show($id, CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', Order::class);
         $order = Order::where('order_id', $id)
@@ -194,7 +184,7 @@ class OrderController extends Controller
             'order' => [
                 'no' => $order->order_id,
                 'name' => $order->product->name,
-                'url' => $order->product->url_img,
+                'url' => $order->product->url_img ? $cloudinary->getUrl($order->product->url_img) : null,
                 'category' => $order->product->category->name,
                 'request' => $order->request_id ? $order->request_id : null,
                 'quantity' => $order->quantity,

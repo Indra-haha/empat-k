@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\WorkOrder;
+use App\Models\OrderStatusHistory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use App\Services\CloudinaryService;
 
 class WorkOrderController extends Controller
 {
-    public function index()
+    public function index(CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', WorkOrder::class);
         $role = auth()->user()->role;
@@ -34,9 +36,9 @@ class WorkOrderController extends Controller
         });
 
         $workOrders = [
-            'none' => $this->mapWorkOrder($groupedOrders->get('none', collect())),
-            'process' => $this->mapWorkOrder($groupedOrders->get('process', collect())),
-            'checking' => $this->mapWorkOrder($groupedOrders->get('checking', collect())),
+            'none' => $this->mapWorkOrder($groupedOrders->get('none', collect()), $cloudinary),
+            'process' => $this->mapWorkOrder($groupedOrders->get('process', collect()), $cloudinary),
+            'checking' => $this->mapWorkOrder($groupedOrders->get('checking', collect()), $cloudinary),
         ];
 
         return Inertia::render("$role/WorkOrderPage/WorkOrderList", [
@@ -44,9 +46,9 @@ class WorkOrderController extends Controller
         ]);
     }
 
-    private function mapWorkOrder($collection)
+    private function mapWorkOrder($collection, CloudinaryService $cloudinary)
     {
-        return $collection->map(function ($order) {
+        return $collection->map(function ($order) use ($cloudinary){
 
             return [
                 'no' => $order->order_id,
@@ -54,8 +56,8 @@ class WorkOrderController extends Controller
                 'user' => $order->user->name,
                 'request' => ($order->request_id) ? $order->request_id : null,
                 'phone' => $order->user->no_hp,
-                'url_img_product' => $order->product->url_img,
-                'url_img_request' => ($order->request && $order->request->status === 'finished') ? $order->request->upload_img : null,
+                'url_img_product' => $order->product->url_img ? $cloudinary->getUrl($order->product->url_img) : null,
+                'url_img_request' => ($order->request && $order->request->status === 'finished') ? $cloudinary->getUrl($order->request->upload_img) : null,
                 'ordered_by' => Carbon::parse($order->created_at)
                     ->locale('id')
                     ->translatedFormat('d F Y'),
@@ -73,5 +75,34 @@ class WorkOrderController extends Controller
     {
         $order = WorkOrder::with('product')->findOrFail($id);
         return inertia('WorkOrder/Show', compact('order'));
+    }
+
+    public function store(Request $request)
+    {
+        $this->authorizeAction('create', WorkOrder::class);
+        $validatedData = $request->validate([
+            'order_id' => 'required|exists:orders,order_id',
+            'ukuran' => 'required|string',
+            'bahan' => 'required|string',
+            'finishing' => 'required|string',
+        ]);
+
+        $validatedData['status_pengerjaan'] = 'process';
+        WorkOrder::create($validatedData);
+        OrderStatusHistory::create([
+            'order_id' => $validatedData['order_id'],
+            'status' => 'process',
+            'created_by' => auth()->id(),
+        ]);
+
+        return redirect()->route('work-orders.index')
+            ->with('success', 'Work order berhasil dibuat.');
+    }
+
+    public function show(Request $request)
+    {
+        $orderId = $request->input('order_id');
+        $detail = WorkOrder::with('product')->where('order_id', $orderId)->firstOrFail();
+        return response()->json(['data' => $detail]);
     }
 }

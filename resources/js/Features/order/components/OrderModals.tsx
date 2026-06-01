@@ -149,6 +149,7 @@ export default function OrderModals({
                                 <img
                                     src={selectedOrder.url_img_request}
                                     alt="Custom Design "
+                                    className="w-full h-64 object-cover rounded-lg"
                                 />
                                 <div className="flex flex-col gap-1">
                                     <label className="block text-white font-bold mb-1">

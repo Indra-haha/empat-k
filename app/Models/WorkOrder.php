@@ -13,8 +13,9 @@ class WorkOrder extends Model
     protected $fillable = [
         'order_id', 
         'status_pengerjaan', // process, finished, dll
-        'url_gambar_work_order', // URL gambar hasil pengerjaan
-        'url_gambar_laporan' // URL gambar laporan'[;;;;;;;;;;;;;;;;;;;]
+        'ukuran',
+        'bahan',
+        'finishing'
     ];
 
     /**
@@ -23,6 +24,11 @@ class WorkOrder extends Model
     public function order()
     {
         return $this->belongsTo(Order::class, 'order_id');
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'product_id'); 
     }
 }
 

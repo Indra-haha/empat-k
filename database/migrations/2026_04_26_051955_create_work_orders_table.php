@@ -16,10 +16,11 @@ return new class extends Migration {
             $table->foreign('order_id')
                 ->references('order_id') // Nama primary key asli di tabel orders
                 ->on('orders')
-                ->onDelete('cascade');
+                ->onDelete('cascade')->unique(); // Pastikan order_id unik di work_orders
             $table->enum('status_pengerjaan', ['none','process', 'finished'])->default('none'); // Contoh status pengerjaan
-            $table->string('url_gambar_work_order')->nullable();
-            $table->string('url_gambar_laporan')->nullable();
+            $table->string('ukuran')->nullable(); 
+            $table->string('bahan')->nullable(); 
+            $table->string('finishing')->nullable(); 
             $table->timestamps();
         });
     }

@@ -48,9 +48,9 @@ class WorkOrderController extends Controller
 
     private function mapWorkOrder($collection, CloudinaryService $cloudinary)
     {
-        return $collection->map(function ($order) use ($cloudinary){
-
-            return [
+        return $collection->map(function ($order) use ($cloudinary) {
+            $status = $order->latestStatus?->status ?? 'pending';
+            $common = [
                 'no' => $order->order_id,
                 'name' => $order->product->name,
                 'user' => $order->user->name,
@@ -67,6 +67,17 @@ class WorkOrderController extends Controller
                 'status' => $order->latestStatus?->status ?? 'pending',
                 'status_bukti' => $order->latestInvoiceStatus->status_bukti ?? null,
                 'fee' => $order->request->fee ?? null,
+            ];
+            if($status === 'process'){
+                return array_merge($common, [
+                    'ukuran' => $order->workOrder->ukuran,
+                    'bahan' => $order->workOrder->bahan,
+                    'finishing' => $order->workOrder->finishing,
+                    'status_pengerjaan' => $order->workOrder->status_pengerjaan,
+                ]);
+            }
+            return [
+                ...$common,
             ];
         })->values(); // Reset keys agar menjadi array murni di JSON
     }
@@ -99,10 +110,4 @@ class WorkOrderController extends Controller
             ->with('success', 'Work order berhasil dibuat.');
     }
 
-    public function show(Request $request)
-    {
-        $orderId = $request->input('order_id');
-        $detail = WorkOrder::with('product')->where('order_id', $orderId)->firstOrFail();
-        return response()->json(['data' => $detail]);
-    }
 }

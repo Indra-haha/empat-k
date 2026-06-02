@@ -45,7 +45,7 @@ export default function WorkOrderDetail({ selectedOrder, onClose }: WorkOrderDet
                         <h4 className="font-semibold mb-2 text-blue-600">Spesifikasi Produksi (Dari Database):</h4>
                         <p><strong>Bahan:</strong> {selectedOrder.bahan || "Memuat..."}</p>
                         <p><strong>Ukuran:</strong> {selectedOrder.ukuran || "Memuat..."}</p>
-                        <p><strong>Catatan Produksi:</strong> {selectedOrder.notes || "-"}</p>
+                        <p><strong>Catatan Finishing:</strong> {selectedOrder.finishing || "-"}</p>
                     </div>
                 </div>
             </div>

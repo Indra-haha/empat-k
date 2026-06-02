@@ -4,7 +4,6 @@ import { AdminItemCard } from "@/Components/AdminItemCard";
 import OrderModals from "@/Features/order/components/OrderModals";
 import { OrdersCSProps, StatusHistory } from "@/Types/Orders";
 import WorkOrderDetail from "@/Features/work-order/components/WorkOrderDetail";
-import axios from "axios";
 import { WorkOrderProps } from "@/Types/WorkOrder";
 
 export default function page({
@@ -12,14 +11,14 @@ export default function page({
 }: {
     workOrders: Partial<Record<string, any[]>>;
 }) {
+console.log("Received workOrders prop:", workOrders); // Debug: Lihat data yang diterima dari server
     const workOrdersEntries = Object.entries(workOrders);
 
     const [selectedOrder, setSelectedOrder] = useState<{
-        key: string; // 1. MODIFIKASI: Ubah ke string agar sesuai dengan hasil Object.entries()
+        key: string; 
         value: OrdersCSProps[];
     } | null>(null);
 
-    // Memantau objek dasar workOrders agar render tab pertama stabil
     useEffect(() => {
         if (workOrdersEntries.length > 0 && !selectedOrder) {
             const firstEntry = workOrdersEntries[0];
@@ -28,53 +27,32 @@ export default function page({
                 value: firstEntry[1] as OrdersCSProps[],
             });
         }
-    }, [workOrders]); // 2. PERBAIKAN: Gunakan workOrders sebagai dependency, bukan workOrdersEntries
+    }, [workOrders]); 
 
     const [openDetailOrder, setopenDetailOrder] = useState<OrdersCSProps | null>(null);
     const [openDetailWorkOrder, setopenDetailWorkOrder] = useState<WorkOrderProps | null>(null);
     const [showModal, setShowModal] = useState(false);
 
-    const handleCardClick = (order: OrdersCSProps) => {
-        const currentStatus = order.status?.toString().trim().toLowerCase();
-
-        if (currentStatus === "process") {
-            axios.post(route("work-orders.show"), { 
-                order_id: order.no 
-            })
-            .then((res) => {
-                const detailData = res.data.data; 
-                console.log("Detail Data:", detailData); 
-                console.log(Boolean(detailData));// Debug: Lihat data yang diterima dari server
-                if (detailData) {
-                    setopenDetailWorkOrder({
-                        no: detailData.order_id,
-                        name: order.name,
-                        quantity: order.quantity,
-                        status: detailData.status_pengerjaan,
-                        bahan: detailData.bahan || "N/A",
-                        ukuran: detailData.ukuran || "N/A",
-                        finishing : detailData.finishing,
-                    });
-                    setShowModal(true);
-                }
-            })
-            .catch((err) => {
-                console.error("Detail Error:", err);
-                alert("Gagal mengambil data dari server via JSON.");
-            });
-            
-        } else {
-            setopenDetailOrder(order);
-            setShowModal(true);
-        }
+    const handleCardClick = (order: OrdersCSProps | WorkOrderProps) => {
+      console.log("Card clicked with order:", order); 
+      if (order.status === "process") {
+        setopenDetailWorkOrder(order as WorkOrderProps); 
+        setopenDetailOrder(null);
+      } else {
+        setopenDetailOrder(order);
+        setopenDetailWorkOrder(null); 
+      }
+      setShowModal(true);
     };
 
     const renderActiveModal = () => {
-        if (!showModal || !openDetailOrder) return null;
+        if (!showModal) return null;
 
-        const currentStatus = openDetailOrder.status?.toString().trim().toLowerCase();
+        const currentStatus = openDetailWorkOrder?.status || openDetailOrder?.status; // 4. PERBAIKAN: Pastikan kita cek status yang benar untuk menentukan modal mana yang muncul
+        console.log("Current Status for Modal:", currentStatus); // Debug: Lihat status pengerjaan yang akan menentukan modal mana yang muncul
 
         if (currentStatus === "process") {
+            console.log("Rendering WorkOrderDetail for order:", openDetailWorkOrder); // Debug: Lihat data yang akan dikirim ke modal
             return (
                 <WorkOrderDetail
                     selectedOrder={openDetailWorkOrder}
@@ -82,6 +60,8 @@ export default function page({
                 />
             );
         }
+
+        if (!openDetailOrder) return null;
 
         return (
             <OrderModals

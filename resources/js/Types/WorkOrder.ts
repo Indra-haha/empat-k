@@ -1,9 +1,11 @@
-export interface WorkOrderProps {
-    no: string,
+import { OrdersCSProps } from "./Orders";
+
+export interface WorkOrderProps extends OrdersCSProps {
+    no: number,
     name: string,
     quantity: number,
-    status: string,
+    status_pengerjaan: string,
     bahan: string,
     ukuran: string,
-    finishing: string,  
+    finishing: string, 
 }

@@ -36,10 +36,14 @@ class WorkOrderController extends Controller
         });
 
         $workOrders = [
-            'none' => $this->mapWorkOrder($groupedOrders->get('none', collect()), $cloudinary),
             'process' => $this->mapWorkOrder($groupedOrders->get('process', collect()), $cloudinary),
             'checking' => $this->mapWorkOrder($groupedOrders->get('checking', collect()), $cloudinary),
         ];
+        if ($role === 'cs') {
+            $workOrders = array_merge($workOrders, [
+                'none' => $this->mapWorkOrder($groupedOrders->get('none', collect()), $cloudinary),
+            ]);
+        }
 
         return Inertia::render("$role/WorkOrderPage/WorkOrderList", [
             'workOrders' => $workOrders,
@@ -68,7 +72,7 @@ class WorkOrderController extends Controller
                 'status_bukti' => $order->latestInvoiceStatus->status_bukti ?? null,
                 'fee' => $order->request->fee ?? null,
             ];
-            if($status === 'process'){
+            if ($status === 'process') {
                 return array_merge($common, [
                     'ukuran' => $order->workOrder->ukuran,
                     'bahan' => $order->workOrder->bahan,

@@ -12,7 +12,7 @@ export default function ProductShow({ product }: { product: ProductsProps }) {
             <Head title="Product Detail" />
             <section className="w-full h-full flex flex-col rounded-xl border-2 border-gray-300 overflow-hidden text-green-800">
                 {/* Gambar - 65% tinggi */}
-                <div className="flex-[0.65] min-h-0">
+                <div className="flex flex-col h-[50%] w-full">
                     <LazyLoadImage
                         className="w-full h-full object-cover [font-family:'Inter-Italic',Helvetica] font-normal italic text-black text-base text-center tracking-[0] leading-[normal] whitespace-nowrap"
                         src={product.url_img}
@@ -23,7 +23,7 @@ export default function ProductShow({ product }: { product: ProductsProps }) {
                 </div>
 
                 {/* Konten lainnya (main + footer) - 35% tinggi */}
-                <div className="flex-[0.35] min-h-0 flex flex-col">
+                <div className="flex flex-col h-full">
                     <main className="inline-flex flex-col items-start justify-center gap-2 relative py-6 px-3">
                         <h1 className="relative flex items-center justify-center w-fit text-xl font-bold whitespace-nowrap">
                             {product.name}

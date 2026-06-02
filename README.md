@@ -1,12 +1,21 @@
-CS : 
--id: cs
--pass: csaction1
-KP :
--id: kp
--pass: kproduksi1
-Pelanggan :
--id: pelanggan
--pass: pelanggan1
-Desainer:
--id: desainer
--pass :desainer1
+
+## Pelanggan
+| Username | Password |
+|---------|---------|
+| pelanggan | pelanggan1 |
+
+
+## CS
+| Username | Password |
+|---------|---------|
+| cs | csaction1 |
+
+## Kepala Produksi
+| Username | Password |
+|---------|---------|
+| kp | password |
+
+## Desainer 
+| Username | Password |
+|---------|---------|
+| desainer | desainer1 |

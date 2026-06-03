@@ -13,6 +13,14 @@ export function AdminItemCard({
     status_bukti_tagihan,
     onClick,
 }: AdminItemCardProps) {
+    console.log("Rendering AdminItemCard with props:", {
+        url_img,
+        judul,
+        tgl,
+        keterangan,
+        status,
+        status_bukti_tagihan,
+    }); // Debug: Lihat data yang diterima di card
     return (
         <section className="flex flex-row w-full justify-around bg-green-100 mb-4 p-2 rounded-xl">
             <header className="w-1/9 p-2">

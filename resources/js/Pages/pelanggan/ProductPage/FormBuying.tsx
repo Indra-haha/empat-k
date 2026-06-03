@@ -5,7 +5,7 @@ import { PageWithHeaderBack } from "../Layout/PageWithHeaderBack";
 import PrimaryButton from "@/Components/PrimaryButton";
 import InputError from "@/Components/InputError";
 
-export default function FormBuying({ product, requests, user }) {
+export default function FormBuying({ product, requests }: { product: any; requests: any }) {
     const [useRequest, setUseRequest] = useState(false);
 
     useEffect(() => {
@@ -15,7 +15,6 @@ export default function FormBuying({ product, requests, user }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         product_id: product.product_id,
         request_id: useRequest ? requests.request_id : null,
-        user_id: user,
         quantity: 0,
         price: product.price,
         total_price: 0,
@@ -29,7 +28,8 @@ export default function FormBuying({ product, requests, user }) {
         post(`/product/buyout`, {});
     };
 
-    // console.log(data);
+    console.log(product, "ini product");
+    console.log(requests, "ini requests");
 
     return (
         <PageWithHeaderBack title="Buying" route="products">
@@ -62,7 +62,7 @@ export default function FormBuying({ product, requests, user }) {
                                 className="hidden"
                             />
                             <LazyLoadImage
-                                src={requests}
+                                src={requests.upload_img}
                                 alt="Request"
                                 className={`h-20 border-2 border-gray-300 rounded-2xl ${useRequest ? "ring-2 ring-blue-500" : ""}`}
                             />

@@ -8,14 +8,15 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use App\Services\CloudinaryService;
-
+use Illuminate\Support\Facades\Auth;
 class WorkOrderController extends Controller
 {
+
     public function index(CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', WorkOrder::class);
         $role = auth()->user()->role;
-        $ordersRaw = Order::with('latestStatus', 'request', 'invoice', 'product')
+        $ordersRaw = Order::with('latestStatus', 'request', 'invoice', 'product', 'workOrder')
             ->whereHas('latestStatus', function ($q) {
                 $q->whereIn('status', ['partial_paid', 'process', 'checking']);
             })
@@ -55,7 +56,7 @@ class WorkOrderController extends Controller
         return $collection->map(function ($order) use ($cloudinary) {
             $status = $order->latestStatus?->status ?? 'pending';
             $common = [
-                'no' => $order->order_id,
+                'no' => $order->workOrder->wo_id ?? null,
                 'name' => $order->product->name,
                 'user' => $order->user->name,
                 'request' => ($order->request_id) ? $order->request_id : null,
@@ -92,26 +93,57 @@ class WorkOrderController extends Controller
         return inertia('WorkOrder/Show', compact('order'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, CloudinaryService $cloudinary)
     {
-        $this->authorizeAction('create', WorkOrder::class);
+        $this->authorizeAction('update', WorkOrder::class);
+        $role = Auth::user()->role;
+        if ($role === 'cs') {
+            $validatedData = $request->validate([
+                'order_id' => 'required|exists:orders,order_id',
+                'ukuran' => 'required|string',
+                'bahan' => 'required|string',
+                'finishing' => 'required|string',
+            ]);
+
+            $validatedData['status_pengerjaan'] = 'process';
+            WorkOrder::create($validatedData);
+            OrderStatusHistory::create([
+                'order_id' => $validatedData['order_id'],
+                'status' => 'process',
+                'created_by' => auth()->id(),
+            ]);
+
+            return redirect()->route('work-orders.index')
+                ->with('success', 'Work order berhasil dibuat.');
+        }
         $validatedData = $request->validate([
-            'order_id' => 'required|exists:orders,order_id',
-            'ukuran' => 'required|string',
-            'bahan' => 'required|string',
-            'finishing' => 'required|string',
+            'order_id' => 'required|exists:work_orders,wo_id',
+            'img_laporan' => 'required|image|max:2048', // Validasi file gambar
+        ]);
+        $file = $request->file('img_laporan');
+
+        $result = $cloudinary->upload($file->getRealPath(), [
+            'folder' => 'laporan',
+            'resource_type' => 'image',
+            'type' => 'authenticated'
+        ]);
+        $publicId = $result['public_id'];
+        $workOrder = WorkOrder::where('wo_id', $request->order_id)->first();
+        $workOrder->update([
+            'img_laporan' => $publicId,
         ]);
 
-        $validatedData['status_pengerjaan'] = 'process';
-        WorkOrder::create($validatedData);
         OrderStatusHistory::create([
-            'order_id' => $validatedData['order_id'],
-            'status' => 'process',
+            'order_id' => $workOrder->order_id,
+            'status' => 'checking',
             'created_by' => auth()->id(),
         ]);
 
         return redirect()->route('work-orders.index')
             ->with('success', 'Work order berhasil dibuat.');
+
     }
+
+
 
 }

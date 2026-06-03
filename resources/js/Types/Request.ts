@@ -1,3 +1,4 @@
+import { ProductsProps } from "./Products";
 
 export interface descriptionRequest {
     teks: string;
@@ -6,13 +7,12 @@ export interface descriptionRequest {
     reference: string;
     focus_spot: string;
 }
-export interface RequestProps {
+export interface RequestProps extends ProductsProps {
+    url_img_product: string;
     no: number;
     user: string;
-    product: string;
     upload_image: string;
-    img_product: string;
-    description: descriptionRequest;
+    description_request: descriptionRequest;
     status: string; 
     fee: number;  
     create: string;  

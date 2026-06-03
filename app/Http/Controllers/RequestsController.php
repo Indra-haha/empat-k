@@ -21,6 +21,7 @@ class RequestsController extends Controller
                 return [
                     'no' => $request->request_id,
                     'user' => $request->user->name,
+                    'url_img_product' => $request->product->url_img ? $cloudinary->getUrl($request->product->url_img) : null,
                     'upload_image' => $request->upload_img,
                     'product' => $request->product->name,
                     'description' =>
@@ -68,7 +69,7 @@ class RequestsController extends Controller
             'description' => $request->description,
         ];
 
-        if ($request->descrpition) {
+        if ($request->description) {
             CustomRequest::create([
                 'product_id' => $data['product_id'],
                 'user_id' => auth()->id(),
@@ -137,7 +138,7 @@ class RequestsController extends Controller
             'request' => [
                 'no' => $request->request_id,
                 'user' => $request->user->name,
-                'upload_image' => $request->upload_img ? $cloudinary->getUrl($request->upload_img) : null,
+                'upload_image' => $request->upload_img,
                 'category' => $request->product->category->name,
                 'product' => $request->product->name,
                 'img_product' => $request->product->url_img ? $cloudinary->getUrl($request->product->url_img) : null,

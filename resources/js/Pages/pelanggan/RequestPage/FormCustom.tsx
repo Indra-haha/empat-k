@@ -31,12 +31,12 @@ export default function FormCustom({ product }: { product: ProductsProps }) {
         <PageWithHeaderBack title="Custom Produk" route="products">
             <Head title="Custom Product" />
             <section className="text-green-800">
-                <main className="border-2 border-gray-300 flex flex-row gap-4 w-[300px]">
+                <main className="flex flex-row gap-4 w-[300px]">
                     <LazyLoadImage
                         src={product.url_img}
                         alt={product.name}
-                        width={150}
-                        height={150}
+                        width={120}
+                        height={120}
                         className="object-cover"
                     />
                     <article>

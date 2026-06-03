@@ -53,15 +53,27 @@ class ProductController extends Controller
     }
 
 
-    public function instantBuying($id)
+    public function instantBuying($id, CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', Product::class);
         $product = Product::with('category')->findOrFail($id);
+        $product = [
+            'product_id' => $product->product_id,
+            'name' => $product->name,
+            'price' => $product->price,
+            'url_img' => $cloudinary->getUrl($product->url_img),
+            'category' => $product->category->name,
+        ];
         $requests = CustomRequest::where('user_id', Auth::user()->user_id)
             ->where('product_id', $id)
             ->where('status', 'finished')
             ->latest('updated_at')
             ->first();
+            $requests = $requests ? [
+                'request_id' => $requests->request_id,
+                'upload_img' => $cloudinary->getUrl($requests->upload_img),
+                'description' => $requests->description,
+            ] : null;
         $id = Auth::user()->user_id;
         $role = Auth::user()->role;
         return Inertia::render("$role/ProductPage/FormBuying", [
@@ -103,10 +115,21 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 
-    public function custom($id)
+    public function custom($id, CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', Product::class);
         $product = Product::with('category')->findOrFail($id);
+        $product = [
+            'product_id' => $product->product_id,
+            'url_img' => $product->url_img ? $cloudinary->getUrl($product->url_img) : null,
+            'description' => $product->description,
+            'category' => $product->category->name,
+            'created_at' => $product->created_at->translatedFormat('d F Y'),
+            'updated_at' => $product->updated_at->translatedFormat('d F Y'),
+            'deleted_at' => $product->deleted_at?->translatedFormat('d F Y'),
+             // tambahkan field lain yang diperlukan
+             // misal: 'stock', 'weight', dll.
+        ];
         return Inertia::render('pelanggan/RequestPage/FormCustom', [
             'product' => $product
         ]);

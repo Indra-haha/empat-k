@@ -21,7 +21,7 @@ export default function RequestList({
                 requests.map((request) => (
                     <AdminItemCard
                         key={request.no}
-                        url_img={`${request.img_product}`}
+                        url_img={request.url_img_product}
                         judul={String(request.no)}
                         tgl={request.create}
                         status={request.status}

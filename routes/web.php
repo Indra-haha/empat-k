@@ -57,9 +57,9 @@ Route::middleware(['auth', 'role:desainer'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:cs,kp'])->group(function () {
-    Route::get('/work-order', [WorkOrderController::class, 'index'])->name('work-orders.index');
+    Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');
     Route::get('/work-order/{id}', [WorkOrderController::class, 'showWorkOrder'])->name('work-orders.showWorkOrder');
-    Route::post('work-order', [WorkOrderController::class, 'store'])->name('work-orders.store');
+    Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
 });
 
 Route::middleware(['auth', 'role:accounting,pelanggan'])->group(function () {

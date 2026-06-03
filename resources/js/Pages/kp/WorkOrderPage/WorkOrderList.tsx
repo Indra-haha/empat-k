@@ -34,6 +34,10 @@ export default function Page ({
     
         const handleCardClick = (order: OrdersCSProps | WorkOrderProps) => {
           console.log("Card clicked with order:", order); 
+          if ((window as any).Auth?.user()?.role === "kp") {
+            console.log("User role is KP, ignoring card click.");
+            return;
+          }
           if (order.status === "process") {
             setopenDetailWorkOrder(order as WorkOrderProps); 
             setopenDetailOrder(null);
@@ -68,7 +72,7 @@ export default function Page ({
                     onClose={() => setShowModal(false)}
                 />
             );
-        };
+        }; 
     return (
         <AdminLayout className="p-4">
              <section className="p-6">
@@ -104,7 +108,7 @@ export default function Page ({
                                 selectedOrder.value.map((order, index) => (
                                     <AdminItemCard
                                         key={order.no || `order-${index}`}
-                                        url_img={`${order.url_img_product}`}
+                                        url_img={order.url_img_product}
                                         judul={order.name}
                                         tgl={order.ordered_by}
                                         keterangan={String(order.quantity)}

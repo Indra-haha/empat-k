@@ -18,7 +18,7 @@ class CloudinaryService
         $this->apiKey = config('cloudinary.api_key');
         $this->apiSecret = config('cloudinary.api_secret');
         $this->baseUrl = "https://res.cloudinary.com/{$this->cloudName}/image/upload";
-        
+
         $this->cloudinary = new Cloudinary([
             'cloud' => [
                 'cloud_name' => $this->cloudName,
@@ -38,17 +38,12 @@ class CloudinaryService
         if (!$publicId)
             return null;
 
+        // Jangan tambah/kurangi prefix, pakai apa adanya
         $publicId = preg_replace('/\.(jpg|jpeg|png|gif|webp)$/i', '', $publicId);
-        $publicId = ltrim($publicId, '/');
 
-        $apiSecret = config('cloudinary.api_secret');
         $expiresAt = time() + $expiresInSeconds;
-
-        $stringToSign = $publicId . '/' . $expiresAt;
-
-        $fullSignature = sha1($stringToSign . $apiSecret);
-
-        $signature = substr($fullSignature, 0, 8);
+        $stringToSign = "expires_at={$expiresAt}&public_id={$publicId}{$this->apiSecret}";
+        $signature = substr(hash('sha256', $stringToSign), 0, 8);
 
         return "https://res.cloudinary.com/{$this->cloudName}/image/private/s--{$signature}--/{$publicId}?expires_at={$expiresAt}";
     }
@@ -78,7 +73,7 @@ class CloudinaryService
 
     public function upload($filePath, $options = [])
     {
-        
+
 
         return $this->cloudinary->uploadApi()->upload($filePath, $options);
     }

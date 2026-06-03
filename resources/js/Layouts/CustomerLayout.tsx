@@ -50,7 +50,7 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
         .replace(/\b\w/g, (l) => l.toUpperCase());
 
     return (
-        <section className="flex flex-col max-w-[425px] h-screen mx-auto bg-gray-100">
+        <section className="flex flex-col max-w-[450px] h-screen mx-auto bg-gray-100">
             <header className="h-16 flex flex-row justify-between items-center gap-auto border-2 border-green-200 bg-green-200 rounded-b-4xl px-5 py-2">
                 <Link className="w-12 h-12 flex items-center justify-center bg-white rounded-full" href={menus[3].route}>
                     <FontAwesomeIcon

@@ -15,7 +15,8 @@ class WorkOrder extends Model
         'status_pengerjaan', // process, finished, dll
         'ukuran',
         'bahan',
-        'finishing'
+        'finishing',
+        'img_laporan'
     ];
 
     /**

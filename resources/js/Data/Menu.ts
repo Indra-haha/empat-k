@@ -14,13 +14,13 @@ export const menusByRole: Record<string, Menu[]> = {
     ],
     cs: [
         { name: 'Order', route: '/orders' },
-        { name: 'Work Order', route: '/work-order' },
+        { name: 'Work Order', route: '/work-orders' },
     ],
     desainer: [
         { name: 'Request', route: '/requests' },
     ],
     kp: [
-        { name: 'Work-order', route: '/work-order' },
+        { name: 'Work-order', route: '/work-orders' },
     ],
     accounting: [
         { name: 'Orders', route: '/orders' },

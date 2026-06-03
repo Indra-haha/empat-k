@@ -1,0 +1,62 @@
+"use client";
+import { PageWithHeaderBack } from "../Layout/PageWithHeaderBack";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { Head, Link } from "@inertiajs/react";
+import React from "react";
+import { ProductsProps } from "@/Types/Products";
+
+export default function ProductShow({ product }: { product: ProductsProps }) {
+    console.log(product, "ini product show");
+    return (
+        <PageWithHeaderBack title="Detail" route="products">
+            <Head title="Product Detail" />
+            <section className="w-full h-full flex flex-col rounded-xl border-2 border-gray-300 overflow-hidden text-green-800">
+                {/* Gambar - 65% tinggi */}
+                <div className="flex flex-col h-[50%] w-full">
+                    <LazyLoadImage
+                        className="w-full h-full object-cover [font-family:'Inter-Italic',Helvetica] font-normal italic text-black text-base text-center tracking-[0] leading-[normal] whitespace-nowrap"
+                        src={product.url_img}
+                        alt={product.name}
+                        width={150}
+                        height={40}
+                    />
+                </div>
+
+                {/* Konten lainnya (main + footer) - 35% tinggi */}
+                <div className="flex flex-col h-full">
+                    <main className="inline-flex flex-col items-start justify-center gap-2 relative py-6 px-3">
+                        <h1 className="relative flex items-center justify-center w-fit text-xl font-bold whitespace-nowrap">
+                            {product.name}
+                        </h1>
+
+                        <h2 className="relative flex items-center justify-center w-fit text-sm font-normal whitespace-nowrap">
+                            {product.category}
+                        </h2>
+                    </main>
+
+                    <footer className="flex w-full h-fit relative flex-wrap items-start gap-[10px_10px] px-3 pb-4 mt-auto">
+                        <span className="relative w-[293px] h-20">
+                            <div className="h-[19px] flex items-start justify-start font- text-sm whitespace-nowrap">
+                                {product.description}
+                            </div>
+                        </span>
+                        <span className="flex flex-row gap-4 w-full justify-end">
+                            <Link
+                                href={`/product/${product.product_id}/custom`}
+                                className="py-2 px-4 bg-gray-300 text-black rounded-md"
+                            >
+                                Custom
+                            </Link>
+                            <Link
+                                href={`/product/${product.product_id}/instant-buying`}
+                                className="py-2 px-4 bg-blue-500 text-white rounded-md"
+                            >
+                                Beli
+                            </Link>
+                        </span>
+                    </footer>
+                </div>
+            </section>
+        </PageWithHeaderBack>
+    );
+}

@@ -1,0 +1,160 @@
+<?php
+
+namespace App\Http\Controllers;
+use App\Services\CloudinaryService;
+use App\Models\CustomRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+class RequestsController extends Controller
+{
+    public function index(CloudinaryService $cloudinary)
+    {
+        $this->authorizeAction('view', CustomRequest::class);
+        $role = Auth::user()->role;
+        $role === 'desainer' ?
+            $customrequests = CustomRequest::with('product')->get() :
+            $customrequests = CustomRequest::with('product')->where('user_id', Auth::user()->user_id)->get();
+    
+        return Inertia("{$role}/RequestPage/RequestList", [
+            'requests' => $customrequests->map(function ($request) use ($cloudinary) {
+                return [
+                    'no' => $request->request_id,
+                    'user' => $request->user->name,
+                    'upload_image' => $request->upload_img,
+                    'product' => $request->product->name,
+                    'description' =>
+                        [
+                            'teks' => $request->description['teks_font'] ?? null,
+                            'style' => $request->description['gaya_desain'] ?? null,
+                            'color' => $request->description['warna_dominan'] ?? null,
+                            'reference' => $request->description['referensi_virtual'] ?? null,
+                            'focus_spot' => $request->description['titik_fokus_revisi'] ?? null
+                        ],
+                    'status' => $request->status,
+                    'fee' => $request->fee,
+                    'create' => Carbon::parse($request->updated_at)
+                        ->locale('id')
+                        ->translatedFormat('d F Y'),
+                ];
+            }),
+        ]);
+        
+    }
+
+    public function store(Request $request)
+    {
+        // dd($request->all());
+        $this->authorizeAction('create', CustomRequest::class);
+
+        $request->validate([
+            'product_id' => 'required|integer|exists:products,product_id',
+            'description' => 'required|array',
+            'description.teks_font' => 'required|string',
+            'description.gaya_desain' => 'required|string',
+            'description.warna_dominan' => 'required|string',
+            'description.referensi_virtual' => 'required|string',
+            'description.titik_fokus_revisi' => 'required|string',
+        ], [
+            'description.teks_font.required' => 'This field is required.',
+            'description.gaya_desain.required' => 'This field is required.',
+            'description.warna_dominan.required' => 'This field is required.',
+            'description.referensi_virtual.required' => 'This field is required.',
+            'description.titik_fokus_revisi.required' => 'This field is required.',
+        ]);
+
+        $data = [
+            'product_id' => $request->product_id,
+            'description' => $request->description,
+        ];
+
+        if ($request->descrpition) {
+            CustomRequest::create([
+                'product_id' => $data['product_id'],
+                'user_id' => auth()->id(),
+                'description' => $data['description'],
+            ]);
+
+            return redirect()->route('products.index')->with('success', 'Custom request created successfully.');
+        }
+
+        return redirect()->route('products.index')->with('error', 'Failed to create custom request. Please try again.');
+
+    }
+
+    public function updateGambar(Request $request, $id, CloudinaryService $cloudinary)
+    {
+        // 1. Authorize (Pastikan desainer yang melakukan ini)
+        $this->authorizeAction('update', CustomRequest::class);
+
+        // 2. Masukkan ID dari parameter URL ke dalam request agar bisa divalidasi
+        $request->merge(['request_id' => $id]);
+
+        // 3. Validasi bersamaan
+        $request->validate([
+            'request_id' => 'required|exists:custom_requests,request_id',
+            'url_img' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ], [
+            'url_img.required' => 'File gambar wajib diunggah.',
+            'url_img.image' => 'File harus berupa gambar.',
+            'url_img.max' => 'Ukuran gambar maksimal 2MB.',
+        ]);
+
+        // 4. Cari data berdasarkan ID
+        $customRequest = CustomRequest::findOrFail($id);
+
+        // 5. Proses File
+        if ($request->hasFile('url_img')) {
+
+            // Upload to Cloudinary via service
+            $uploadResult = $cloudinary->upload($request->file('url_img')->getRealPath(), [
+                'folder' => 'uploads/desain',
+                'public_id' => 'desain_' . $customRequest->request_id,
+                'overwrite' => true,
+                'resource_type' => 'image',
+            ]);
+
+            // If Cloudinary returned a secure_url, store it; otherwise fallback to local storage
+            $path = $uploadResult['secure_url'] ?? $request->file('url_img')->store('uploads/desain', 'public');
+
+            // 6. Update database
+            $customRequest->update([
+                'upload_img' => $path,
+                'status' => 'finished', // Otomatis set jadi selesai
+            ]);
+
+            return redirect()->back()->with('success', 'Hasil desain berhasil dikirim!');
+        }
+
+        return redirect()->back()->with('error', 'Gagal mengunggah gambar.');
+    }
+
+    public function show($id, CloudinaryService $cloudinary)
+    {
+        $this->authorizeAction('view', CustomRequest::class);
+        $request = CustomRequest::with('product')->findOrFail($id);
+        return Inertia("pelanggan/RequestPage/RequestShow", [
+            'request' => [
+                'no' => $request->request_id,
+                'user' => $request->user->name,
+                'upload_image' => $request->upload_img ? $cloudinary->getUrl($request->upload_img) : null,
+                'category' => $request->product->category->name,
+                'product' => $request->product->name,
+                'img_product' => $request->product->url_img ? $cloudinary->getUrl($request->product->url_img) : null,
+                'description' =>
+                    [
+                        'teks' => $request->description['teks_font'] ?? null,
+                        'style' => $request->description['gaya_desain'] ?? null,
+                        'color' => $request->description['warna_dominan'] ?? null,
+                        'reference' => $request->description['referensi_virtual'] ?? null,
+                        'focus_spot' => $request->description['titik_fokus_revisi'] ?? null
+                    ],
+                'status' => $request->status,
+                'fee' => $request->fee,
+                'create' => Carbon::parse($request->updated_at)
+                    ->locale('id')
+                    ->translatedFormat('d F Y'),
+            ]
+        ]);
+    }
+}

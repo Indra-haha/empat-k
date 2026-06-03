@@ -208,7 +208,6 @@ class OrderController extends Controller
     public function updateStatus($id)
     {
         $this->authorizeAction('update', Order::class);
-        sleep(2);
         $order = Order::where('order_id', $id)->firstOrFail();
         $role = Auth::user()->role;
         $currentStatus = $order->latestStatus?->status ?? 'pending';
@@ -235,6 +234,8 @@ class OrderController extends Controller
                 $newStatus = 'ordered';
             } elseif ($currentStatus === 'paid') {
                 $newStatus = 'process';
+            } elseif ($currentStatus === 'checking') {
+                $newStatus = 'finished';
             }
         } elseif ($role === 'accounting' && $currentStatus === 'ordered') {
             /* Ketika accounting update status */

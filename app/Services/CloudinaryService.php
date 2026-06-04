@@ -78,6 +78,10 @@ class CloudinaryService
 
     public function getImageUrl($publicId)
     {
-        return $this->cloudinary->image($publicId)->signUrl();
+        return cloudinary()
+            ->image($publicId)
+            ->delivery('authenticated')
+            ->signUrl()
+            ->toUrl();
     }
 }

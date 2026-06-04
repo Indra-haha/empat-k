@@ -73,7 +73,7 @@ class WorkOrderController extends Controller
                 'status_bukti' => $order->latestInvoiceStatus->status_bukti ?? null,
                 'fee' => $order->request->fee ?? null,
             ];
-            if ($status === 'process') {
+            if ($status === 'process' || $status === 'checking') {
                 return array_merge($common, [
                     'ukuran' => $order->workOrder->ukuran,
                     'bahan' => $order->workOrder->bahan,

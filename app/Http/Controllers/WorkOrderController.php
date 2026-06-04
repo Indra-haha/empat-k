@@ -53,6 +53,7 @@ class WorkOrderController extends Controller
 
     private function mapWorkOrder($collection, CloudinaryService $cloudinary)
     {
+        
         return $collection->map(function ($order) use ($cloudinary) {
             $status = $order->latestStatus?->status ?? 'pending';
             $common = [
@@ -80,7 +81,7 @@ class WorkOrderController extends Controller
                     'bahan' => $order->workOrder->bahan,
                     'finishing' => $order->workOrder->finishing,
                     'status_pengerjaan' => $order->workOrder->status_pengerjaan,
-                    'img_laporan' => $order->workOrder->img_laporan ? $cloudinary->getImageUrl($order->workOrder->img_laporan) : null,
+                    'img_laporan' => $order->workOrder->img_laporan ? $cloudinary->getAuthenticatedUrl($order->workOrder->img_laporan) : null,
                 ]);
             }
             return [

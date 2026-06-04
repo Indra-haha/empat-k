@@ -76,11 +76,11 @@ class CloudinaryService
         return $this->cloudinary->uploadApi()->upload($filePath, $options);
     }
 
-    public function getImageUrl($publicId)
+    public function getAuthenticatedUrl(string $publicId): string
     {
-        return cloudinary()
+        return (string) cloudinary()
             ->image($publicId)
-            ->delivery('authenticated')
+            ->deliveryType('authenticated')
             ->signUrl()
             ->toUrl();
     }

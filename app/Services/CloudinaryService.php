@@ -73,8 +73,11 @@ class CloudinaryService
 
     public function upload($filePath, $options = [])
     {
-
-
         return $this->cloudinary->uploadApi()->upload($filePath, $options);
+    }
+
+    public function getImageUrl($publicId)
+    {
+        return $this->cloudinary->image($publicId)->signUrl();
     }
 }

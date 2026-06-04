@@ -15,7 +15,7 @@ class WorkOrderController extends Controller
     public function index(CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', WorkOrder::class);
-        $role = auth()->user()->role;
+        $role = Auth::user()->role;
         $ordersRaw = Order::with('latestStatus', 'request', 'invoice', 'product', 'workOrder')
             ->whereHas('latestStatus', function ($q) {
                 $q->whereIn('status', ['partial_paid', 'process', 'checking']);
@@ -79,7 +79,7 @@ class WorkOrderController extends Controller
                     'bahan' => $order->workOrder->bahan,
                     'finishing' => $order->workOrder->finishing,
                     'status_pengerjaan' => $order->workOrder->status_pengerjaan,
-                    'img_laporan' => $order->workOrder->img_laporan ? $cloudinary->getUrl($order->workOrder->img_laporan) : null,
+                    'img_laporan' => $order->workOrder->img_laporan ? $cloudinary->getImageUrl($order->workOrder->img_laporan) : null,
                 ]);
             }
             return [
@@ -111,7 +111,7 @@ class WorkOrderController extends Controller
             OrderStatusHistory::create([
                 'order_id' => $validatedData['order_id'],
                 'status' => 'process',
-                'created_by' => auth()->id(),
+                'created_by' => Auth::id(),
             ]);
 
             return redirect()->route('work-orders.index')
@@ -137,7 +137,7 @@ class WorkOrderController extends Controller
         OrderStatusHistory::create([
             'order_id' => $workOrder->order_id,
             'status' => 'checking',
-            'created_by' => auth()->id(),
+            'created_by' => Auth::id(),
         ]);
 
         return redirect()->route('work-orders.index')

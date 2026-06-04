@@ -56,6 +56,16 @@ export default function WorkOrderDetail({ selectedOrder, onClose }: WorkOrderDet
                                 {auth.user.role !== 'cs' && (
                                     <button onClick={() => setModals(selectedOrder.no)}>Open Modal</button>
                                 )}
+                                {selectedOrder.img_laporan && (
+                                    <div className="mt-4">
+                                        <h5 className="font-semibold mb-1">Laporan Gambar:</h5>
+                                        <img 
+                                            src={selectedOrder.img_laporan}
+                                            alt="Laporan Gambar"
+                                            className="max-w-full h-auto rounded-lg"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

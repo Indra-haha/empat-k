@@ -8,4 +8,5 @@ export interface WorkOrderProps extends OrdersCSProps {
     bahan: string,
     ukuran: string,
     finishing: string, 
+    img_laporan: string | null,
 }

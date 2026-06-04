@@ -29,8 +29,8 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*', function ($view) {
             $view->with('cloudinary', app(CloudinaryService::class));
         });
-        if (app()->environment('production')) {
-        URL::forceScheme('https');
-    }
+    //     if (app()->environment('production')) {
+    //     URL::forceScheme('https');
+    // }
     }
 }

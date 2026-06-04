@@ -51,7 +51,7 @@ console.log("Received workOrders prop:", workOrders); // Debug: Lihat data yang 
         const currentStatus = openDetailWorkOrder?.status || openDetailOrder?.status; // 4. PERBAIKAN: Pastikan kita cek status yang benar untuk menentukan modal mana yang muncul
         console.log("Current Status for Modal:", currentStatus); // Debug: Lihat status pengerjaan yang akan menentukan modal mana yang muncul
 
-        if (currentStatus === "process" ) {
+        if (currentStatus === "process" || currentStatus === "checking" ) {
             console.log("Rendering WorkOrderDetail for order:", openDetailWorkOrder); // Debug: Lihat data yang akan dikirim ke modal
             return (
                 <WorkOrderDetail

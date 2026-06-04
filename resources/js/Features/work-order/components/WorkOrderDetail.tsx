@@ -20,7 +20,7 @@ export default function WorkOrderDetail({ selectedOrder, onClose }: WorkOrderDet
                 <div 
                     // WAJIB: Pastikan ada 'fixed inset-0 flex items-center justify-center'
                     // WAJIB: Berikan z-index super tinggi (z-[9999]) agar tidak tertutup layout Admin
-                    className="fixed inset-0 flex items-center justify-center bg-black/60 z-[9999] p-4 animate-fade-in"
+                    className="fixed inset-0 flex items-center justify-center bg-black/60 z-[9999] p-4 animate-fade-in overflow-hidden"
                     onClick={onClose} // Klik di luar modal untuk menutup
                 >
                     {/* Box Konten Modal */}
@@ -57,7 +57,7 @@ export default function WorkOrderDetail({ selectedOrder, onClose }: WorkOrderDet
                                     <button onClick={() => setModals(selectedOrder.no)}>Open Modal</button>
                                 )}
                                 {selectedOrder.img_laporan && (
-                                    <div className="mt-4">
+                                    <div className="mt-4 overflow-auto">
                                         <h5 className="font-semibold mb-1">Laporan Gambar:</h5>
                                         <img 
                                             src={selectedOrder.img_laporan}

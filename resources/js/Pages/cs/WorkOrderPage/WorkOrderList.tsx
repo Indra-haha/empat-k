@@ -35,7 +35,7 @@ console.log("Received workOrders prop:", workOrders); // Debug: Lihat data yang 
 
     const handleCardClick = (order: OrdersCSProps | WorkOrderProps) => {
       console.log("Card clicked with order:", order); 
-      if (order.status === "process") {
+      if (order.status === "process" || order.status === "checking") {
         setopenDetailWorkOrder(order as WorkOrderProps); 
         setopenDetailOrder(null);
       } else {

@@ -65,7 +65,7 @@ class WorkOrderController extends Controller
     {
 
         return $collection->map(function ($order) use ($cloudinary) {
-            $status = $order->latestStatus?->status ?? 'pending';
+            $status = $order->latestStatus?->status;
             $common = [
                 'no' => $order->workOrder->wo_id ?? null,
                 'name' => $order->product->name,

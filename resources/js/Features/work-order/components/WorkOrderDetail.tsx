@@ -89,13 +89,13 @@ export default function WorkOrderDetail({ selectedOrder, onClose }: WorkOrderDet
                         {auth.user.role !== 'cs' ?
                             <div className="flex w-full justify-end gap-3 mt-4">
                                 {selectedOrder.status === 'process' ? (
-                                    <button onClick={() => setModals(selectedOrder.no)} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Open Modal</button>
+                                    <button onClick={() => setModals(selectedOrder.no)} className="bg-gray-300 text-gray-600 px-3 py-1 rounded">Open Modal</button>
                                 ) : null}
                             </div>
                             : selectedOrder.status === 'checking' || selectedOrder.status === 'rejected' ? (
                                 <div className="flex w-full justify-between gap-3 mt-4">
-                                    <button onClick={() => approveReport({ no: selectedOrder.no, status: 'approved' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Approve</button>
-                                    <button onClick={() => approveReport({ no: selectedOrder.no, status: 'rejected' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Reject</button>
+                                    <button onClick={() => approveReport({ no: selectedOrder.no, status: 'approved' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded">Approve</button>
+                                    <button onClick={() => approveReport({ no: selectedOrder.no, status: 'rejected' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded">Reject</button>
                                 </div>
                             ) : null}
                     </div>

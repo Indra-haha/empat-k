@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Order;
 use App\Models\WorkOrder;
 use App\Models\OrderStatusHistory;
@@ -9,6 +10,7 @@ use Inertia\Inertia;
 use Carbon\Carbon;
 use App\Services\CloudinaryService;
 use Illuminate\Support\Facades\Auth;
+
 class WorkOrderController extends Controller
 {
 
@@ -32,13 +34,25 @@ class WorkOrderController extends Controller
             if ($latestStatus === 'process') {
                 return 'process';
             }
+            if ($latestStatus === 'checking') {
+                return 'checking';
+            }
 
+            if ($latestStatus === 'finished') {
+                return 'finished';
+            }
+
+            if ($latestStatus === 'rejected') {
+                return 'rejected';
+            }
             return 'checking';
         });
 
         $workOrders = [
             'process' => $this->mapWorkOrder($groupedOrders->get('process', collect()), $cloudinary),
             'checking' => $this->mapWorkOrder($groupedOrders->get('checking', collect()), $cloudinary),
+            'finished' => $this->mapWorkOrder($groupedOrders->get('finished', collect()), $cloudinary),
+            'rejected' => $this->mapWorkOrder($groupedOrders->get('rejected', collect()), $cloudinary),
         ];
         if ($role === 'cs') {
             $workOrders = array_merge($workOrders, [
@@ -53,7 +67,7 @@ class WorkOrderController extends Controller
 
     private function mapWorkOrder($collection, CloudinaryService $cloudinary)
     {
-        
+
         return $collection->map(function ($order) use ($cloudinary) {
             $status = $order->latestStatus?->status ?? 'pending';
             $common = [
@@ -74,7 +88,7 @@ class WorkOrderController extends Controller
                 'status_bukti' => $order->latestInvoiceStatus->status_bukti ?? null,
                 'fee' => $order->request->fee ?? null,
             ];
-            
+
             if ($status === 'process' || $status === 'checking') {
                 return array_merge($common, [
                     'ukuran' => $order->workOrder->ukuran,
@@ -134,6 +148,7 @@ class WorkOrderController extends Controller
         $workOrder = WorkOrder::where('wo_id', $request->order_id)->first();
         $workOrder->update([
             'img_laporan' => $publicId,
+            'status_pengerjaan' => 'finished',
         ]);
 
         OrderStatusHistory::create([
@@ -144,9 +159,32 @@ class WorkOrderController extends Controller
 
         return redirect()->route('work-orders.index')
             ->with('success', 'Work order berhasil dibuat.');
-
     }
 
+    public function reportApproval(Request $request)
+    {
+        $this->authorizeAction('update', WorkOrder::class);
+        $validatedData = $request->validate([
+            'id' => 'required|exists:work_orders,wo_id',
+            'action' => 'required|in:approved,rejected',
+        ]);
 
+        $workOrder = WorkOrder::where('wo_id', $validatedData['id'])->first();
+        if (!$workOrder) {
+            return redirect()->route('work-orders.index')
+                ->with('error', 'Work order tidak ditemukan.');
+        }
 
+        $newStatus = ($validatedData['action'] === 'approved') ? 'finished' : 'rejected';
+        $workOrder->update(['status_pengerjaan' => $newStatus]);
+
+        OrderStatusHistory::create([
+            'order_id' => $workOrder->order_id,
+            'status' => $newStatus,
+            'created_by' => Auth::id(),
+        ]);
+
+        return redirect()->route('work-orders.index')
+            ->with('success', 'Laporan work order berhasil diproses.');
+    }
 }

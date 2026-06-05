@@ -8,6 +8,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\WorkOrderController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -17,7 +18,7 @@ Route::get('/', function () {
 })->middleware('guest');
 
 Route::get('/auth', function () {
-    $user = auth()->user();
+    $user = Auth::user();
     if ($user->role == 'pelanggan') return redirect()->route('products.index');
     if ($user->role == 'cs') return redirect()->route('orders.index');
     if ($user->role == 'accounting') return redirect()->route('orders.index');
@@ -60,6 +61,7 @@ Route::middleware(['auth', 'role:cs,kp'])->group(function () {
     Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');
     Route::get('/work-order/{id}', [WorkOrderController::class, 'showWorkOrder'])->name('work-orders.showWorkOrder');
     Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
+    Route::patch('/work-orders', [WorkOrderController::class, 'reportApproval'])->name('work-orders.reportApproval');
 });
 
 Route::middleware(['auth', 'role:accounting,pelanggan'])->group(function () {

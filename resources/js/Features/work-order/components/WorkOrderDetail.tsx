@@ -86,18 +86,18 @@ export default function WorkOrderDetail({ selectedOrder, onClose }: WorkOrderDet
                                 )}
                             </div>
                         </div>
-                         {auth.user.role !== 'cs' ?
-                                <>
-                                    {selectedOrder.status === 'process' ? (
-                                        <button onClick={() => setModals(selectedOrder.no)} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Open Modal</button>
-                                    ) : selectedOrder.status === 'checking' ? (
-                                        <div>
-                                            <button onClick={() => approveReport({ no: selectedOrder.no, status: 'approved' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Approve</button>
-                                            <button onClick={() => approveReport({ no: selectedOrder.no, status: 'rejected' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Reject</button>
-                                        </div>
-                                    ) : null}
-                                </>
-                                : null}
+                        {auth.user.role !== 'cs' ?
+                            <div className="flex w-full justify-end gap-3 mt-4">
+                                {selectedOrder.status === 'process' ? (
+                                    <button onClick={() => setModals(selectedOrder.no)} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Open Modal</button>
+                                ) : null}
+                            </div>
+                            : selectedOrder.status === 'checking' || selectedOrder.status === 'rejected' ? (
+                                <div className="flex w-full justify-between gap-3 mt-4">
+                                    <button onClick={() => approveReport({ no: selectedOrder.no, status: 'approved' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Approve</button>
+                                    <button onClick={() => approveReport({ no: selectedOrder.no, status: 'rejected' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Reject</button>
+                                </div>
+                            ) : null}
                     </div>
                 </div>,
                 document.body

@@ -74,9 +74,18 @@ export default function WorkOrderDetail({ selectedOrder, onClose }: WorkOrderDet
                                 <p><strong>Bahan:</strong> {selectedOrder.bahan || "Memuat..."}</p>
                                 <p><strong>Ukuran:</strong> {selectedOrder.ukuran || "Memuat..."}</p>
                                 <p><strong>Catatan Finishing:</strong> {selectedOrder.finishing || "-"}</p>
-                                {auth.user.role !== 'cs' ? (
-                                    <button onClick={() => setModals(selectedOrder.no)} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Open Modal</button>
-                                ) : <button onClick={() => approveReport({ no: selectedOrder.no, status: 'approved' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Approve</button>}
+                                {auth.user.role !== 'cs' ?
+                                    <>
+                                        {selectedOrder.status === 'process' ? (
+                                            <button onClick={() => setModals(selectedOrder.no)} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Open Modal</button>
+                                        ) : selectedOrder.status === 'checking' ? (
+                                            <div>
+                                                <button onClick={() => approveReport({ no: selectedOrder.no, status: 'approved' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Approve</button>
+                                                <button onClick={() => approveReport({ no: selectedOrder.no, status: 'rejected' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed">Reject</button>
+                                            </div>
+                                        ) : null}
+                                    </>
+                                    : null}
                                 {selectedOrder.img_laporan && (
                                     <div className="mt-4 overflow-auto">
                                         <h5 className="font-semibold mb-1">Laporan Gambar:</h5>

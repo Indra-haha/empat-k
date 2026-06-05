@@ -18,11 +18,7 @@ class WorkOrderController extends Controller
     {
         $this->authorizeAction('view', WorkOrder::class);
         $role = Auth::user()->role;
-        $ordersRaw = Order::with('latestStatus', 'request', 'invoice', 'product', 'workOrder')
-            ->whereHas('latestStatus', function ($q) {
-                $q->whereIn('status', ['partial_paid', 'process', 'checking']);
-            })
-            ->get();
+        $ordersRaw = Order::with('latestStatus', 'request', 'invoice', 'product', 'workOrder')->get();
         $groupedOrders = $ordersRaw->groupBy(function ($order) {
             // Ambil invoice terbaru dari koleksi invoices (Many-to-One)
             $latestStatus = $order->latestStatus()->first()?->status;

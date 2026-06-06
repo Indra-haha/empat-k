@@ -72,7 +72,7 @@ class RequestsController extends Controller
         if ($request->description) {
             CustomRequest::create([
                 'product_id' => $data['product_id'],
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'description' => $data['description'],
             ]);
 

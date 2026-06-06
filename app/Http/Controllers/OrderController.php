@@ -149,7 +149,6 @@ class OrderController extends Controller
     {
         $this->authorizeAction('create', Order::class);
         $this->validate($request, [
-            'user_id' => 'required',
             'request_id' => 'nullable',
             'product_id' => 'required',
             'quantity' => 'required',
@@ -157,7 +156,7 @@ class OrderController extends Controller
 
         $price = Product::findOrFail($request->product_id)->price;
         $order = Order::create([
-            'user_id' => $request->user_id,
+            'user_id' => Auth::id(),
             'request_id' => $request->request_id ? $request->request_id : null,
             'product_id' => $request->product_id,
             'quantity' => $request->quantity,

@@ -158,7 +158,7 @@ class OrderController extends Controller
         $price = Product::findOrFail($request->product_id)->price;
         $order = Order::create([
             'user_id' => $request->user_id,
-            'request_id' => $request->request_id,
+            'request_id' => $request->request_id ? $request->request_id : null,
             'product_id' => $request->product_id,
             'quantity' => $request->quantity,
             'price' => $price,

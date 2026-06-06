@@ -201,7 +201,7 @@ export default function OrderModals({
                             </p>
                         )}
                         <div className="flex flex-wrap justify-center gap-6">
-                            {selectedOrder.status === "pending" || selectedOrder.status === "checking" && (
+                            {(selectedOrder.status === "pending" || selectedOrder.status === "checking") && (
                                 <button
                                     className="flex items-center gap-3 bg-[#d9d9d9] hover:bg-gray-200 transition-colors px-8 py-3 rounded-2xl shadow-lg group"
                                     onClick={submitStatus}
@@ -218,7 +218,7 @@ export default function OrderModals({
                                     </span>
                                 </button>
                             )}
-                            {selectedOrder.status_bukti === "approved" && selectedOrder.status !== "checking" && (
+                            {(selectedOrder.status_bukti === "approved" && selectedOrder.status !== "checking") && (
                                 <button
                                     className="flex items-center gap-3 bg-[#d9d9d9] hover:bg-gray-200 transition-colors px-8 py-3 rounded-2xl shadow-lg group"
                                     type="button"

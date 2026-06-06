@@ -206,7 +206,6 @@ class OrderController extends Controller
 
     public function updateStatus($id)
     {
-        dd($id);
         $this->authorizeAction('update', Order::class);
         $order = Order::where('order_id', $id)->firstOrFail();
         $role = Auth::user()->role;

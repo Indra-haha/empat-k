@@ -32,7 +32,7 @@ class OrderController extends Controller
                         'ordered_by' => Carbon::parse($order->created_at)
                             ->locale('id')
                             ->translatedFormat('d F Y'),
-                        'status' => $order->latestStatus?->status ?? 'pending',
+                        'status' => $order->latestStatus?->status,
                     ];
                 });
 
@@ -47,7 +47,7 @@ class OrderController extends Controller
                 ->get();
 
             $groupedOrders = $ordersRaw->groupBy(function ($order) {
-                $status = $order->latestStatus?->status ?? 'pending';
+                $status = $order->latestStatus?->status;
                 return $status; // 'pending' atau 'ordered'
             });
 
@@ -137,7 +137,7 @@ class OrderController extends Controller
             'quantity' => $order->quantity,
             'price' => $order->product->price,
             'total_price' => $order->total_price, // rename
-            'status' => $order->latestStatus?->status ?? 'pending',
+            'status' => $order->latestStatus?->status,
             'status_bukti' => $order->latestInvoiceStatus->status_bukti ?? null,
             'fee' => $order->request->fee ?? null,
         ])->values(); // Reset keys agar menjadi array murni di JSON
@@ -167,7 +167,7 @@ class OrderController extends Controller
         OrderStatusHistory::create([
             'order_id' => $order->order_id,
             'status' => $request->status ?? 'pending',
-            'created_by' => auth()->id(),
+            'created_by' => Auth::id(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -178,7 +178,7 @@ class OrderController extends Controller
     {
         $this->authorizeAction('view', Order::class);
         $order = Order::where('order_id', $id)
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->firstOrFail();
         return Inertia::render('pelanggan/OrderPage/OrderShow', [
             'order' => [

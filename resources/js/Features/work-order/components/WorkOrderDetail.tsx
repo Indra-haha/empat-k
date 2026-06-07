@@ -88,7 +88,7 @@ export default function WorkOrderDetail({ selectedOrder, onClose }: WorkOrderDet
                         </div>
                         {auth.user.role !== 'cs' ?
                             <div className="flex w-full justify-end gap-3 mt-4">
-                                {selectedOrder.status === 'process' || selectedOrder.status === 'checking' ? (
+                                {selectedOrder.status === 'process' ? (
                                     <button onClick={() => setModals(selectedOrder.no)} className="bg-gray-300 text-gray-600 px-3 py-1 rounded">Open Modal</button>
                                 ) : null}
                             </div>

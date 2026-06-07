@@ -137,7 +137,7 @@ class WorkOrderController extends Controller
                 ->with('success', 'Work order berhasil dibuat.');
         }
         $validatedData = $request->validate([
-            'order_id' => 'required|exists:work_orders,wo_id',
+            'order_id' => 'required|exists:orders,order_id',
             'img_laporan' => 'required|image|max:2048', // Validasi file gambar
         ]);
         $file = $request->file('img_laporan');

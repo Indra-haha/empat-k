@@ -38,7 +38,7 @@ export default function Page ({
             console.log("User role is KP, ignoring card click.");
             return;
           }
-          if (order.status === "process") {
+          if (order.status === "process" || order.status === "checking") {
             setopenDetailWorkOrder(order as WorkOrderProps); 
             setopenDetailOrder(null);
           } else {

@@ -79,7 +79,7 @@ class InvoiceController extends Controller
                 // upload ke Cloudinary
                 $uploadResult = $this->cloudinary->upload($request->file('url_img_tagihan')->getRealPath(), [
                     'folder' => 'tagihan',
-                    'public_id' => 'INV-' . date('ymd') . '-' . $order->order_id,
+                    'public_id' => 'INV-' . date('ymd') . '-' . $order->order_id . '.png',
                     'overwrite' => true,
                     'type' => 'private',
                 ]);
@@ -124,7 +124,7 @@ class InvoiceController extends Controller
 
                 $uploadResult = $this->cloudinary->upload($request->file('url_img_bukti')->getRealPath(), [
                     'folder' => 'bukti',
-                    'public_id' => 'INV-' . date('ymd') . '-' . $request->order_id,
+                    'public_id' => 'INV-' . date('ymd') . '-' . $request->order_id . '.png',
                     'overwrite' => true,
                     'type' => 'private',
                     'access_mode' => 'authenticated'

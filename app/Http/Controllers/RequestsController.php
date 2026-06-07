@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Services\CloudinaryService;
 use App\Models\CustomRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+
 class RequestsController extends Controller
 {
     public function index(CloudinaryService $cloudinary)
@@ -15,7 +17,7 @@ class RequestsController extends Controller
         $role === 'desainer' ?
             $customrequests = CustomRequest::with('product')->get() :
             $customrequests = CustomRequest::with('product')->where('user_id', Auth::user()->user_id)->get();
-    
+
         return Inertia("{$role}/RequestPage/RequestList", [
             'requests' => $customrequests->map(function ($request) use ($cloudinary) {
                 return [
@@ -25,13 +27,13 @@ class RequestsController extends Controller
                     'upload_image' => $request->upload_img,
                     'product' => $request->product->name,
                     'description' =>
-                        [
-                            'teks' => $request->description['teks_font'] ?? null,
-                            'style' => $request->description['gaya_desain'] ?? null,
-                            'color' => $request->description['warna_dominan'] ?? null,
-                            'reference' => $request->description['referensi_virtual'] ?? null,
-                            'focus_spot' => $request->description['titik_fokus_revisi'] ?? null
-                        ],
+                    [
+                        'teks' => $request->description['teks_font'] ?? null,
+                        'style' => $request->description['gaya_desain'] ?? null,
+                        'color' => $request->description['warna_dominan'] ?? null,
+                        'reference' => $request->description['referensi_virtual'] ?? null,
+                        'focus_spot' => $request->description['titik_fokus_revisi'] ?? null
+                    ],
                     'status' => $request->status,
                     'fee' => $request->fee,
                     'create' => Carbon::parse($request->updated_at)
@@ -40,7 +42,6 @@ class RequestsController extends Controller
                 ];
             }),
         ]);
-        
     }
 
     public function store(Request $request)
@@ -80,7 +81,6 @@ class RequestsController extends Controller
         }
 
         return redirect()->route('products.index')->with('error', 'Failed to create custom request. Please try again.');
-
     }
 
     public function updateGambar(Request $request, $id, CloudinaryService $cloudinary)
@@ -143,13 +143,13 @@ class RequestsController extends Controller
                 'product' => $request->product->name,
                 'img_product' => $request->product->url_img ? $cloudinary->getUrl($request->product->url_img) : null,
                 'description' =>
-                    [
-                        'teks' => $request->description['teks_font'] ?? null,
-                        'style' => $request->description['gaya_desain'] ?? null,
-                        'color' => $request->description['warna_dominan'] ?? null,
-                        'reference' => $request->description['referensi_virtual'] ?? null,
-                        'focus_spot' => $request->description['titik_fokus_revisi'] ?? null
-                    ],
+                [
+                    'teks' => $request->description['teks_font'] ?? null,
+                    'style' => $request->description['gaya_desain'] ?? null,
+                    'color' => $request->description['warna_dominan'] ?? null,
+                    'reference' => $request->description['referensi_virtual'] ?? null,
+                    'focus_spot' => $request->description['titik_fokus_revisi'] ?? null
+                ],
                 'status' => $request->status,
                 'fee' => $request->fee,
                 'create' => Carbon::parse($request->updated_at)

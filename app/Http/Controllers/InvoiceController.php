@@ -79,11 +79,11 @@ class InvoiceController extends Controller
                 // upload ke Cloudinary
                 $uploadResult = $this->cloudinary->upload($request->file('url_img_tagihan')->getRealPath(), [
                     'folder' => 'tagihan',
-                    'public_id' => 'invoice_' . $order->order_id . '_' . time()
+                    'public_id' => 'INV-' . date('ymd') . '-' . $order->order_id,
                 ]);
 
                 // Ambil URL hasil upload
-                $imageUrl = $uploadResult['secure_url'];
+                $imageUrl = $uploadResult['public_id']; // Simpan public_id untuk generate signed URL nanti
 
                 Invoice::updateOrCreate(
                     [
@@ -120,16 +120,15 @@ class InvoiceController extends Controller
             if ($request->hasFile('url_img_bukti')) {
                 $file = $request->file('url_img_bukti');
 
-
-                Cloudinary::upload($file->getRealPath(), [
+                $uploadResult = $this->cloudinary->upload($request->file('url_img_bukti')->getRealPath(), [
                     'folder' => 'bukti',
-                    'public_id' => $request->invoice_no,
+                    'public_id' => 'INV-' . date('ymd') . '-' . $request->order_id,
                     'overwrite' => true,
                     'type' => 'private',
                     'access_mode' => 'authenticated'
                 ]);
 
-                $publicId = 'bukti/' . $request->invoice_no;
+                $publicId = $uploadResult['public_id'];
 
                 Invoice::where('invoice_number', $request->invoice_no)->update([
                     'url_img_bukti' => $publicId,

@@ -35,7 +35,9 @@ class InvoiceController extends Controller
             $cloudinary = $this->cloudinary;
 
             $invoices = $invoices->map(function ($order) use ($cloudinary) {
-                $invoice = $order->invoice?->first() ?? $order->invoice;
+                $invoice = $order->invoice instanceof \Illuminate\Support\Collection
+                    ? $order->invoice->first()
+                    : $order->invoice;
 
                 $tagihanPublicId = $invoice?->url_img_tagihan ?? null;
                 $buktiPublicId = $invoice?->url_img_bukti ?? null;

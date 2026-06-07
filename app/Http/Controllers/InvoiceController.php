@@ -124,10 +124,12 @@ class InvoiceController extends Controller
         try {
             $file      = $request->file('url_img_bukti');
             $extension      = $request->file('url_img_bukti')->getClientOriginalExtension();
-
+            $order = Order::whereHas('invoice', function ($query) use ($request) {
+                $query->where('invoice_number', $request->invoice_no);
+            })->firstOrFail();
             $storedPublicId = $this->cloudinary->upload($file->getRealPath(), [
                 'folder' => 'bukti',
-                'public_id' => 'INV-' . date('ymd') . '-' . $request->order_id,
+                'public_id' => 'INV-' . date('ymd') . '-' . $order->order_id,
                 'type' => 'private',
             ]);
 

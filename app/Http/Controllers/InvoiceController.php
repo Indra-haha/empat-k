@@ -81,9 +81,10 @@ class InvoiceController extends Controller
                 // upload ke Cloudinary
                 $uploadResult = $this->cloudinary->upload($request->file('url_img_tagihan')->getRealPath(), [
                     'folder' => 'tagihan',
-                    'public_id' => 'INV-' . date('ymd') . '-' . $order->order_id . '.png',
+                    'public_id' => 'INV-' . date('ymd') . '-' . $order->order_id,
                     'overwrite' => true,
                     'type' => 'private',
+                    'access_mode' => 'authenticated'
                 ]);
 
                 // Ambil URL hasil upload
@@ -94,7 +95,7 @@ class InvoiceController extends Controller
                         'order_id' => $request->order_id,
                         'invoice_number' => $request->invoice_no,
                         'total_amount' => $request->total_amount,
-                        'url_img_tagihan' => $imageUrl, // Simpan URL gambar
+                        'url_img_tagihan' => $imageUrl . ".png", // Simpan URL gambar
                     ]
                 );
 
@@ -122,11 +123,10 @@ class InvoiceController extends Controller
 
         try {
             if ($request->hasFile('url_img_bukti')) {
-                $file = $request->file('url_img_bukti');
 
                 $uploadResult = $this->cloudinary->upload($request->file('url_img_bukti')->getRealPath(), [
                     'folder' => 'bukti',
-                    'public_id' => 'INV-' . date('ymd') . '-' . $request->order_id . '.png',
+                    'public_id' => 'INV-' . date('ymd') . '-' . $request->order_id,
                     'overwrite' => true,
                     'type' => 'private',
                     'access_mode' => 'authenticated'
@@ -135,7 +135,7 @@ class InvoiceController extends Controller
                 $publicId = $uploadResult['public_id'];
 
                 Invoice::where('invoice_number', $request->invoice_no)->update([
-                    'url_img_bukti' => $publicId,
+                    'url_img_bukti' => $publicId . ".png",
                     'status_bukti' => 'pending',
                 ]);
 

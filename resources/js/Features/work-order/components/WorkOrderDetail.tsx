@@ -92,7 +92,7 @@ export default function WorkOrderDetail({ selectedOrder, onClose }: WorkOrderDet
                                     <button onClick={() => setModals(selectedOrder.no)} className="bg-gray-300 text-gray-600 px-3 py-1 rounded">Open Modal</button>
                                 ) : null}
                             </div>
-                            : (selectedOrder.status === 'checking' || selectedOrder.status === 'rejected') && auth.user.role === 'accounting' ? (
+                            : selectedOrder.status === 'checking' || selectedOrder.status === 'rejected' && (
                                 <div className="flex w-full justify-between gap-3 mt-4">
                                     <button onClick={() => approveReport({ no: selectedOrder.no, status: 'approved' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded">Approve</button>
                                     <button onClick={() => approveReport({ no: selectedOrder.no, status: 'rejected' })} className="bg-gray-300 text-gray-600 px-3 py-1 rounded">Reject</button>

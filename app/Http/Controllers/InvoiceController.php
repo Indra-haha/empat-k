@@ -80,6 +80,8 @@ class InvoiceController extends Controller
                 $uploadResult = $this->cloudinary->upload($request->file('url_img_tagihan')->getRealPath(), [
                     'folder' => 'tagihan',
                     'public_id' => 'INV-' . date('ymd') . '-' . $order->order_id,
+                    'overwrite' => true,
+                    'type' => 'private',
                 ]);
 
                 // Ambil URL hasil upload

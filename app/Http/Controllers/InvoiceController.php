@@ -83,8 +83,7 @@ class InvoiceController extends Controller
                     'folder' => 'tagihan',
                     'public_id' => 'INV-' . date('ymd') . '-' . $order->order_id,
                     'overwrite' => true,
-                    'type' => 'private',
-                    'access_mode' => 'authenticated'
+                    'type' => 'authenticated'
                 ]);
 
                 // Ambil URL hasil upload
@@ -128,8 +127,7 @@ class InvoiceController extends Controller
                     'folder' => 'bukti',
                     'public_id' => 'INV-' . date('ymd') . '-' . $request->order_id,
                     'overwrite' => true,
-                    'type' => 'private',
-                    'access_mode' => 'authenticated'
+                    'type' => 'authenticated',
                 ]);
 
                 $publicId = $uploadResult['public_id'];

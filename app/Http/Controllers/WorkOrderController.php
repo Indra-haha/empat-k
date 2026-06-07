@@ -67,7 +67,7 @@ class WorkOrderController extends Controller
         return $collection->map(function ($order) use ($cloudinary) {
             $status = $order->latestStatus?->status;
             $common = [
-                'no' => $order->workOrder->wo_id ?? null,
+                'no' => $order->order_id,
                 'name' => $order->product->name,
                 'user' => $order->user->name,
                 'request' => ($order->request_id) ? $order->request_id : null,

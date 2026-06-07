@@ -117,7 +117,6 @@ class InvoiceController extends Controller
 
         $this->validate($request, [
             'invoice_no'      => 'required|string|exists:invoices,invoice_number',
-            'order_id'        => 'required|exists:orders,order_id', 
             'url_img_bukti'   => 'required|file|mimes:jpg,jpeg,png|max:5120',
         ]);
 

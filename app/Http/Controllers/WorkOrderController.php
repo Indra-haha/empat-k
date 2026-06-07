@@ -51,9 +51,9 @@ class WorkOrderController extends Controller
             'rejected' => $this->mapWorkOrder($groupedOrders->get('rejected', collect()), $cloudinary),
         ];
         if ($role === 'cs') {
-            $workOrders = array_merge($workOrders, [
+            $workOrders = array_merge([
                 'none' => $this->mapWorkOrder($groupedOrders->get('none', collect()), $cloudinary),
-            ]);
+            ], $workOrders);
         }
 
         return Inertia::render("$role/WorkOrderPage/WorkOrderList", [

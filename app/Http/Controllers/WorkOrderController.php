@@ -22,6 +22,13 @@ class WorkOrderController extends Controller
         $groupedOrders = $ordersRaw->groupBy(function ($order) {
             // Ambil invoice terbaru dari koleksi invoices (Many-to-One)
             $latestStatus = $order->latestStatus()->first()?->status;
+            if (!$latestStatus) {
+                return 'none';
+            }
+
+            if (in_array($latestStatus, ['pending', 'ordered'])) {
+                return 'useless';
+            }
 
             if ($latestStatus === 'partial_paid') {
                 return 'none';

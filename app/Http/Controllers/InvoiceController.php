@@ -80,7 +80,7 @@ class InvoiceController extends Controller
 
         try {
             $order = Order::findOrFail($request->order_id);
-
+            $extension      = $request->file('url_img_tagihan')->getClientOriginalExtension();
             $storedPublicId = $this->cloudinary->upload($request->file('url_img_tagihan')->getRealPath(), [
                 'folder' => 'tagihan',
                 'publicId' => 'INV-' . date('ymd') . '-' . $order->order_id,
@@ -92,7 +92,7 @@ class InvoiceController extends Controller
                 [
                     'invoice_number'  => $request->invoice_no,
                     'total_amount'    => $request->total_amount,
-                    'url_img_tagihan' => $storedPublicId,  // contoh: "tagihan/INV-250607-12.jpg"
+                    'url_img_tagihan' => $storedPublicId['public_id'] . "." . $extension,  // contoh: "tagihan/INV-250607-12.jpg"
                 ]
             );
 
@@ -123,7 +123,7 @@ class InvoiceController extends Controller
 
         try {
             $file      = $request->file('url_img_bukti');
-            $extension = $file->getClientOriginalExtension();
+            $extension      = $request->file('url_img_bukti')->getClientOriginalExtension();
 
             $storedPublicId = $this->cloudinary->upload($file->getRealPath(), [
                 'folder' => 'bukti',
@@ -132,7 +132,7 @@ class InvoiceController extends Controller
             ]);
 
             Invoice::where('invoice_number', $request->invoice_no)->update([
-                'url_img_bukti' => $storedPublicId, // contoh: "bukti/INV-250607-12.png"
+                'url_img_bukti' => $storedPublicId['public_id'] . '.' . $extension, // contoh: "bukti/INV-250607-12.png"
                 'status_bukti'  => 'pending',
             ]);
 

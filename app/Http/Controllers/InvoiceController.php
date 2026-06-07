@@ -79,16 +79,13 @@ class InvoiceController extends Controller
         }
 
         try {
-            $order     = Order::findOrFail($request->order_id);
-            $file      = $request->file('url_img_tagihan');
-            $extension = $file->getClientOriginalExtension(); // jpg/jpeg/png
+            $order = Order::findOrFail($request->order_id);
 
-            $storedPublicId = $this->uploadPrivateImage(
-                filePath: $file->getRealPath(),
-                folder: 'tagihan',
-                publicId: 'INV-' . date('ymd') . '-' . $order->order_id,
-                extension: $extension
-            );
+            $storedPublicId = $this->cloudinary->upload($request->file('url_img_tagihan')->getRealPath(), [
+                'folder' => 'tagihan',
+                'publicId' => 'INV-' . date('ymd') . '-' . $order->order_id,
+                'type' => 'private',
+            ]);
 
             Invoice::updateOrCreate(
                 ['order_id' => $request->order_id],        // WHERE
@@ -128,12 +125,11 @@ class InvoiceController extends Controller
             $file      = $request->file('url_img_bukti');
             $extension = $file->getClientOriginalExtension();
 
-            $storedPublicId = $this->uploadPrivateImage(
-                filePath: $file->getRealPath(),
-                folder: 'bukti',
-                publicId: 'INV-' . date('ymd') . '-' . $request->order_id,
-                extension: $extension
-            );
+            $storedPublicId = $this->cloudinary->upload($file->getRealPath(), [
+                'folder' => 'bukti',
+                'publicId' => 'INV-' . date('ymd') . '-' . $request->order_id,
+                'type' => 'private',
+            ]);
 
             Invoice::where('invoice_number', $request->invoice_no)->update([
                 'url_img_bukti' => $storedPublicId, // contoh: "bukti/INV-250607-12.png"
@@ -214,7 +210,7 @@ class InvoiceController extends Controller
             }
 
             // Pelanggan: hanya bisa akses miliknya sendiri
-            if ($user->role === 'pelanggan' || $user->role === 'customer') {
+            if ($user->role === 'pelanggan' || $user->role === 'customer' || $user->role === 'accounting') {
                 return $order->user_id === $user->id;
             }
         }

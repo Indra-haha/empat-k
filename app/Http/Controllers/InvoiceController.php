@@ -66,85 +66,87 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         $this->authorizeAction('create', Invoice::class);
+
         $this->validate($request, [
-            'order_id' => 'required|exists:orders,order_id',
-            'invoice_no' => 'required|string|unique:invoices,invoice_number',
-            'url_img_tagihan' => 'required|file|mimes:jpg,jpeg,png|max:5120',
-            'total_amount' => 'required|numeric',
+            'order_id'         => 'required|exists:orders,order_id',
+            'invoice_no'       => 'required|string|unique:invoices,invoice_number',
+            'url_img_tagihan'  => 'required|file|mimes:jpg,jpeg,png|max:5120',
+            'total_amount'     => 'required|numeric',
         ]);
 
-        try {
-            if ($request->hasFile('url_img_tagihan')) {
-
-                $order = Order::findOrFail($request->order_id);
-
-                // upload ke Cloudinary
-                $uploadResult = $this->cloudinary->upload($request->file('url_img_tagihan')->getRealPath(), [
-                    'folder' => 'tagihan',
-                    'public_id' => 'INV-' . date('ymd') . '-' . $order->order_id,
-                    'overwrite' => true,
-                    'type' => 'private',
-                ]);
-
-                // Ambil URL hasil upload
-                $imageUrl = $uploadResult['public_id']; // Simpan public_id untuk generate signed URL nanti
-
-                Invoice::updateOrCreate(
-                    [
-                        'order_id' => $request->order_id,
-                        'invoice_number' => $request->invoice_no,
-                        'total_amount' => $request->total_amount,
-                        'url_img_tagihan' => $imageUrl . ".png", // Simpan URL gambar
-                    ]
-                );
-
-                OrderStatusHistory::create([
-                    'order_id' => $request->order_id,
-                    'status' => 'partial_paid',
-                    'created_by' => Auth::user()->user_id,
-                ]);
-
-                return back()->with('success', 'Tagihan Berhasil Disimpan ke Cloudinary!');
-            }
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Gagal upload ke Cloudinary: ' . $e->getMessage()]);
+        if (!$request->hasFile('url_img_tagihan')) {
+            return back()->withErrors(['url_img_tagihan' => 'File tidak ditemukan']);
         }
 
-        return back()->withErrors(['url_img_tagihan' => 'File tidak ditemukan']);
+        try {
+            $order     = Order::findOrFail($request->order_id);
+            $file      = $request->file('url_img_tagihan');
+            $extension = $file->getClientOriginalExtension(); // jpg/jpeg/png
+
+            $storedPublicId = $this->uploadPrivateImage(
+                filePath: $file->getRealPath(),
+                folder: 'tagihan',
+                publicId: 'INV-' . date('ymd') . '-' . $order->order_id,
+                extension: $extension
+            );
+
+            Invoice::updateOrCreate(
+                ['order_id' => $request->order_id],        // WHERE
+                [
+                    'invoice_number'  => $request->invoice_no,
+                    'total_amount'    => $request->total_amount,
+                    'url_img_tagihan' => $storedPublicId,  // contoh: "tagihan/INV-250607-12.jpg"
+                ]
+            );
+
+            OrderStatusHistory::create([
+                'order_id'   => $request->order_id,
+                'status'     => 'partial_paid',
+                'created_by' => Auth::user()->user_id,
+            ]);
+
+            return back()->with('success', 'Tagihan berhasil disimpan!');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Gagal upload: ' . $e->getMessage()]);
+        }
     }
+
     public function uploadBukti(Request $request)
     {
         $this->authorizeAction('update', Invoice::class);
+
         $this->validate($request, [
-            'invoice_no' => 'required|string',
-            'url_img_bukti' => 'required|file|mimes:jpg,jpeg,png|max:5120',
+            'invoice_no'      => 'required|string|exists:invoices,invoice_number',
+            'order_id'        => 'required|exists:orders,order_id', 
+            'url_img_bukti'   => 'required|file|mimes:jpg,jpeg,png|max:5120',
         ]);
 
-        try {
-            if ($request->hasFile('url_img_bukti')) {
-
-                $uploadResult = $this->cloudinary->upload($request->file('url_img_bukti')->getRealPath(), [
-                    'folder' => 'bukti',
-                    'public_id' => 'INV-' . date('ymd') . '-' . $request->order_id,
-                    'overwrite' => true,
-                    'type' => 'private',
-                ]);
-
-                $publicId = $uploadResult['public_id'];
-
-                Invoice::where('invoice_number', $request->invoice_no)->update([
-                    'url_img_bukti' => $publicId . ".png",
-                    'status_bukti' => 'pending',
-                ]);
-
-                return back()->with('success', 'Bukti Pembayaran Berhasil Disimpan ke Cloudinary!');
-            }
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Gagal upload ke Cloudinary: ' . $e->getMessage()]);
+        if (!$request->hasFile('url_img_bukti')) {
+            return back()->withErrors(['url_img_bukti' => 'File tidak ditemukan']);
         }
 
-        return back()->withErrors(['url_img_bukti' => 'File tidak ditemukan']);
+        try {
+            $file      = $request->file('url_img_bukti');
+            $extension = $file->getClientOriginalExtension();
+
+            $storedPublicId = $this->uploadPrivateImage(
+                filePath: $file->getRealPath(),
+                folder: 'bukti',
+                publicId: 'INV-' . date('ymd') . '-' . $request->order_id,
+                extension: $extension
+            );
+
+            Invoice::where('invoice_number', $request->invoice_no)->update([
+                'url_img_bukti' => $storedPublicId, // contoh: "bukti/INV-250607-12.png"
+                'status_bukti'  => 'pending',
+            ]);
+
+            return back()->with('success', 'Bukti pembayaran berhasil disimpan!');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Gagal upload: ' . $e->getMessage()]);
+        }
     }
+
     public function show(Request $request, CloudinaryService $cloudinary)
     {
         $this->authorizeAction('view', Invoice::class);

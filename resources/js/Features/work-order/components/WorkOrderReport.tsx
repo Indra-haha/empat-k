@@ -159,27 +159,40 @@ export default function LaporanModals({ selectedOrder, onClose }: any) {
 
             const formData = new FormData();
 
-            formData.append("_method", "POST");
-
-            // PASTIKAN INI ADA
             formData.append("img_laporan", file);
-            formData.append("order_id", data.order_id);
+            formData.append("order_id", String(data.order_id));
             formData.append("tanggal_laporan", data.tanggal_laporan);
             formData.append("progress", data.progress);
             formData.append("kendala", data.kendala);
             formData.append("solusi", data.solusi);
             formData.append("keterangan", data.keterangan);
 
-            console.log("FILE:", file); // DEBUG
-            formData.append("_method", "POST");
+            console.log("SUBMIT:", {
+                order_id: data.order_id,
+                file_size: file.size,
+                file_type: file.type,
+            });
 
             router.post(route("work-orders.store"), formData, {
                 forceFormData: true,
+                preserveScroll: true,
+
+                onSuccess: () => {
+                    console.log("Work order berhasil disimpan");
+                    onClose();
+                },
+
+                onError: (errors) => {
+                    console.error("Validation Error:", errors);
+                },
+
+                onFinish: () => {
+                    setGenerating(false);
+                },
             });
         } catch (err) {
             console.error(err);
             alert("Gagal generate gambar");
-        } finally {
             setGenerating(false);
         }
     };

@@ -92,7 +92,7 @@ class InvoiceController extends Controller
                 [
                     'invoice_number'  => $request->invoice_no,
                     'total_amount'    => $request->total_amount,
-                    'url_img_tagihan' => $storedPublicId['public_id'] . "." . $extension,  // contoh: "tagihan/INV-250607-12.jpg"
+                    'url_img_tagihan' => $storedPublicId['publicId'] . "." . $extension,  // contoh: "tagihan/INV-250607-12.jpg"
                 ]
             );
 
@@ -132,7 +132,7 @@ class InvoiceController extends Controller
             ]);
 
             Invoice::where('invoice_number', $request->invoice_no)->update([
-                'url_img_bukti' => $storedPublicId['public_id'] . '.' . $extension, // contoh: "bukti/INV-250607-12.png"
+                'url_img_bukti' => $storedPublicId['publicId'] . '.' . $extension, // contoh: "bukti/INV-250607-12.png"
                 'status_bukti'  => 'pending',
             ]);
 

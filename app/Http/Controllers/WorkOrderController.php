@@ -148,7 +148,7 @@ class WorkOrderController extends Controller
             'type' => 'authenticated'
         ]);
         $publicId = $result['public_id'];
-        $workOrder = WorkOrder::where('wo_id', $request->order_id)->first();
+        $workOrder = WorkOrder::where('order_id', $request->order_id)->first();
         $workOrder->update([
             'img_laporan' => $publicId,
             'status_pengerjaan' => 'finished',

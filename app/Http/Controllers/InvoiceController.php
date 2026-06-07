@@ -176,6 +176,11 @@ class InvoiceController extends Controller
         ]);
 
         Invoice::where('invoice_number', $id)->update(['status_bukti' => $request->status]);
+        OrderStatusHistory::create([
+            'order_id' => Invoice::where('invoice_number', $id)->first()->order_id,
+            'status' => $request->status === 'approved' ? 'process' : null,
+            'created_by' => Auth::id(),
+        ]);
 
         return back()->with('success', "Invoice {$request->status}!");
     }

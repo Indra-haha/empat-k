@@ -149,7 +149,7 @@ class InvoiceController extends Controller
 
         $publicId = $request->query('file'); // Contoh: "tagihan/INV-xxx" atau "bukti/INV-xxx"
 
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             abort(401, 'Session habis, silakan login ulang.');
         }
 

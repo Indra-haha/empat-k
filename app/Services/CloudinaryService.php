@@ -71,10 +71,12 @@ class CloudinaryService
         return "https://res.cloudinary.com/{$cloudName}/image/upload/{$baseName}";
     }
 
-    public function upload($filePath, $options = [])
-    {
-        return $this->cloudinary->uploadApi()->upload($filePath, $options);
-    }
+   public function upload($filePath, $options = [])
+{
+    $result = $this->cloudinary->uploadApi()->upload($filePath, $options);
+    
+    return (array) $result;
+}
 
     public function getAuthenticatedImageUrl(string $publicId): string
     {
